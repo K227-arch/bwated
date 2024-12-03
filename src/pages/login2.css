@@ -1,0 +1,126 @@
+.login-wrapper{
+    display: flex; /* Align items horizontally */
+    justify-content: space-between; /* Space between elements */
+    align-items: center; /* Vertically align items */
+    height: 100vh; /* Full viewport height */
+    padding: 20px;
+    overflow: hidden;
+    margin-left:-100px;
+    
+  }
+  
+  
+  .container {
+      display: flex;
+      flex-Direction: column;
+      align-Items: center;
+      justify-Content: center;
+      height: 400px;
+      background-Color:white;
+       /* Creates the box outline */
+    padding: 40px;            /* Space inside the box */
+    margin: 10px;             /* Space outside the box */
+    background-color: #fff;   /* Background color inside the box */
+    border-radius: 8px;       /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    text-align: center;       /* Center-align text inside the box */
+    max-width: 400px;
+    
+    margin-top:10px;
+    margin-left:200px;
+    flex:1;
+    
+    }
+    .google-input-with-icon {
+      display: flex; /* Align icon and text */
+      text-align: center;
+      flex-direction: column; /* Center vertically */
+      margin-left: 13px;
+      background-color: white; /* Google's white button */
+      color: #555; /* Neutral text color */
+      font-size: 16px;
+      font-weight: bold;
+      padding: 10px;
+      border: 1px solid #ddd; /* Border similar to Google's button */
+      border-radius: 10px; /* Rounded corners */
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+      transition: all 0.3s ease; /* Smooth hover effect */
+      width:320px;
+      
+    }
+    .google-input-with-icon:hover {
+      background-color: #f7f7f7; /* Slightly darker background on hover */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Increase shadow */
+    }
+    .google-input-with-icon {
+      padding-left: 30px; /* Add left padding for the icon */
+      background-image: url("https://www.google.com/images/branding/product/1x/gsa_64dp.png");
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: 20px 20px; /* Adjust size as needed */
+      
+  }
+  
+    
+    .email-input {
+      display: flex;
+      padding:10px;
+      flex-direction: column; /* Stack input and button vertically */
+      align-items: center; /* Center-align contents */
+      gap: 15px; /* Add spacing between input and button */
+      margin: 20px auto;
+      border-radius: 10px;
+      font-size: 16px;
+      width:340px;
+      margin-left:12px;
+      border: 1px solid #ddd;
+      transition: all 0.3s ease; /* Smooth hover effect */
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align:center;
+    }
+    .email-input:hover {
+      background-color: #f7f7f7; /* Slightly darker background on hover */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Increase shadow */
+    }
+    .or{
+      margin-right: 10px;
+      margin-top:20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .formbutton{
+      margin: -10px auto;
+      text-align: center;
+    }
+    .submit-button {
+    margin-right:1220px;
+    padding:5px;
+    
+    background-color: black;
+    color: #fff;
+    
+    border-radius: 9px;
+    cursor: pointer;
+    width:320px;
+    height:80px;
+    
+    }
+    
+    p h5{
+      margin-top:-50px;
+    }
+  
+  
+  
+  img{
+    flex: 1; /* Take up half the space */
+    max-width: 50%; /* Limit image width to half the page */
+     /* Ensure the image maintains aspect ratio */
+    /* Adjust height based on width */
+    width:1050px;
+    height:899px;
+    margin-left:140px;
+    
+  }

@@ -1,0 +1,74 @@
+.premium-plan{
+    text-align: center;
+}
+.premium-btn{
+    border-radius:50px;
+}
+.newchat-btn{
+    border-radius:50px;
+    color:white;
+    background-color:black;
+    width:200px;
+    height:50px;
+}
+
+
+.box {
+        
+        width: 1300px;         /* Sets the width of the box */
+        height: 800px;        /* Sets the height of the box */
+        background-color: #f0f0f0; /* Light gray background */
+        border: 2px solid #ccc;    /* Gray border */
+        padding: 10px;        /* Space inside the box */
+        margin: 20px;         /* Space outside the box */
+           /* Aligns text to the center */
+        line-height: 100px;   /* Vertically centers text if height is fixed */
+        margin-left:90px;
+      }
+
+.pdf-btn{
+    margin-left: 1px;
+    border-radius:50px;
+    width:200px;
+    height:50px;
+}
+.most-btn{
+    margin-left:890px;
+    border-radius:50px;
+    width:200px;
+    height:50px;
+}
+.box1{
+    display:flex;
+    margin-right:100px;
+}
+.box2 {
+    width: 1000px;         /* Sets the width of the box */
+    height: 200px;        /* Sets the height of the box */
+    background-color: #f0f0f0; /* Light gray background */
+    border: 2px solid #ccc;    /* Gray border */
+    padding: 10px;        /* Space inside the box */
+    margin: 20px;         /* Space outside the box */
+       /* Aligns text to the center */
+    line-height: 100px;   /* Vertically centers text if height is fixed */
+    margin-left:90px;
+    border-radius:10px;
+    position:relative;
+    box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.3);
+  }
+.quarter{
+    position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;       /* Half the width */
+  height: 20%;      /* Half the height */
+  background-color: black; /* Quarter color */
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color:white;
+}
+
+      
+
+
+      

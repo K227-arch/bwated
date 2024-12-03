@@ -1,0 +1,91 @@
+.container1{
+  display:flex;
+  justify-content:center;
+  gap: 100px;
+}
+
+.container2{
+    display:inline-block;
+    margin-top:50px;
+    border: 2px solid black; /* Border of the box */
+    border-radius: 10px; /* Rounded corners (optional) */ 
+    width:300px;
+    height:400px;
+    gap:10px;
+    padding:90px 20px;
+}
+
+.main{
+
+    border: 2px solid black;
+    border-radius:15px;
+    background-color:lightgrey;
+    padding:7px;
+    padding-top:10px;
+    margin-top:-80px;
+    width:120px;
+
+}
+ul {
+    list-style-type: none; /* Remove default bullets */
+    padding: 0;
+    margin-top:15px;
+  }
+
+  li::before {
+    content: '✔'; /* Add tick before each list item */
+    color: black; /* Tick color */
+    margin-right: 10px; /* Space between tick and text */
+  }
+
+.title{
+    justify-content:center;
+}
+hr{
+    /* Full width of the container */
+      height: 2px; /* Thickness */
+      background-color: black; /* Line color */
+      margin-top:40px;
+      margin-left:30px;
+      margin-right:90px;
+
+}
+.start{
+  border: 2px solid black;
+    border-radius:10px;
+    
+    padding:5px;
+    padding-top:10px;
+    margin-top:30px;
+    width:250px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+.start:hover{
+  background-color: black;
+  color: white;
+}
+.subtitle{
+  text-align: center; /* Optional: Center text inside */
+      font-size: 20px;
+      margin-top: 20px;
+}
+.title{
+  text-align: center; /* Optional: Center text inside */
+      font-size: 15px;
+      margin-top:40px;
+}
+.container2  hr{
+  height:4px;
+  margin-top:10px;
+  margin-left: 2px;
+  margin-right:2px;
+}
+.container2  p{
+  margin-top:15px;
+}
+.container2  h1{
+   margin-top:10px;
+}
