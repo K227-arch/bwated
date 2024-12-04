@@ -32,7 +32,7 @@ function login() {
            
            </form>
         </div>
-        <button type="submit" class="submit-button">Continue with email</button>
+        <button type="submit" class="submitbutton">Continue with email</button>
        </div>
        <img src={kisasi} alt="Img" />
       </div>

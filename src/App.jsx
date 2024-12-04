@@ -1,9 +1,7 @@
 
 import Login from './pages/login.jsx';
-import Login2 from './pages/login2.jsx';
 import Home from './pages/Home.jsx';
 import Plan from './pages/plan.jsx';
-import './App.css';
 import Sidebar from './components/layout/Sidebar.jsx';
 import Header from './components/layout/Header.jsx';
 import ChatInterface from './components/features/ChatInterface.jsx';

@@ -4,8 +4,10 @@
   align-items: center; /* Vertically align items */
   height: 100vh; /* Full viewport height */
   padding: 20px;
+  margin-left:-400px;
+  overflow:hidden;
   
-  margin-left:-100px;
+  
   
 }
 
@@ -94,8 +96,8 @@
     margin: -10px auto;
     text-align: center;
   }
-  .submit-button {
-  margin-right:1220px;
+  .submitbutton {
+  margin-right:-9px;
   padding:5px;
   
   background-color: black;
@@ -103,8 +105,8 @@
   
   border-radius: 9px;
   cursor: pointer;
-  width:3px;
-  height:80px;
+  width:360px;
+  height:40px;
   
   }
   
