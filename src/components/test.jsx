@@ -1,7 +1,6 @@
 import React from 'react';
-import Sidebar from './Sidebar';
-import Layout from './Layout';
-import ChatInterface from '../features/ChatInterface.jsx';
+import Layout from './Layout.jsx';
+import Testscreen from './testscreen.jsx';
 import './Documentchat.css';
 
 
@@ -12,7 +11,7 @@ import './Documentchat.css';
         <Layout />  
         </div>
         <div className="layoutmain2">
-          <ChatInterface />  
+          <Testscreen />  
         </div>
         
         <main className="layout-content">

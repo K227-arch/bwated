@@ -10,19 +10,20 @@
     border: 2px solid black; /* Border of the box */
     border-radius: 10px; /* Rounded corners (optional) */ 
     width:300px;
-    height:400px;
+    height:300px;
     gap:10px;
     padding:90px 20px;
 }
 
 .main{
 
-    border: 2px solid black;
+    border: none;
     border-radius:15px;
-    background-color:lightgrey;
-    padding:7px;
-    padding-top:10px;
-    margin-top:-80px;
+    background-color:grey;
+    padding:20px;
+    padding-top:1px;
+    margin-top:-70px;
+    height:30px;
     width:120px;
 
 }

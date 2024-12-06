@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, User, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
 export default function Header() {
@@ -17,14 +18,17 @@ export default function Header() {
           />
           <Search className="search-icon" size={20} />
         </div>
-        
+
         <div className="header-actions">
           <button className="header-btn">
             <Bell size={20} />
           </button>
-          <button className="header-btn">
-            <User size={20} />
-          </button>
+          {/* Redirects to the Plan page */}
+          <Link to="/plan">
+            <button className="header-btn">
+              <User size={20} />
+            </button>
+          </Link>
         </div>
       </div>
     </header>

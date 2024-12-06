@@ -1,10 +1,10 @@
-.login-wrapper{
+.login-wrapper2{
   display: flex; /* Align items horizontally */
   justify-content: space-between; /* Space between elements */
   align-items: center; /* Vertically align items */
   height: 100vh; /* Full viewport height */
   padding: 20px;
-  margin-left:-400px;
+  margin-left:-80px;
   overflow:hidden;
   
   
@@ -33,7 +33,7 @@
   flex:1;
   
   }
-  .google-input-with-icon {
+  .google-input-with-icon2 {
     display: flex; /* Align icon and text */
     text-align: center;
     flex-direction: column; /* Center vertically */
@@ -51,13 +51,13 @@
     width:320px;
     
   }
-  .google-input-with-icon:hover {
+  .google-input-with-icon2:hover {
     background-color: #f7f7f7; /* Slightly darker background on hover */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Increase shadow */
   }
-  .google-input-with-icon {
+.google-input-with-icon2 {
     padding-left: 30px; /* Add left padding for the icon */
-    background-image: url("https://www.google.com/images/branding/product/1x/gsa_64dp.png");
+    
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 20px 20px; /* Adjust size as needed */
@@ -65,7 +65,7 @@
 }
 
   
-  .email-input {
+  .email-input2 {
     display: flex;
     padding:10px;
     flex-direction: column; /* Stack input and button vertically */
@@ -82,21 +82,21 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align:center;
   }
-  .email-input:hover {
+  .email-input2:hover {
     background-color: #f7f7f7; /* Slightly darker background on hover */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Increase shadow */
   }
-  .or{
+  .or2{
     margin-right: 10px;
     margin-top:20px;
     font-size: 16px;
     font-weight: bold;
   }
-  .formbutton{
+  .formbutton2{
     margin: -10px auto;
     text-align: center;
   }
-  .submitbutton {
+  .submitbutton2 {
   margin-right:-9px;
   padding:5px;
   
