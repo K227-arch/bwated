@@ -1,26 +1,24 @@
-
-import Login from './pages/login.jsx';
-import Home from './pages/Home.jsx';
-import Plan from './pages/plan.jsx';
-import Sidebar from './components/layout/Sidebar.jsx';
-import Header from './components/layout/Header.jsx';
-import ChatInterface from './components/features/ChatInterface.jsx';
-import PDFViewer from './components/features/PDFViewer.jsx';
-import Layout from './components/layout/Layout.jsx';
-import Documentchat from './components/layout/Documentchat.jsx';
-import Testscreen from './components/layout/test.jsx';
-import Dashboard from './components/layout/dashboard.jsx';
-
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import Home from './components/Home.jsx';
+import Plan from './components/plan.jsx';
+import Documentchat from './components/Documentchat.jsx';
+import Load from './components/Load.jsx';
+import Login from './components/Login.jsx';
 
 function App() {
- 
-
   return (
-    <>
-    <Login />
-    
-    </>
-  )
+    <Router>
+      <Load>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/plan" element={<Plan />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/documentchat" element={<Documentchat />} />
+        </Routes>
+      </Load>
+    </Router>
+  );
 }
 
-export default App
+export default App;

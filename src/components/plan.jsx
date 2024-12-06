@@ -1,7 +1,16 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './plan.css';
 
 const plan = () => {
+
+
+  const navigate  = useNavigate()
+
+  function gotoHomePage(){
+    navigate("/home")
+  }
+
   return (
     <div>
       <div className="plan">
@@ -29,9 +38,10 @@ const plan = () => {
                 <li>Feature 1</li>
                 <li>Feature 1</li>
             </ul>
-            <div className="start">
-                Get Started
-            </div>
+            <button className="start" onClick={gotoHomePage}>
+  Get Started
+</button>
+            
         </div>
         <div className="container2">
             <div className="main">
@@ -48,9 +58,9 @@ const plan = () => {
                 <li>Feature 1</li>
                 <li>Feature 1</li>
             </ul>
-            <div className="start">
+            <button className="start">
                 Get Started
-            </div>
+            </button>
         </div>
         </div>
         

@@ -1,38 +1,38 @@
 import React from 'react';
 import kisasi from '../assets/kisasi.jpg';
-import './login.css';
+import './signup.css';
 
 function login() {
   return (
     <div>
 
-      <div className="login-wrapper">
+      <div className="login-wrapper2">
         <div className="container">
         MY KASASI
-        <p><h1>Your Learning, supercharged</h1></p>
-        <p><h5>The AI platform built to help you study faster.</h5></p>
-        <div className="formbutton">
+        <p><h1>Enter Password</h1></p>
+        
+        <div className="formbutton2">
           <form>
           <input
             type="email"
-            placeholder="Continue With Google"
-            class="google-input-with-icon"
+            placeholder="Enter Password"
+            class="google-input-with-icon2"
             required
            />
            <div className="or">
-              OR
+              
             </div>
            <input
             type="email"
-            placeholder="Enter your email address"
-            class="email-input"
+            placeholder="Confirm Password"
+            class="email-input2"
             required
            />
            
            
            </form>
         </div>
-        <button type="submit" class="submitbutton">Continue with email</button>
+        <button type="submit" class="submitbutton2">Set password</button>
        </div>
        <img src={kisasi} alt="Img" />
       </div>
