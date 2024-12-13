@@ -7,6 +7,7 @@ import Load from './components/Load.jsx';
 import Login from './components/Login.jsx';
 import PDFViewer from './components/PDFViewer.jsx';
 import Test from './components/test.jsx';
+import Signup from './components/signup.jsx';
 
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
       <Load>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/Signup" element={<Signup />} />
+
           <Route path="/plan" element={<Plan />} />
           <Route path="/home" element={<Home />} />
           <Route path="/documentchat" element={<Documentchat />} />

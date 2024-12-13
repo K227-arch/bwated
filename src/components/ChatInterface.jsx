@@ -49,10 +49,7 @@ export default function ChatInterface() {
             <Download size={16} />
             Download Chat
           </button>
-          <button className="action-btn">
-            <PenSquare size={16} />
-            Make a Note
-          </button>
+          
         </div>
         
         <div className="input-container">

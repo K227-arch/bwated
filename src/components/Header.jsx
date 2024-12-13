@@ -13,7 +13,7 @@ export default function Header() {
         <div className="search-container">
           <input
             type="text"
-            placeholder="Search documents..."
+            placeholder=""
             className="search-input"
           />
           <Search className="search-icon" size={20} />

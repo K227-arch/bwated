@@ -8,10 +8,12 @@ const Sidebar = () => {
 
   const navigate  = useNavigate()
 
-  function gotoPDFViewer(){
+  const gotoPDFViewer=()=>{
     navigate("/PDFViewer")
   }
-
+  const gotoDocumentchat=()=>{
+    navigate("/Documentchat")
+  }
 
 
   return (
@@ -31,7 +33,7 @@ const Sidebar = () => {
             <FileText size={20} />
             Documents
           </button>
-          <button className="nav-btn">
+          <button className="nav-btn" onClick={gotoDocumentchat}>
             <MessageSquare size={20} />
             Chats
           </button>

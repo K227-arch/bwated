@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import kisasi from "../assets/kisasi.jpg";
 import "./login.css";
 
@@ -10,7 +10,7 @@ function Login() {
 
 
   function navigateToPlanPage(){
-      navigate("/plan")
+      navigate("/Signup")
   }
 
 
