@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Send, Mic, Download, BookOpen, PenSquare } from 'lucide-react';
 import './ChatInterface.css';
 
 export default function ChatInterface() {
   const [message, setMessage] = useState('');
+  const navigate  = useNavigate()
+  function test(){
+    navigate("/test")
+  }
 
   const handleSend = () => {
     if (message.trim()) {
       // Handle sending message
+      console.log('Message sent:', message);
       setMessage('');
     }
   };
@@ -35,7 +41,7 @@ export default function ChatInterface() {
             <Mic size={16} />
             Voice Chat
           </button>
-          <button className="action-btn">
+          <button className="action-btn" onClick={test}>
             <BookOpen size={16} />
             Take Test
           </button>
@@ -65,3 +71,4 @@ export default function ChatInterface() {
     </div>
   );
 }
+

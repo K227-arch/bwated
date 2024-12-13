@@ -4,7 +4,13 @@ body{
 .testscreen{
    
    margin-top:80px;
+   margin-left:400px;
 }
+.testscreen h1{
+    margin-left:300px;
+}
+
+
 .back-button {
     display: flex;
     align-items: center;
@@ -14,7 +20,7 @@ body{
     background-color: black;
     cursor: pointer;
     color:white;
-    margin-left:210px;
+    margin-left:-195px;
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
   .back-button:hover {
@@ -24,20 +30,7 @@ body{
   }
   
 
-  .container {
-    
-    margin-left:600px;
-    width: 800px;
-    height: 450px;
-    border: 2px solid black;
-    background-color: white;
-  }
-  .container h1 {
-    margin: 1rem 0;
-    font-size: 2.5rem;
-  }
-  .container p {
-    color: #666;
-    margin-bottom: 2rem;
-  }
+
+
+
  

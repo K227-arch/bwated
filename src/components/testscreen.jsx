@@ -1,5 +1,7 @@
-import { ArrowLeft } from 'lucide-react'
+import React from 'react';
+import { ArrowLeft,Logs, Notebook } from 'lucide-react';
 import './testscreen.css';
+import Generator from './generator';
 
 export default function BackButton() {
   return (
@@ -9,14 +11,9 @@ export default function BackButton() {
             <ArrowLeft size={20} />
             Back to chat
            </button>
+           <h1>Welcome to the Test Space</h1>
         
-        <div className="container">
-      
-          <h1>Welcome to Test Space</h1>
-          <p>Your minimalist workspace for focused testing</p>
-          
-      
-    </div>
+            <Generator />
 
     </div>
 

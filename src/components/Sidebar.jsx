@@ -1,8 +1,19 @@
 import React from 'react';
 import { Upload, FileText, Settings, MessageSquare } from 'lucide-react';
 import './Sidebar.css';
+import { useNavigate } from "react-router";
 
-export default function Sidebar() {
+const Sidebar = () => {
+
+
+  const navigate  = useNavigate()
+
+  function gotoPDFViewer(){
+    navigate("/PDFViewer")
+  }
+
+
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -16,7 +27,7 @@ export default function Sidebar() {
         </button>
         
         <div>
-          <button className="nav-btn">
+          <button className="nav-btn" onClick={gotoPDFViewer}>
             <FileText size={20} />
             Documents
           </button>
@@ -39,3 +50,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+export default Sidebar
