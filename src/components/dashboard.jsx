@@ -1,52 +1,66 @@
 import React from 'react';
+import { useState } from 'react';
 import Header from './Header';
 import './dashboard.css';
+import { useNavigate } from "react-router";
 
 
- function App({ children }) {
+function App() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const navigate=useNavigate()
+  const gotoDocumentchat=()=>{
+    navigate("/Documentchat")
+  }
   return (
     <div className="layout">
       <div className="layout-main">
         <Header />
       </div>
-      
-      <div className="layout-main2">
-        <div className="premium-plan">
-        <button className="premium-btn">Using Premium plan</button>
-        <h1>Good Morning, Abba</h1>
-        <button className="newchat-btn"><h3>Start a new chart</h3></button>
+
+      <div className="chat-container2">
+      <header className="chat-header">
+        <h1>Good morning, Abba</h1>
+        <button className="new-chat-btn" onClick={gotoDocumentchat}>
+          <div className="icon">📝</div>
+            Start a new chat
+        </button>
+      </header>
+
+      <div className="filter-section">
+        <div className="filter-buttons">
+          <button className="filter-btn active">PDFs & Quizzes</button>
+          
         </div>
         
-
-        <div className="box">
-          <div className="box-btn">
-            <button className="pdf-btn"><h3>PDFs Quizes</h3></button>
-            <button className="most-btn"><h3>Most Recent</h3></button>
-          </div>
-          <div className="box1">
-            <div className="box2">
-              
-              <div className="quarter"></div>
-            </div>
-            <div className="box2">
-              
-            <div className="quarter">
-              
-            </div>
-            </div>
-            <div className="box2">
-            <div className="quarter"></div>
-            </div>
-            <div className="box2">
-            <div className="quarter"></div>
-            </div>
-          </div>
-           
+        <div className="search-container">
+          <input 
+            type="text" 
+            placeholder=""
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          <div className="search-icon">🔍</div>
         </div>
-         
-         
+
+        <div className="sort-dropdown">
+          <select className="sort-select">
+            <option>Most recent</option>
+          </select>
+        </div>
       </div>
-      
+
+      <div className="chat-grid">
+        {[1, 2, 3, 4].map((item) => (
+          <div key={item} className="chat-card">
+            <div className="chat-preview">
+              <h3>Untitled</h3>
+              <div className="date">12/31/1969</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
     </div>
   );
 }

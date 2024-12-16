@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, User, Bell } from 'lucide-react';
+import { Search, User, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 
@@ -21,7 +21,7 @@ export default function Header() {
 
         <div className="header-actions">
           <button className="header-btn">
-            <Bell size={20} />
+            <Settings size={20} />
           </button>
           {/* Redirects to the Plan page */}
           <Link to="/plan">

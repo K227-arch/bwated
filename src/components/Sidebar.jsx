@@ -9,7 +9,7 @@ const Sidebar = () => {
   const navigate  = useNavigate()
 
   const gotoPDFViewer=()=>{
-    navigate("/PDFViewer")
+    navigate("/dashboard")
   }
   const gotoDocumentchat=()=>{
     navigate("/Documentchat")
@@ -37,10 +37,7 @@ const Sidebar = () => {
             <MessageSquare size={20} />
             Chats
           </button>
-          <button className="nav-btn">
-            <Settings size={20} />
-            Settings
-          </button>
+  
         </div>
       </nav>
       Help us Make Kasasi Better
