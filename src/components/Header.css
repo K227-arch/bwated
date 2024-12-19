@@ -1,63 +1,70 @@
+/* Header.css */
 .header {
-  height: 64px;
-  background-color: #e5e5e5;
-  border-bottom: 1px solid #e5e5e5;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
   position: fixed;
   top: 0;
+  left: 0;
   right: 0;
-  left: 1px;
-  z-index: 10;
-  box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 
-.header-content {
-  height: 100%;
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  margin-left:-110px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+  color:lightseagreen;
 }
 
-.search-container {
-  margin-left:50px;
-  flex: 1;
-  max-width: 25rem;
-  position: relative;
-  padding:10px;
-  border-radius: 700px;
-}
 
-.search-input {
-  width: 100%;
-  padding: 8px 16px 8px 40px;
-  background-color: #f3f4f6;
-  border-radius: 25px;
-}
 
-.search-input:focus {
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-}
-
-.header-actions {
+.auth-buttons {
+  margin-right:-100px;
   display: flex;
-  gap: 16px;
+  gap: 1rem;
 }
 
-.header-btn {
-  padding: 8px;
-  border-radius: 50%;
-  cursor:pointer;
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.header-btn:hover {
-  background-color: black;
-  color:white;
+.btn-login {
+  background: none;
+  border: 1px solid #333;
+  color: #333;
+}
+
+.btn-login:hover {
+  background: #333;
+  color: #fff;
+}
+
+.btn-signup {
+  background: #333;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.btn-signup:hover {
+  background: white;
+  color:black;
+  border-color: #000;
 }

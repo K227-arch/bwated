@@ -1,0 +1,116 @@
+.question-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .question-form h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+  
+  .style-selection,
+  .question-count,
+  .topics {
+    margin-bottom: 2rem;
+  }
+  
+  .style-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .style-buttons button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .style-buttons button.active {
+    border-color: #646cff;
+    background: rgba(100, 108, 255, 0.08);
+  }
+  
+  .style-buttons button span {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .style-buttons button small {
+    color: #666;
+    text-align: center;
+  }
+  
+  .count-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  .count-buttons button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .count-buttons button.active {
+    background: #646cff;
+    color: white;
+    border-color: #646cff;
+  }
+  
+  .topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .topic-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .topic-checkbox:hover {
+    background-color: rgba(100, 108, 255, 0.08);
+  }
+  
+  .start-button {
+    width: 100%;
+    padding: 1rem;
+    background: #646cff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .start-button:hover {
+    background: #535bf2;
+  }
+  
+  .start-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 const Home = () => {
@@ -8,7 +8,7 @@ const Home = () => {
   const navigate  = useNavigate();
 
   function gotoDocumentChat(){
-    navigate("/Documentchat")
+    navigate("/Documenttitle")
   }
 
 

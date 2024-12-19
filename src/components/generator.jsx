@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./generator.css";
+import { useNavigate } from "react-router";
 
 function Generator() {
   const [questionType, setQuestionType] = useState("");
@@ -12,26 +13,19 @@ function Generator() {
   const questionTypes = ["Objectives", "Structured questions"];
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Easy", "Medium", "Hard", "Mixed"];
-
+  
+  const navigate = useNavigate()
+  
   // Handle the generation of questions
   const handleGenerate = () => {
     // Validate required fields
-    if (!questionType || !questionCount) {
-      alert("Please select a question type and the number of questions.");
-      return;
-    }
-
-    // Prepare the generation logic (placeholder for now)
-    console.log({
+    navigate("/Question",{state:{
       questionType,
-      questionCount,
-      complexity,
       keywords,
+      complexity,
       isFileUpload,
-      text,
-    });
-
-    alert("Questions generated successfully!");
+      questionCount,
+    }})
   };
 
   return (
@@ -129,7 +123,7 @@ function Generator() {
         <button
           className="generate-button"
           onClick={handleGenerate}
-          disabled={!questionType || !questionCount}
+          disabled={!questionType || !questionCount }
         >
           Generate Questions
         </button>

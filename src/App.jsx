@@ -9,6 +9,8 @@ import PDFViewer from './components/PDFViewer.jsx';
 import Test from './components/test.jsx';
 import Signup from './components/signup.jsx';
 import Dashboard  from './components/dashboard.jsx';
+import Question from './components/questionscreen.jsx';
+import Documenttitle from './components/documenttitle.jsx';
 
 
 function App() {
@@ -20,14 +22,19 @@ function App() {
       <Load>
         <Routes>
           <Route path="/" element={<Login />} />
+          
           <Route path="/Signup" element={<Signup />} />
 
+          
           <Route path="/plan" element={<Plan />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/documenttitle" element={<Documenttitle />} />
           <Route path="/documentchat" element={<Documentchat />} />
           <Route path ="/dashboard" element={<Dashboard />}/>
           <Route path="/PDFViewer" element={<PDFViewer />} />
           <Route path="/Test" element={<Test />} />
+          <Route path="/Question" element={<Question />} />
+
 
 
         </Routes>
