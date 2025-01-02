@@ -107,12 +107,22 @@
   cursor: pointer;
   width:360px;
   height:40px;
-  
+  cursor:pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  .submitbutton:hover {
+    background-color: white; /* Change background color */
+    color:Black;
+    
   }
   
   p h5{
     margin-top:-50px;
+    color:#25C0AE;
   }
+   p h1{
+    color:#25C0AE;
+   }
 
 
 

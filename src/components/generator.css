@@ -44,7 +44,7 @@
   input[type="text"]:focus,
   textarea:focus {
     outline: none;
-    border-color: black;
+    border-color: #25C0AE;
     box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
   }
   
@@ -126,7 +126,7 @@
     width: 100%;
     padding: 1rem;
     margin-top: 2rem;
-    background-color: black;
+    background-color: #25C0AE;
     color: white;
     border: none;
     border-radius: 4px;

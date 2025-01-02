@@ -11,6 +11,7 @@ import Signup from './components/signup.jsx';
 import Dashboard  from './components/dashboard.jsx';
 import Question from './components/questionscreen.jsx';
 import Documenttitle from './components/documenttitle.jsx';
+import Upload from './components/upload.jsx';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/PDFViewer" element={<PDFViewer />} />
           <Route path="/Test" element={<Test />} />
           <Route path="/Question" element={<Question />} />
+          <Route path="/Upload" element={<Upload />} />
 
 
 

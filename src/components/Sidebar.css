@@ -31,7 +31,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background-color: black;
+  background-color: #25C0AE;
   color: white;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -60,7 +60,7 @@
 }
 
 .nav-btn:hover {
-  background-color: #f3f4f6;
+  background-color: #25C0AE;
   color:Black;
   transform: scale(1.1);
 }
@@ -80,5 +80,5 @@
 }
 
 .feedback-btn:hover {
-  background-color: #f3f4f6;
+  background-color: #25C0AE;
 }

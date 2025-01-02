@@ -14,6 +14,9 @@ const Sidebar = () => {
   const gotoDocumentchat=()=>{
     navigate("/Documentchat")
   }
+  const gotoUpload=()=>{
+    navigate("/Upload")
+  }
 
 
   return (
@@ -23,7 +26,7 @@ const Sidebar = () => {
       </div>
       
       <nav className="sidebar-nav">
-        <button className="upload-btn">
+        <button className="upload-btn" onClick={gotoUpload}>
           <Upload size={20} />
           Upload a PDF
         </button>

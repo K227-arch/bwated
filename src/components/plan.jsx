@@ -30,7 +30,9 @@ const plan = () => {
              
             <p>Still not sure? Try it out for a limited time period with all features.</p>
             <h1>UGX 0</h1> per month.
-            <hr></hr>
+            <button className="start" onClick={gotoHomePage}>
+  Current Plan
+</button>
             <ul>
                 <li>Feature 1</li>
                 <li>Feature 1</li>
@@ -38,9 +40,7 @@ const plan = () => {
                 <li>Feature 1</li>
                 <li>Feature 1</li>
             </ul>
-            <button className="start" onClick={gotoHomePage}>
-  Get Started
-</button>
+            
             
         </div>
         <div className="container2">
@@ -50,7 +50,9 @@ const plan = () => {
             
             <p>Get the full experience with all the latest tools and features.</p>
             <h1>UGX 50,000 </h1>per month
-            <hr></hr>
+            <button className="start">
+                Subscribe
+            </button>
             <ul>
                 <li>Feature 1</li>
                 <li>Feature 1</li>
@@ -58,9 +60,7 @@ const plan = () => {
                 <li>Feature 1</li>
                 <li>Feature 1</li>
             </ul>
-            <button className="start">
-                Get Started
-            </button>
+            
         </div>
         </div>
         

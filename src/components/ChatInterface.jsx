@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Mic, Download, BookOpen, PenSquare } from 'lucide-react';
+import { Send, Mic, Link, BookOpen} from 'lucide-react';
 import './ChatInterface.css';
 
 export default function ChatInterface() {
@@ -8,6 +8,9 @@ export default function ChatInterface() {
   const navigate  = useNavigate()
   function test(){
     navigate("/test")
+  }
+  const gotoUpload=()=>{
+    navigate("/upload")
   }
 
   const handleSend = () => {
@@ -45,9 +48,9 @@ export default function ChatInterface() {
             <BookOpen size={16} />
             Take Test
           </button>
-          <button className="action-btn">
-            <Download size={16} />
-            Download Chat
+          <button className="action-btn" onclick={gotoUpload}>
+            <Link size={16} />
+            Attach files
           </button>
           
         </div>
