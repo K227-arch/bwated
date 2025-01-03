@@ -10,7 +10,7 @@ function Generator() {
   const [isFileUpload, setIsFileUpload] = useState(false);
   const [text, setText] = useState("");
 
-  const questionTypes = ["Objectives", "Structured questions"];
+  
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Easy", "Medium", "Hard", "Mixed"];
   
@@ -32,22 +32,7 @@ function Generator() {
     <div className="generator-container">
       <div className="dropdown-group">
         {/* Dropdown for Question Type */}
-        <div className="dropdown-wrapper">
-          <label htmlFor="questionType">Select Question Style:</label>
-          <select
-            id="questionType"
-            value={questionType}
-            onChange={(e) => setQuestionType(e.target.value)}
-          >
-            <option value="">-- Please select an option --</option>
-            {questionTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
+        
         {/* Dropdown for Question Count */}
         <div className="dropdown-wrapper">
           <label htmlFor="questionCount">How many Questions:</label>
@@ -95,37 +80,18 @@ function Generator() {
         </div>
 
         {/* File Upload Toggle */}
-        <div className="file-upload-wrapper">
-          <label>
-            <input
-              type="checkbox"
-              checked={isFileUpload}
-              onChange={(e) => setIsFileUpload(e.target.checked)}
-            />
-            Upload File
-          </label>
-        </div>
+        
 
         {/* Text Input for Custom Text */}
-        {isFileUpload && (
-          <div className="input-wrapper">
-            <label htmlFor="textInput">Enter Text:</label>
-            <textarea
-              id="textInput"
-              placeholder="Paste your text here"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-          </div>
-        )}
+        
 
         {/* Generate Button */}
         <button
           className="generate-button"
           onClick={handleGenerate}
-          disabled={!questionType || !questionCount }
+          disabled={!questionCount }
         >
-          Generate Questions
+          Start test
         </button>
       </div>
     </div>

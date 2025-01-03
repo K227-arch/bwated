@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, FileText, Settings, MessageSquare } from 'lucide-react';
+import { Upload, FileText, Settings, Info, CreditCard } from 'lucide-react';
 import './Sidebar.css';
 import { useNavigate } from "react-router";
 
@@ -11,12 +11,16 @@ const Sidebar = () => {
   const gotoPDFViewer=()=>{
     navigate("/dashboard")
   }
-  const gotoDocumentchat=()=>{
-    navigate("/Documentchat")
+  const gotoHome=()=>{
+    navigate("/Home")
   }
   const gotoUpload=()=>{
     navigate("/Upload")
   }
+  const gotoSubscribe=()=>{
+    navigate("/Plan")
+  }
+
 
 
   return (
@@ -36,9 +40,17 @@ const Sidebar = () => {
             <FileText size={20} />
             Documents
           </button>
-          <button className="nav-btn" onClick={gotoDocumentchat}>
-            <MessageSquare size={20} />
-            Chats
+          <button className="nav-btn" onClick={gotoHome}>
+            <Info size={20} />
+            Help
+          </button>
+          <button className="nav-btn" onClick={gotoHome}>
+            <Settings size={20} />
+            Settings
+          </button>
+          <button className="nav-btn" onClick={gotoSubscribe}>
+            <CreditCard size={20} />
+            My Subscription
           </button>
   
         </div>

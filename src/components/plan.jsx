@@ -7,8 +7,8 @@ const plan = () => {
 
   const navigate  = useNavigate()
 
-  function gotoHomePage(){
-    navigate("/home")
+  function gotoDocumenttitle(){
+    navigate("/Documenttitle")
   }
 
   return (
@@ -30,7 +30,7 @@ const plan = () => {
              
             <p>Still not sure? Try it out for a limited time period with all features.</p>
             <h1>UGX 0</h1> per month.
-            <button className="start" onClick={gotoHomePage}>
+            <button className="start" onClick={gotoDocumenttitle}>
   Current Plan
 </button>
             <ul>

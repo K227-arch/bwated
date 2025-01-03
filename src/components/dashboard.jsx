@@ -38,7 +38,7 @@ function App() {
             placeholder=""
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            className="search-input4"
           />
           <div className="search-icon">🔍</div>
         </div>

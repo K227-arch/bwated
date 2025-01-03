@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Mic, Link, BookOpen} from 'lucide-react';
+import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
 import './ChatInterface.css';
 
 export default function ChatInterface() {
@@ -34,7 +34,9 @@ export default function ChatInterface() {
         <div className="message user">
           <div className="message-content">
             <p>Can you summarize the main points of the document?</p>
+            
           </div>
+          
         </div>
       </div>
       
@@ -64,7 +66,7 @@ export default function ChatInterface() {
             className="chat-input"
           />
           <button className="send-btn" onClick={handleSend}>
-            <Send size={20} />
+            <ArrowRight size={20} />
           </button>
         </div>
       </div>
