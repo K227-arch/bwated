@@ -6,8 +6,8 @@ import "./signup.css";
 
 const signup =()=> {
   const navigate = useNavigate()
-const gotoPlan=()=>{
-  navigate("/Plan")
+const gotoDocumenttitle=()=>{
+  navigate("/Documenttitle")
 }
   return (
     <div>
@@ -34,7 +34,7 @@ const gotoPlan=()=>{
               />
             </form>
           </div>
-          <button type="submit" class="submitbutton2" onClick={gotoPlan}>
+          <button type="submit" class="submitbutton2" onClick={gotoDocumenttitle}>
             Set password
           </button>
         </div>
