@@ -44,7 +44,7 @@ const Sidebar = () => {
             <Info size={20} />
             Help
           </button>
-          <button className="nav-btn" onClick={gotoHome}>
+          <button className="nav-btn">
             <Settings size={20} />
             Settings
           </button>
