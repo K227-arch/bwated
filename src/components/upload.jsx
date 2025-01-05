@@ -65,7 +65,7 @@ function App() {
         const extractedText = textContent.join('\n');
         setText(extractedText);
 
-
+        
         localStorage.setItem('extractedText', extractedText);
       } catch (err) {
         console.error('Error extracting text:', err);
