@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
 import './ChatInterface.css';
 import axios from 'axios';
+import { ReactMediaRecorder, useReactMediaRecorder  } from "react-media-recorder";
+import OpenAI from "openai";
+
 
 export default function ChatInterface() {
    const [pdfContent, setpdfContent ] = useState('')
@@ -11,7 +14,45 @@ export default function ChatInterface() {
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // const [transcription, setTranscription] = useState("");
+  const [error, setError] = useState("");
 
+  const apiKey = import.meta.env.VITE_OPENAI_KEY;
+
+  const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
+
+  //whisper settings
+
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+  useReactMediaRecorder({ audio: true });
+
+
+  
+  const handleUploadAndTranscribe = async () => {
+    try{ 
+        const response = await fetch(mediaBlobUrl);
+        const audioBlob = await response.blob();
+    //   const formData = new FormData();
+    //   formData.append("file", audioBlob, "audio.wav");
+    //   formData.append("model", "whisper-1");
+
+    console.log(audioBlob);
+    const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
+
+
+    const  transcription = await openai.audio.transcriptions.create({
+      file:  audioFile,
+      model: "whisper-1",
+      language: "en"
+    });
+    
+    console.log(transcription.text);
+    setQuestion(transcription.text);
+    }catch (e){
+      console.log(e.message)
+    }
+     
+  };
 
   const navigate  = useNavigate()
   function test(){
@@ -55,7 +96,7 @@ export default function ChatInterface() {
       const initialContext = response.data.choices[0].message.content;
       setChatHistory([
         { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: `Here is the content of a PDF: "${pdfContent}"` },
+        { role: "user", content: `Here is the content of a PDF: "${pdfContent}". ${question}` },
         { role: "assistant", content: initialContext },
       ]);
  
@@ -161,13 +202,40 @@ export default function ChatInterface() {
           
         </div> */}
       </div>
-      
+      {mediaBlobUrl && (
+              <div>
+                <audio src={mediaBlobUrl} controls />
+              </div>
+            )}
       <div className="action-bar">
-        <div className="action-buttons">
-          <button className="action-btn">
-            <Mic size={16} />
-            Voice Chat
-          </button>
+        <div className="action-buttons"> 
+          <div>
+            {status === 'recording' ? 
+            <button className="action-btn"
+                onClick= {
+                  stopRecording 
+                }
+              >
+                <Mic size={16} />
+                Stop Recording
+              </button>
+              : 
+              <button className="action-btn" onClick={startRecording}>
+                <Mic size={16} />
+                Voice Chat
+              </button>
+              } 
+              
+          </div>
+          <button
+              className='action-btn'
+                onClick= {
+                  handleUploadAndTranscribe
+                }
+              >
+                <Send size={16} />
+                send audio
+              </button>
           <button className="action-btn" onClick={test}>
             <BookOpen size={16} />
             Take Test
