@@ -26,6 +26,7 @@ function Generator() {
       isFileUpload,
       questionCount,
     }})
+ 
   };
 
   return (

@@ -1,10 +1,15 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import './question.css'
 
 function App() {
   const [questionType, setQuestionType] = useState('multiple')
   const [score, setScore] = useState(null)
   const [currentAnswer, setCurrentAnswer] = useState('')
+
+  const location = useLocation();
+  const {  keywords, complexity, isFileUpload, questionCount } = location.state;
+
   
   const multipleChoiceQuestion = {
     question: "What is one of the core focuses of the React Native Fundamentals section?",
