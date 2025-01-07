@@ -81,6 +81,16 @@ export default function ChatInterface() {
         {
           model: "gpt-4o-mini",
           messages: [
+            {"role": "developer",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": `
+                      You are a helpful assistant that answers  
+                      questions about provided book content to students
+                    `
+                  }
+                ]},
             { role: "system", content: "You are a helpful assistant." },
             { role: "user", content: `Here is the content of a PDF: "${pdfContent}". ${question}` },
           ],

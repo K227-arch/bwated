@@ -3,12 +3,11 @@ import { useLocation } from 'react-router-dom'
 import './question.css'
 
 function App() {
-  const [questionType, setQuestionType] = useState('multiple')
-  const [score, setScore] = useState(null)
+   const [score, setScore] = useState(null)
   const [currentAnswer, setCurrentAnswer] = useState('')
 
   const location = useLocation();
-  const {  keywords, complexity, isFileUpload, questionCount } = location.state;
+  const { questionType,  keywords, complexity, questionCount } = location.state;
 
   
   const multipleChoiceQuestion = {
@@ -49,7 +48,7 @@ function App() {
     <div className="quiz-container">
       <div className="quiz-header">
         <h1>Quiz Application</h1>
-        <div className="question-type-selector">
+        {/* <div className="question-type-selector">
           <button 
             className={questionType === 'multiple' ? 'active' : ''}
             onClick={() => {
@@ -68,7 +67,7 @@ function App() {
           >
             Structured Question
           </button>
-        </div>
+        </div> */}
       </div>
 
       <form onSubmit={handleSubmit} className="quiz-form">
