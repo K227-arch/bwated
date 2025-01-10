@@ -50,10 +50,7 @@ export default function ChatInterface() {
             <BookOpen size={16} />
             Take Test
           </button>
-          <button className="action-btn" onclick={gotoUpload}>
-            <Link size={16} />
-            Attach files
-          </button>
+          
           
         </div>
         

@@ -12,6 +12,9 @@ import Dashboard  from './components/dashboard.jsx';
 import Question from './components/questionscreen.jsx';
 import Documenttitle from './components/documenttitle.jsx';
 import Upload from './components/upload.jsx';
+import './App.css'
+
+
 
 
 function App() {
@@ -29,6 +32,7 @@ function App() {
           
           <Route path="/plan" element={<Plan />} />
           <Route path="/home" element={<Home />} />
+          
           <Route path="/documenttitle" element={<Documenttitle />} />
           <Route path="/documentchat" element={<Documentchat />} />
           <Route path ="/dashboard" element={<Dashboard />}/>
@@ -36,6 +40,7 @@ function App() {
           <Route path="/Test" element={<Test />} />
           <Route path="/Question" element={<Question />} />
           <Route path="/Upload" element={<Upload />} />
+         
 
 
 

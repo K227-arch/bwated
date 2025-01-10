@@ -1,3 +1,5 @@
+
+
 .sidebar {
   width: 200px;
   height: 100vh;
@@ -37,6 +39,7 @@
   margin-bottom: 16px;
   cursor:pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  border:none;
 }
 .upload-btn:hover {
   background-color: white; /* Change background color */
@@ -52,7 +55,7 @@
   gap: 8px;
   padding: 8px 16px;
   color: #4b5563;
-  border-radius: 8px;
+  border:none;
   margin-bottom: 8px;
   cursor:pointer;
   background-color:white;
@@ -75,10 +78,102 @@
   padding: 8px 16px;
   color: #4b5563;
   font-size: 14px;
-  border-radius: 8px;
+  border-radius:20px;
+  border:none;
   cursor:pointer;
 }
 
 .feedback-btn:hover {
   background-color: #25C0AE;
+}
+
+
+  
+
+
+.settings-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: #4b5563;
+  border:none;
+  margin-bottom: 8px;
+  cursor:pointer;
+  background-color:white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.settings-button:hover + .settings-dropdown,
+.settings-dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  background-color: #25C0AE;
+  color:Black;
+  transform: scale(1.1);
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 250px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  color: #1a1a1a;
+  
+}
+
+.settings-item:hover {
+  background: #f8fafc;
+  margin-left:100px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #e2e8f0;
+  border-radius: 12px;
+  padding: 2px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  
+  
+}
+
+.toggle-switch.active {
+  background: #6366f1;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch.active::after {
+  transform: translateX(20px);
 }
