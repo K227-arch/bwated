@@ -4,8 +4,7 @@ import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
 import './ChatInterface.css';
 import axios from 'axios';
 import { ReactMediaRecorder, useReactMediaRecorder  } from "react-media-recorder";
-import OpenAI from "openai";
-
+import OpenAI from "openai"; 
 
 export default function ChatInterface() {
    const [pdfContent, setpdfContent ] = useState('')
@@ -13,6 +12,9 @@ export default function ChatInterface() {
   const [question, setQuestion] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);   
+  const [audio, setAudio] = useState(null); 
+  const [audioLoaded, setaudioLoaded] = useState(false)
 
   // const [transcription, setTranscription] = useState("");
   const [error, setError] = useState("");
@@ -81,18 +83,23 @@ export default function ChatInterface() {
         {
           model: "gpt-4o-mini",
           messages: [
-            {"role": "developer",
-                "content": [
-                  {
-                    "type": "text",
-                    "text": `
-                      You are a helpful assistant that answers  
-                      questions about provided book content to students
-                    `
-                  }
-                ]},
-            { role: "system", content: "You are a helpful assistant." },
-            { role: "user", content: `Here is the content of a PDF: "${pdfContent}". ${question}` },
+            {
+              role: "system",
+              content: `
+                You are a knowledgeable and supportive assistant for students. 
+                Your job is to answer their questions based solely on the provided PDF content.
+                If a question cannot be answered from the PDF, politely inform the user 
+                and encourage them to ask something relevant to the material.
+              `,
+            },
+            {
+              role: "user",
+              content: `
+                Here is the content of a PDF: "${pdfContent}". 
+                Please remember that the answers should only reference this content. 
+                The student's question is: "${question}".
+              `,
+            },
           ],
         },
         {
@@ -102,47 +109,67 @@ export default function ChatInterface() {
           },
         }
       );
-
+  
       const initialContext = response.data.choices[0].message.content;
       setChatHistory([
-        { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: `Here is the content of a PDF: "${pdfContent}". ${question}` },
+        {
+          role: "system",
+          content: `
+            You are a knowledgeable and supportive assistant for students. 
+            Your job is to answer their questions based solely on the provided PDF content.
+            If a question cannot be answered from the PDF, politely inform the user 
+            and encourage them to ask something relevant to the material.
+          `,
+        },
+        {
+          role: "user",
+          content: `
+            Here is the content of a PDF: "${pdfContent}". 
+            Please remember that the answers should only reference this content. 
+            The student's question is: "${question}".
+          `,
+        },
         { role: "assistant", content: initialContext },
       ]);
- 
-
     } catch (error) {
-      console.error('Error sending PDF content:', error.message);
-      alert('An error occurred while sending PDF content.');
+      console.error("Error sending PDF content:", error.message);
+      alert("An error occurred while sending PDF content.");
     } finally {
       setLoading(false);
     }
   };
-
-
-  // handle user interaction questions to api
-  const handleQuestionSubmit = async () => { 
+  
+  const handleQuestionSubmit = async () => {
     if (!chatHistory.length) {
       sendPDFContentToOpenAI(pdfContent);
       return;
     }
     if (!question.trim()) {
-      alert('Please enter a question.');
+      alert("Please enter a question.");
       return;
     }
     setLoading(true);
-
+  
     try {
       const updatedChatHistory = [
         ...chatHistory,
         { role: "user", content: question },
       ];
-
+  
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
           model: "gpt-4o-mini",
-          messages: updatedChatHistory,
+          messages: [
+            ...updatedChatHistory,
+            {
+              role: "system",
+              content: `
+                Always refer to the PDF content when answering questions.
+                If the answer cannot be derived from the PDF, politely respond that the information is not available in the document.
+              `,
+            },
+          ],
         },
         {
           headers: {
@@ -151,20 +178,59 @@ export default function ChatInterface() {
           },
         }
       );
-
+  
       const answer = response.data.choices[0].message.content;
       setResponse(answer);
+      // readAIResponseAloud(answer);
       setChatHistory([...updatedChatHistory, { role: "assistant", content: answer }]);
     } catch (error) {
-      console.error('Error answering question:', error.message);
-      alert('An error occurred while answering the question.');
+      console.error("Error answering question:", error.message);
+      alert("An error occurred while answering the question.");
     } finally {
       setLoading(false);
-      setQuestion('');
+      setQuestion("");
     }
   };
-
-
+  
+  const readAIResponseAloud = async (responseText) => {
+    try {
+      // Generate TTS audio using OpenAI API
+      const mp3 = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: "alloy",
+        input: responseText,
+      });
+  
+      // Convert ArrayBuffer to Blob
+      const buffer = await mp3.arrayBuffer();
+      const audioBlob = new Blob([buffer], { type: "audio/mp3" });
+      const audioUrl = URL.createObjectURL(audioBlob);
+  
+      // Create a new audio object and play
+      const newAudio = new Audio(audioUrl);
+      newAudio.play();
+  
+      // Update state with the new audio object
+      setAudio(newAudio);
+      setaudioLoaded(true);
+    } catch (error) {
+      console.error("Error generating speech:", error); // Log full error
+      alert("An error occurred while generating speech.");
+    }
+  };
+  
+  // Toggle pause and resume functionality
+  const togglePauseResume = () => {
+    if (audio) {
+      if (isPaused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+      setIsPaused(!isPaused);
+    }
+  };
+  
 
   useEffect(() => {
     const getLoadedPdf  = () => {
@@ -180,6 +246,7 @@ export default function ChatInterface() {
     }
 
     getLoadedPdf();
+   
   }, []) 
 
   return (
@@ -192,6 +259,15 @@ export default function ChatInterface() {
             <div className="avatar">{msg.role === 'user' ? 'You' : 'AI'}</div>
             <div className="message-content">
               <p>{msg.content}</p>
+                  {msg.role === 'assistant' && (
+                    
+                   <div className="audio-controls">
+                       <button onClick={() => readAIResponseAloud(msg.content)}>🔊</button>
+                        <button onClick={togglePauseResume} disabled={!audio}>
+                          {isPaused ? "Resume" : "Pause"}
+                        </button>
+                 </div>
+                )}
             </div>
           </div>
         ))}
@@ -203,14 +279,7 @@ export default function ChatInterface() {
             <p>{response ? '...' : response}</p>
           </div>
         </div>
-        
-        {/* <div className="message user">
-          <div className="message-content">
-            <p>Can you summarize the main points of the document?</p>
-            
-          </div>
-          
-        </div> */}
+         
       </div>
       {mediaBlobUrl && (
               <div>
@@ -256,6 +325,13 @@ export default function ChatInterface() {
           </button>
           
         </div>
+
+         {/* <div className="audio-controls">
+                       <button onClick={() => readAIResponseAloud("this is a very serious boy")}>🔊</button>
+                        <button onClick={togglePauseResume} disabled={!audio}>
+                          {isPaused ? "Resume" : "Pause"}
+                        </button>
+                 </div> */}
         
         <div className="input-container">
           <input
