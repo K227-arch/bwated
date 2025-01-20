@@ -27,3 +27,42 @@
 .placeholder-text {
   color: #6b7280;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pdf-placeholder {
+    padding: 15px;
+    border-width: 1px;
+  }
+
+  .placeholder-title {
+    font-size: 1.25rem;
+  }
+
+  .placeholder-text {
+    font-size: 0.9rem;
+  }
+
+  .placeholder-icon {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdf-placeholder {
+    padding: 10px;
+    border-width: 1px;
+  }
+
+  .placeholder-title {
+    font-size: 1rem;
+  }
+
+  .placeholder-text {
+    font-size: 0.8rem;
+  }
+
+  .placeholder-icon {
+    font-size: 36px;
+  }
+}

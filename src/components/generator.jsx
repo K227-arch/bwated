@@ -12,7 +12,7 @@ function Generator() {
 
   
   const questionCounts = ["5", "10", "15", "20", "25"];
-  const complexityLevels = ["Easy", "Medium", "Hard", "Mixed"];
+  const complexityLevels = ["Structured", "Multichoice"];
   
   const navigate = useNavigate()
   

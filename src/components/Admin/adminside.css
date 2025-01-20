@@ -1,0 +1,76 @@
+
+.sidebar2 {
+    width: 200px;
+    background-color: #25C0AE;
+    color: white;
+    padding: 20px;
+    margin-left:-10px;
+    height:660px;
+    margin-top:-10px;
+  }
+  
+  .logo2 {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: WHITE;
+    Margin-left:40px;
+  }
+  
+  .nav-items {
+    list-style: none;
+  }
+  
+  .nav-item {
+    padding: 12px;
+    margin: 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+  }
+  
+  .nav-item:hover {
+    background-color: black;
+    border-radius: 6px;
+  }
+  
+  
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 260px;
+    padding-top: 20px;
+  }
+  
+  .admin-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #4ade80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .admin-container {
+      flex-direction: column;
+    }
+  
+    .sidebar {
+      width: 100%;
+      padding: 10px;
+    }
+  
+    .main-content {
+      padding: 10px;
+    }
+  
+    .users-table td, 
+    .users-table th {
+      padding: 8px;
+    }
+  }

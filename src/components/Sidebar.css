@@ -105,29 +105,14 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.settings-button:hover + .settings-dropdown,
-.settings-dropdown:hover {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  background-color: #25C0AE;
-  color:Black;
-  transform: scale(1.1);
-}
+
 
 .settings-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  min-width: 250px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.2s ease;
+  margin-top: 10px;
+  padding: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   
 }
 
@@ -144,7 +129,7 @@
 
 .settings-item:hover {
   background: #f8fafc;
-  margin-left:100px;
+  
 }
 
 .toggle-switch {
@@ -172,8 +157,48 @@
   border-radius: 50%;
   background: white;
   transition: transform 0.2s ease;
+  
 }
 
 .toggle-switch.active::after {
   transform: translateX(20px);
+  
+}
+
+.down-buttons .nav-btn{
+  width: 95%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: #4b5563;
+  border:none;
+  margin-bottom: 8px;
+  cursor:pointer;
+  background-color:white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.down-buttons .nav-btn:hover {
+  background-color: #25C0AE;
+  color:Black;
+  transform: scale(1.1);
+}
+
+.menu-btn{
+  width: 30%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: black;
+  
+  margin-bottom: 10px;
+  cursor:pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border:none;
+}
+.menu-btn:hover {
+  background-color: white; /* Change background color */
+  color:Black;
+  transform: scale(1.1); /* Slightly increase the button size */
 }

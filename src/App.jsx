@@ -12,6 +12,7 @@ import Dashboard  from './components/dashboard.jsx';
 import Question from './components/questionscreen.jsx';
 import Documenttitle from './components/documenttitle.jsx';
 import Upload from './components/upload.jsx';
+import Adminside from './components/Admin/adminside.jsx';
 import './App.css'
 
 
@@ -28,7 +29,7 @@ function App() {
           <Route path="/" element={<Login />} />
           
           <Route path="/Signup" element={<Signup />} />
-
+          <Route path="/Adminside" element={<Adminside />} />
           
           <Route path="/plan" element={<Plan />} />
           <Route path="/home" element={<Home />} />

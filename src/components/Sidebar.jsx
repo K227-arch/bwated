@@ -9,6 +9,7 @@ import {
   Accessibility,
   Share,
   Moon,
+  Menu,
 } from 'lucide-react';
 import './Sidebar.css';
 import { useNavigate } from 'react-router';
@@ -24,7 +25,7 @@ const Sidebar = () => {
   const gotoHome = () => navigate('/Home');
   const gotoUpload = () => navigate('/Upload');
   const gotoSubscribe = () => navigate('/Plan');
-  const gotoLogin = () => navigate('/Signup');
+  const gotoLogin = () => navigate('/Adminside');
 
   return (
     <aside className="sidebar">
@@ -32,6 +33,10 @@ const Sidebar = () => {
         <h1 className="sidebar-title">MY KASASI</h1>
       </div>
       <nav className="sidebar-nav">
+      <nav className="menu-btn" onClick={gotoUpload}>
+          <Menu size={30} />
+          
+        </nav>
         <button className="upload-btn" onClick={gotoUpload}>
           <Upload size={20} />
           <div className="text">Upload a PDF</div>
@@ -51,17 +56,17 @@ const Sidebar = () => {
           </button>
           {showSettings && (
             <div className="settings-dropdown">
-              <div className="settings-item">
+              <button className="settings-item">
                 <Accessibility size={20} />
-                <span>Accessibility</span>
-              </div>
+                Accessibility
+              </button>
               <div className="settings-item">
                 <Share size={20} />
-                <span>Share Link</span>
+                Share Link
               </div>
               <div className="settings-item">
                 <Moon size={20} />
-                <span>Dark Mode</span>
+                Dark Mode
                 <div
                   className={`toggle-switch ${isDarkMode ? 'active' : ''}`}
                   onClick={() => setIsDarkMode((prev) => !prev)}
