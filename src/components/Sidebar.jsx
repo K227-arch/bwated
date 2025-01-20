@@ -33,10 +33,7 @@ const Sidebar = () => {
         <h1 className="sidebar-title">MY KASASI</h1>
       </div>
       <nav className="sidebar-nav">
-      <nav className="menu-btn" onClick={gotoUpload}>
-          <Menu size={30} />
-          
-        </nav>
+      
         <button className="upload-btn" onClick={gotoUpload}>
           <Upload size={20} />
           <div className="text">Upload a PDF</div>

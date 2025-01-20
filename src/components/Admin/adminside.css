@@ -19,6 +19,10 @@
   .nav-items {
     list-style: none;
   }
+  .nav-items li {
+   
+    list-style-type: none;
+  }
   
   .nav-item {
     padding: 12px;

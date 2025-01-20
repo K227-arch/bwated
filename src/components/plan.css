@@ -30,13 +30,13 @@
     width:120px;
 
 }
-ul {
+.container2 ul {
     list-style-type: none; /* Remove default bullets */
     padding: 0;
     margin-top:15px;
   }
 
-  li::before {
+  .container2 li::before {
     content: '✔'; /* Add tick before each list item */
     color: black; /* Tick color */
     margin-right: 10px; /* Space between tick and text */
