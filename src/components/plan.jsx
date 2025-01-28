@@ -1,72 +1,72 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Header from './Header.jsx';
 import './plan.css';
 
-const plan = () => {
 
-
-  const navigate  = useNavigate()
-
-  function gotoDocumenttitle(){
+function App({children}) {
+  const navigate = useNavigate();
+  const gotoDocumenttitle=()=>{
     navigate("/Documenttitle")
   }
+  const plans = [
+    {
+      name: 'Daily',
+      description: 'For clients looking for',
+      feature: 'basic AI automation',
+      price: '3',
+      popular: false
+    },
+    {
+      name: 'Weekly',
+      description: 'For clients looking for',
+      feature: 'advanced AI features',
+      price: '18',
+      popular: true
+    },
+    {
+      name: 'Monthly',
+      description: 'For clients looking for',
+      feature: 'complete AI automation',
+      price: '73',
+      popular: false
+    }
+  ]
 
   return (
-    <div>
-      <div className="plan">
-        <div className="title">
-            MY KASASI
+    
+    <div className="pricing-container">
+      <Header />
+      {plans.map((plan) => (
+        <div 
+          key={plan.name} 
+          className={`pricing-card ${plan.popular ? 'popular' : ''}`}
+        >
+          <h2 className="plan-name">{plan.name}</h2>
+          <div className="plan-description">
+            <p>{plan.description}</p>
+            <p><strong>{plan.feature}</strong></p>
+          </div>
+          
+          <div className="price">
+            <span3 className="currency">$</span3>
+            <span3 className="amount">{plan.price}</span3>
+            <span3 className="period">/mo</span3>
+          </div>
+          
+          <div className="discount-badge">
+            Annual discount applied
+          </div>
+          
+          <button className="trial-button" onClick={gotoDocumenttitle}>
+            Start free trial
+          </button>
+          
+          {plan.popular && <div className="popular-badge">MOST POPULAR</div>}
         </div>
-        <hr></hr>
-        <div className="subtitle">
-            <h1>Choose your plan</h1>
-        </div>
-        
-        <div className="container1">
-            <div className="container2">
-             <div className="main">
-               <h3>Free trial</h3> 
-             </div>
-             
-            <p>Still not sure? Try it out for a limited time period with all features.</p>
-            <h1>UGX 0</h1> per month.
-            <button className="start" onClick={gotoDocumenttitle}>
-  Current Plan
-</button>
-            <ul>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-            </ul>
-            
-            
-        </div>
-        <div className="container2">
-            <div className="main">
-               <h3>Premium</h3> 
-            </div>
-            
-            <p>Get the full experience with all the latest tools and features.</p>
-            <h1>UGX 50,000 </h1>per month
-            <button className="start">
-                Subscribe
-            </button>
-            <ul>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-                <li>Feature 1</li>
-            </ul>
-            
-        </div>
-        </div>
-        
-      </div>
+      ))}
     </div>
   )
 }
 
-export default plan
+export default App

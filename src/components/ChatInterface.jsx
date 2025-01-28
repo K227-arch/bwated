@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
+import Recording from '../components/Recording';
 import './ChatInterface.css';
 
 export default function ChatInterface() {
@@ -41,27 +42,11 @@ export default function ChatInterface() {
       </div>
       
       <div className="action-bar">
-        <div className="action-buttons">
-          <button className="action-btn">
-            <Mic size={16} />
-            Voice Chat
-          </button>
-          <button className="action-btn" onClick={test}>
-            <BookOpen size={16} />
-            Take Test
-          </button>
-          
-          
-        </div>
+        
         
         <div className="input-container">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ask a question..."
-            className="chat-input"
-          />
+          
+          <Recording />
           <button className="send-btn" onClick={handleSend}>
             <ArrowRight size={20} />
           </button>

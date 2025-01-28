@@ -2,7 +2,7 @@
 .header {
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem 2rem;
+  height:75px;
   position: fixed;
   top: 0;
   left: 0;
@@ -19,15 +19,11 @@
 }
 
 .logo {
-  margin-left:-110px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  text-decoration: none;
-  color:lightseagreen;
+  width:500px;
+  height:300px;
+  margin-left:-100px;
+  margin-top:-60px;
+  
 }
 
 
@@ -36,6 +32,7 @@
   margin-right:-100px;
   display: flex;
   gap: 1rem;
+  margin-top:-170px;
 }
 
 .btn {
@@ -45,7 +42,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+.setting-btn{
+  margin-top:3px;
+  color: #25C0AE;
+}
 .btn-login {
   background: none;
   border: 1px solid #333;

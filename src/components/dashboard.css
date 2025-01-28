@@ -2,7 +2,7 @@
     
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    /* padding: 2rem; */
   }
   
   .chat-header {
@@ -18,7 +18,7 @@
   }
   
   .new-chat-btn {
-    background-color: #25C0AE;
+    background: linear-gradient(to right, #60a5fa, #25C0AE);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;

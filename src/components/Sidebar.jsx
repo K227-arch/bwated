@@ -16,10 +16,7 @@ import { useNavigate } from 'react-router';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
-  const toggleSettings = () => setShowSettings((prev) => !prev); // Correctly toggles the state
+  
 
   const gotoPDFViewer = () => navigate('/dashboard');
   const gotoHome = () => navigate('/Home');
@@ -47,30 +44,8 @@ const Sidebar = () => {
             <Info size={20} />
             <div className="text">Help</div>
           </button>
-          <button className="settings-button" onClick={toggleSettings}>
-            <Settings size={20} />
-            Settings
-          </button>
-          {showSettings && (
-            <div className="settings-dropdown">
-              <button className="settings-item">
-                <Accessibility size={20} />
-                Accessibility
-              </button>
-              <div className="settings-item">
-                <Share size={20} />
-                Share Link
-              </div>
-              <div className="settings-item">
-                <Moon size={20} />
-                Dark Mode
-                <div
-                  className={`toggle-switch ${isDarkMode ? 'active' : ''}`}
-                  onClick={() => setIsDarkMode((prev) => !prev)}
-                />
-              </div>
-            </div>
-          )}
+          
+          
           <button className="nav-btn" onClick={gotoSubscribe}>
             <CreditCard size={20} />
             <div className="text">My Subscription</div>

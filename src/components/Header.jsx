@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CircleUser } from 'lucide-react';
+import { CircleUser, Settings } from 'lucide-react';
 import './Header.css';
 import { useNavigate } from 'react-router';
+import logo from '../assets/logo.png';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ const ProfileMenu = () => {
 
   return (
     <div className="auth-buttons" ref={dropdownRef}>
+      <Settings size={30} className="setting-btn"/>
       <CircleUser size={35} className="circle-btn" onClick={() => setIsOpen((prev) => !prev)} />
       {isOpen && (
         <div className="dropdown-menu">
@@ -55,9 +57,11 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        <a href="/" className="logo">
-          MY KASASI
-        </a>
+       <div className="logo">
+           <img src={logo} className="logo" alt="Logo"/>
+       </div>  
+      
+          
         <ProfileMenu />
       </div>
     </header>

@@ -1,0 +1,235 @@
+.container8 {
+  
+  
+  padding: 2rem;
+  background-color: #f9f7f2;
+  
+}
+
+.logose{
+  margin-top:-170px;
+  height:400px;
+  width:500px;
+  margin-left:-20px;
+}
+
+.header3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top:-210px;
+  
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #333;
+}
+
+.btn-primary {
+  background: #00bfa5;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  background-color:black;
+  color:white;
+}
+
+.hero {
+  margin-top:-150px;
+  
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.highlight {
+  color: #00bfa5;
+}
+
+.hero .subtitle {
+  font-size: 1.5rem;
+  color: black;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+/* Slider container */
+/* Slider container */
+.slider {
+  overflow:visible; /* Hide overflowing content */
+  width: 100%; /* Full width */
+  height: fit-content; /* Set desired height */
+  background-color: #f9f9f9; /* Background color */
+}
+
+/* Slide track with animation */
+.slide-track {
+  height: 300px;
+  display: flex;
+  width: calc(200%); /* Double the width for looping */
+  animation: slide-left 20s linear infinite; /* Smooth infinite animation */
+}
+
+/* Individual slides */
+.slide {
+  height: 150px;
+  display: block; /* Prevent items from shrinking */
+  width: 150px; /* Width of each logo */
+  margin-right: 20px; /* Spacing between logos */
+  object-fit: contain; /* Ensure logos maintain aspect ratio */
+}
+
+/* Animation keyframes */
+@keyframes slide-left {
+  from {
+    transform: translateX(0); /* Start at original position */
+  }
+  to {
+    transform: translateX(-50%); /* Move left by half the container width */
+  }
+}
+
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #00B3A6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.testimonials h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subtitle {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stars {
+  margin-bottom: 15px;
+}
+
+.star {
+  color: #FFD700;
+  font-size: 20px;
+}
+
+h2 {
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.testimonial-text {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #00B3A6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.author-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.author-username {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .testimonials-container {
+    padding: 20px 10px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+}
+
+
+
+
+

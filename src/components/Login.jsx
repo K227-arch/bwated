@@ -28,7 +28,7 @@ function Login() {
           <div className="formbutton">
             <form>
               <input
-                type="email"
+                
                 placeholder="Continue With Google"
                 class="google-input-with-icon"
                 required
