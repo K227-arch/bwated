@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import kisasi from "../assets/kisasi.jpg";
+import logo from '../assets/logo.png';
 import "./login.css";
 
 function Login() {
@@ -17,8 +18,13 @@ function Login() {
   return (
     <div>
       <div className="login-wrapper">
+        <div className="logologin">
+            <img src={logo} className="logo" alt="Logo"/>
+          </div>
         <div className="container">
-          MY KASASI
+          
+          
+
           <p>
             <h1>Your Learning, supercharged</h1>
           </p>

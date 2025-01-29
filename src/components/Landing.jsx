@@ -21,7 +21,7 @@ const testimonials = [
     id: 1,
     rating: 5,
     title: "A Super Efficient Platform!",
-    text: "Educato is a highly efficient platform with questions designed to test logical thinking rather than just mechanical memory, accompanied by focused and relevant explanations. Highly recommend!",
+    text: "Bwarted is a highly efficient platform with questions designed to test logical thinking rather than just mechanical memory, accompanied by focused and relevant explanations. Highly recommend!",
     author: "Livia Stefania",
     username: "@stefanialivia"
   },
@@ -29,7 +29,7 @@ const testimonials = [
     id: 2,
     rating: 5,
     title: "Recap Test Feature is Exceptional!",
-    text: "The recap test feature is exceptional and makes Educato my top choice. I no longer have to worry about planning my reviews, as the platform helps me stay organized and motivates me to complete them...",
+    text: "The recap test feature is exceptional and makesBwarted my top choice. I no longer have to worry about planning my reviews, as the platform helps me stay organized and motivates me to complete them...",
     author: "Luana Corbu",
     username: "@luanaacg99"
   },
@@ -37,7 +37,7 @@ const testimonials = [
     id: 3,
     rating: 5,
     title: "The Platform I Was Looking For!",
-    text: "I've been searching for a residency preparation platform that tests logic, not just memory, while ensuring that no detail is overlooked. Educato not only accomplishes this but goes above and beyond!",
+    text: "I've been searching for a residency preparation platform that tests logic, not just memory, while ensuring that no detail is overlooked. Bwarted not only accomplishes this but goes above and beyond!",
     author: "Darius Filis",
     username: "@darius.1408"
   },
@@ -45,7 +45,7 @@ const testimonials = [
     id: 4,
     rating: 5,
     title: "A Real Help for Residency Exam Preparation!",
-    text: "The questions on Educato are a real help in preparing for the residency exam. They are clear, emphasize information without ambiguity, and the detailed explanations and flashcards help solidify the knowledge even further.",
+    text: "The questions on Bwarted are a real help in preparing for the residency exam. They are clear, emphasize information without ambiguity, and the detailed explanations and flashcards help solidify the knowledge even further.",
     author: "Delia Barbu",
     username: "@deliabarbu12"
   }

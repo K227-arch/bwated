@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { CircleUser, Settings } from 'lucide-react';
 import './Header.css';
-import { useNavigate } from 'react-router';
+
 import logo from '../assets/logo.png';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+  
+  const navigate = useNavigate();
+  const gotoPDFViewer =()=>navigate('/Upload')
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -21,7 +24,7 @@ const ProfileMenu = () => {
 
   return (
     <div className="auth-buttons" ref={dropdownRef}>
-      <Settings size={30} className="setting-btn"/>
+      <Settings size={30} className="setting-btn" onClick={gotoPDFViewer}/>
       <CircleUser size={35} className="circle-btn" onClick={() => setIsOpen((prev) => !prev)} />
       {isOpen && (
         <div className="dropdown-menu">

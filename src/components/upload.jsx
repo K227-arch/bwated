@@ -1,11 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './Header';
 import './upload.css';
 
-function App() {
+// Popup Component (Placed outside to maintain structure)
+const Popup = ({ onClose, handleDragOver, handleDragLeave, handleDrop, handleFileInput, file, isDragging }) => {
+  return (
+    <div className="upload-container">
+      <div className="layout-main">
+        <Header />
+      </div>
+      <h1 className="upload-title">Upload a document to get started</h1>
+
+      <div
+        className="upload-area"
+        style={{ borderColor: isDragging ? '#2dd4bf' : '#ccc' }}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <input
+          type="file"
+          id="fileInput"
+          style={{ display: 'none' }}
+          onChange={handleFileInput}
+        />
+        <label htmlFor="fileInput">
+          <button
+            className="upload-button"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('fileInput').click();
+            }}
+          >
+            Upload document
+          </button>
+        </label>
+
+        {file && <p className="file-name">Selected File: {file.name}</p>}
+      </div>
+
+      <p className="terms-text">
+        By uploading a document, you agree to and have read our{' '}
+        <a href="#terms">Terms</a> and <a href="#conditions">Conditions</a>.
+      </p>
+
+      {/* Close Button placed correctly */}
+      <button className="close-btn" onClick={onClose}>Extract</button>
+    </div>
+  );
+};
+
+// Main App Component
+const App = () => {
+  const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  useEffect(() => {
+    setShowPopup(true); // Show popup when page loads
+  }, []);
+
+  // Drag & Drop Handlers
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -38,45 +93,22 @@ function App() {
   };
 
   return (
-    <div className="upload-container">
-      <div className="layout-main">
-        <Header />
-      </div>
-      <h1 className="upload-title">Upload a document to get started</h1>
-
-      <div
-        className="upload-area"
-        style={{ borderColor: isDragging ? '#2dd4bf' : '#ccc' }}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <input
-          type="file"
-          id="fileInput"
-          style={{ display: 'none' }}
-          onChange={handleFileInput}
+    <div className="app">
+      {showPopup && (
+        <Popup 
+          onClose={() => setShowPopup(false)} 
+          handleDragOver={handleDragOver} 
+          handleDragLeave={handleDragLeave} 
+          handleDrop={handleDrop} 
+          handleFileInput={handleFileInput} 
+          file={file} 
+          isDragging={isDragging}
         />
-        <label htmlFor="fileInput">
-          <button
-            className="upload-button"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('fileInput').click();
-            }}
-          >
-            Upload document
-          </button>
-        </label>
-        {file && <p className="file-name">Selected File: {file.name}</p>}
-      </div>
-
-      <p className="terms-text">
-        By uploading a document, you agree to and have read our{' '}
-        <a href="#terms">Terms</a> and <a href="#conditions">Conditions</a>.
-      </p>
+      )}
+      
     </div>
   );
-}
+};
 
 export default App;
+

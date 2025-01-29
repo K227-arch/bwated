@@ -1,6 +1,5 @@
-body{
-    background-color:white;
-}
+
+
 .upload-container {
     max-width: 600px;
     margin: 2rem auto;
@@ -10,6 +9,7 @@ body{
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-top:170px;
+   
     
   }
   
@@ -56,6 +56,10 @@ body{
   .terms-text a {
     color: #2dd4bf;
     text-decoration: underline;
+  }
+
+  .close-btn{
+      margin-top:8px;
   }
   
   /* Responsive styles */

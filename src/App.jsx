@@ -17,6 +17,7 @@ import Landing from './components/Landing.jsx';
 import FAQ from './components/FAQ.jsx';
 import Footer from './components/Footer.jsx';
 import Recording from './components/Recording.jsx';
+import Pop from './components/Pop.jsx';
 import './App.css'
 
 
@@ -34,6 +35,7 @@ function App() {
 
           <Route path="/Login" element={<Login />} />
           <Route path="/FAQ" element={<FAQ />} />
+          <Route path="/Pop" element={<Pop />} />
           <Route path="/Signup" element={<Signup />} />
           <Route path="/Adminside" element={<Adminside />} />
           <Route path="/Upload" element={<Upload />} />
