@@ -72,7 +72,10 @@
   }
   
   .slider {
-    position: absolute;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid grey;
     cursor: pointer;
     top: 0;
     left: 0;
