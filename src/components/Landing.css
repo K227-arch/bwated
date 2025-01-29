@@ -1,16 +1,13 @@
 .container8 {
-  
-  
-  padding: 2rem;
   background-color: #f9f7f2;
-  
+  padding: 10px;
 }
 
-.logose{
-  margin-top:-170px;
-  height:400px;
-  width:500px;
-  margin-left:-20px;
+.logose {
+  margin-top: -170px;
+  height: 400px;
+  width: 500px;
+  margin-left: -20px;
 }
 
 .header3 {
@@ -23,8 +20,7 @@
 .nav-buttons {
   display: flex;
   gap: 1rem;
-  margin-top:-210px;
-  
+  margin-top: -210px;
 }
 
 .btn {
@@ -48,13 +44,13 @@
 
 .btn:hover {
   opacity: 0.9;
-  background-color:black;
-  color:white;
+  background-color: black;
+  color: white;
 }
 
 .hero {
-  margin-top:-150px;
-  
+  margin-top: -150px;
+
   text-align: center;
 }
 
@@ -78,12 +74,11 @@
   margin-right: auto;
 }
 
-
-
 /* Slider container */
 /* Slider container */
 .slider {
-  overflow:visible; /* Hide overflowing content */
+  margin: 100px 0px 100px 0px;
+  overflow: visible; /* Hide overflowing content */
   width: 100%; /* Full width */
   height: fit-content; /* Set desired height */
   background-color: #f9f9f9; /* Background color */
@@ -92,6 +87,7 @@
 /* Slide track with animation */
 .slide-track {
   height: 300px;
+  align-items: center;
   display: flex;
   width: calc(200%); /* Double the width for looping */
   animation: slide-left 20s linear infinite; /* Smooth infinite animation */
@@ -120,7 +116,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
-  background-color: #00B3A6;
+  background-color: #00b3a6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -160,7 +156,7 @@
 }
 
 .star {
-  color: #FFD700;
+  color: #ffd700;
   font-size: 20px;
 }
 
@@ -186,7 +182,7 @@ h2 {
 .author-avatar {
   width: 40px;
   height: 40px;
-  background-color: #00B3A6;
+  background-color: #00b3a6;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -215,21 +211,16 @@ h2 {
   .testimonials-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .testimonials-container {
     padding: 20px 10px;
   }
-  
+
   h1 {
     font-size: 2rem;
   }
-  
+
   .subtitle {
     font-size: 1rem;
   }
 }
-
-
-
-
-
