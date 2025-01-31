@@ -10,13 +10,17 @@
   
   
 }
-.logologin{
-  margin-top:10px;
+
+.login-logo{
+  width:600px;
+  height:300px;
+  margin-top:-100px;
+  margin-left:20px;
 }
 
-
-.container {
+.container-login {
     display: flex;
+    gap:5px;
     flex-Direction: column;
     align-Items: center;
     justify-Content: center;
@@ -98,6 +102,7 @@
   .formbutton{
     margin: -10px auto;
     text-align: center;
+    margin-top:-50px;
   }
   .submitbutton {
   margin-right:-9px;
@@ -119,12 +124,13 @@
     
   }
   
-  p h5{
-    margin-top:-50px;
+  .container-login p h5{
+    margin-top:-100px;
     color:#25C0AE;
   }
    p h1{
     color:#25C0AE;
+    margin-top:-150px;
    }
 
 

@@ -14,6 +14,7 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router";
 import logo from "../assets/logo.png";
 
+
 import "./Landing.css";
 
 const testimonials = [
@@ -52,9 +53,13 @@ const testimonials = [
 ];
 
 function App() {
+  
+
   const navigate = useNavigate();
   const gotoDocumenttitle = () => navigate("/Documenttitle");
   const gotoLogin = () => navigate("/Login");
+
+ 
 
   return (
     <div className="container8">
@@ -88,7 +93,7 @@ function App() {
         </button>
       </main>
 
-      <div className="slider">
+      <div className="sliders">
         <div className="slide-track">
           <img src={am} className="slide" alt="" />
 

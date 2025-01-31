@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Upload,
   FileText,
-  Settings,
   Info,
   CreditCard,
   LogOut,
-  Accessibility,
-  Share,
-  Moon,
-  Menu,
 } from 'lucide-react';
 import './Sidebar.css';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const navigate = useNavigate();

@@ -18,19 +18,21 @@ function Login() {
   return (
     <div>
       <div className="login-wrapper">
-        <div className="logologin">
-            <img src={logo} className="logo" alt="Logo"/>
+        
+        <div className="container-login">
+          <div className="logologin">
+            <img src={logo} className="login-logo" alt="Logo"/>
           </div>
-        <div className="container">
           
           
-
-          <p>
+            <p>
             <h1>Your Learning, supercharged</h1>
           </p>
           <p>
             <h5>The AI platform built to help you study faster.</h5>
           </p>
+          
+          
           <div className="formbutton">
             <form>
               <input

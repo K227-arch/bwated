@@ -41,7 +41,7 @@ function App() {
             onClick={() => toggleFAQ(index)}
           >
             {faq.question}
-            <span>{activeIndex === index ? '−' : '+'}</span>
+            <span3>{activeIndex === index ? '−' : '+'}</span3>
           </div>
           <div className={`faq-answer ${activeIndex === index ? 'active' : ''}`}>
             {faq.answer}

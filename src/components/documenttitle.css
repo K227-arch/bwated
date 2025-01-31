@@ -3,6 +3,7 @@
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
+    
   }
   
   .title2 {
@@ -17,6 +18,7 @@
     gap: 2rem;
     margin-bottom: 3rem;
     flex-wrap: wrap;
+    
   }
   
   .card {
@@ -27,6 +29,7 @@
     width: 300px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    border: 3px solid #08ac9e;
     
   }
   

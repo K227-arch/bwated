@@ -2,12 +2,17 @@
   background-color: #f9f7f2;
   padding: 10px;
 }
-
-.logose {
+.logos{
   margin-top: -170px;
   height: 400px;
   width: 500px;
   margin-left: -20px;
+}
+.logose {
+  margin-top:110px;
+  height:400px;
+  width:290px;
+  margin-left:20px;
 }
 
 .header3 {
@@ -15,12 +20,24 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
+  margin-top:-10px;
+  transition: background-color 0.3s ease-in-out;
+  background-color: #f9f7f2;
+  position:fixed;
+  width:100%;
+  height:60px;
+  overflow: visible;
+}
+
+.header3.scrolled {
+  background-color: black; /* Change to solid color */
 }
 
 .nav-buttons {
   display: flex;
   gap: 1rem;
-  margin-top: -210px;
+  margin-top: 10px;
+  margin-right:70px;
 }
 
 .btn {
@@ -38,7 +55,7 @@
 }
 
 .btn-primary {
-  background: #00bfa5;
+  background: #08ac9e;
   color: white;
 }
 
@@ -49,7 +66,7 @@
 }
 
 .hero {
-  margin-top: -150px;
+  margin-top: 150px;
 
   text-align: center;
 }
@@ -76,22 +93,19 @@
 
 /* Slider container */
 /* Slider container */
-.slider {
-  margin: 100px 0px 100px 0px;
-  overflow: visible; /* Hide overflowing content */
+.sliders {
+  margin: 0px 0px 100px 0px;
+   /* Hide overflowing content */
   width: 100%; /* Full width */
   height: fit-content; /* Set desired height */
-  background-color: #f9f9f9; /* Background color */
+  background-color:#f9f7f2; /* Background color */
+  border:none;
 }
 
 /* Slide track with animation */
 .slide-track {
-<<<<<<< HEAD
-  height: 30px;
-=======
   height: 300px;
   align-items: center;
->>>>>>> d7483f60123d9beae23be632f32f96b94f99e431
   display: flex;
   width: calc(200%); /* Double the width for looping */
   animation: slide-left 20s linear infinite; /* Smooth infinite animation */
@@ -117,11 +131,11 @@
 }
 
 .testimonials-container {
-  max-width: 1200px;
+  max-width: 2000px;
   margin: 0 auto;
   padding: 40px 20px;
-  background-color: #00b3a6;
-  min-height: 100vh;
+  background-color: #08ac9e;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 64px);
-  background-color: #f9fafb;
+  background-color:#f9f7f2;
   margin-left:190px;
   margin-top:-25px;
   width:1336px;
@@ -53,7 +53,7 @@
 }
 
 .action-bar {
-  background-color: #f9fafb;
+  background-color:#f9f7f2;
 }
 
 .action-buttons {

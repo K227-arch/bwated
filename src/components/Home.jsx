@@ -37,7 +37,7 @@ const Home = () => {
             </h3>
             <br></br>
             <p>
-              Upload the PDF content you would like to study.My Kisasi will scan
+              Upload the PDF content you would like to study.Bwarted will scan
               and use the PDF to provide you with answers and questions to help
               you study.
             </p>
@@ -48,7 +48,7 @@ const Home = () => {
             </h3>
             <br></br>
             <p>
-              Now you can ask My kasasi questions about the topics in the PDF
+              Now you can ask Bwarted questions about the topics in the PDF
               and it will provide relevant answers and provide more information
               to help you understand better.
             </p>
@@ -59,7 +59,7 @@ const Home = () => {
             </h3>
             <br></br>
             <p>
-              If you feel confident with your study session. My Kisasi cab test
+              If you feel confident with your study session. Bwarted cab test
               your knowledge with a test, which can customize to your standards.
             </p>
           </div>

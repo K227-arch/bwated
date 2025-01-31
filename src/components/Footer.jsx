@@ -1,5 +1,5 @@
 import React from 'react';
-import { Book } from 'lucide-react';
+import logo from '../assets/logo.png';
 import './Footer.css';
 
 const Footer = () => {
@@ -8,8 +8,7 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-brand">
           <div className="logo">
-            <Book className="book-icon" />
-            <span3 className="brand-name">MY KISASI</span3>
+            <img src={logo} className="footer-logo" alt="Logo"/>
           </div>
           <p className="brand-description">
             The premier AI-driven platform for personalized learning and practice tests

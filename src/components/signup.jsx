@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import kisasi from "../assets/kisasi.jpg";
+import logo from '../assets/logo.png';
 import "./signup.css";
 
 
@@ -13,7 +14,10 @@ const gotoDocumenttitle=()=>{
     <div>
       <div className="login-wrapper2">
         <div className="container">
-          MY KASASI
+          <div className="signuplogo">
+            <img src={logo} className="signup-logo" alt="Logo"/>
+          </div>
+          
           <p>
             <h1>Enter Password</h1>
           </p>

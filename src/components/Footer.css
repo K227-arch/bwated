@@ -1,8 +1,10 @@
 .footer {
   margin-top: 100px;
-  border: 1px solid grey;
+  
   padding: 4rem 2rem 1rem;
   font-family: system-ui, -apple-system, sans-serif;
+  background-color: #ffffff;
+  width:100%;
 }
 
 .footer-content {
@@ -26,10 +28,10 @@
   height: 100px;
 }
 
-.book-icon {
-  color: #06b6d4;
-  width: 32px;
-  height: 32px;
+.footer-logo{
+  width:30px;
+  height:300px;
+  margin-left:-50px;
 }
 
 .brand-name {

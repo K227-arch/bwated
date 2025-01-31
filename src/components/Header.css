@@ -1,6 +1,6 @@
 /* Header.css */
 .header {
-  background-color: #ffffff;
+  background-color:#f9f7f2;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height:75px;
   position: fixed;
@@ -16,13 +16,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  
 }
 
-.logo {
-  width:500px;
+.header-logo {
+  width:700px;
   height:300px;
-  margin-left:-100px;
-  margin-top:-60px;
+  margin-left:-180px;
+  margin-top:0px;
   
 }
 
@@ -32,7 +33,7 @@
   margin-right:-100px;
   display: flex;
   gap: 1rem;
-  margin-top:-170px;
+  margin-top:-30px;
 }
 
 .btn {
