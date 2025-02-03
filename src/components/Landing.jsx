@@ -17,7 +17,28 @@ import videoPlaceholder from "../assets/a.i.mp4";
 
 
 import "./Landing.css";
-
+const features = [
+  {
+    icon: "⚡",
+    title: "AI Rubric generation",
+    description: "Bwated creates detailed rubrics for your entire assignment with one click."
+  },
+  {
+    icon: "🔄",
+    title: "AI Regrade",
+    description: "Bwated grades exactly the way you do. Give it instructions, the same way you would instruct a TA."
+  },
+  {
+    icon: "↻",
+    title: "AI Parsing",
+    description: "Reuse your old assignments by uploading them to Bwated, in seconds."
+  },
+  {
+    icon: "📈",
+    title: "AI Analytics",
+    description: "Bwated gives you a bigger picture understanding of common student mistakes to help tailor your teaching."
+  }
+]
 const testimonials = [
   {
     id: 1,
@@ -123,6 +144,22 @@ function App() {
       </div>
 
       <FAQ />
+
+      <div className="features-container">
+      <h2 className="features-title2">Features</h2>
+      <h1 className="features-heading">
+        Powerful AI tools to supercharge your assessment
+      </h1>
+      <div className="features-grid">
+        {features.map((feature, index) => (
+          <div key={index} className="feature-card2">
+            <div className="feature-icon2">{feature.icon}</div>
+            <h3 className="feature-title2">{feature.title}</h3>
+            <p className="feature-description2">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
 
       <div className="testimonials-container">
         <h1>What Your Colleagues Say</h1>
