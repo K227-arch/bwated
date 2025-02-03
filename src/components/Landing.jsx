@@ -90,7 +90,7 @@ function App() {
         </p>
 
         <button className="btn btn-primary" onClick={gotoDocumenttitle}>
-          Find your exam
+          GET STARTED
         </button>
         <div className="video-container">
           <video className="placeholder-video" autoPlay loop muted>

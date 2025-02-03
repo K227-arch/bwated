@@ -70,7 +70,7 @@ const Header = () => {
           <img
             src={logo}
             className="header-logo"
-            onClick={goto('/')}
+            onClick={goto('/Documenttitle')}
             alt="Logo"
             aria-label="Go to home"
           />
