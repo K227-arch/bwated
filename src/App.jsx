@@ -18,6 +18,7 @@ import FAQ from './components/FAQ.jsx';
 import Footer from './components/Footer.jsx';
 import Recording from './components/Recording.jsx';
 import Loader from './components/Loader.jsx';
+import Feedback from './components/feedback.jsx';
 import Pop from './components/Pop.jsx';
 import './App.css';
 
@@ -51,6 +52,7 @@ const AppRoutes = () => {
         <Route path="/PDFViewer" element={<PDFViewer />} />
         <Route path="/Test" element={<Test />} />
         <Route path="/Question" element={<Question />} />
+        <Route path="/Feedback" element={<Feedback />} />
         <Route path="/Footer" element={<Footer />} />
       </Routes>
     </Load>

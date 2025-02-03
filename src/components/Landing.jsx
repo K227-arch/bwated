@@ -13,6 +13,7 @@ import FAQ from "../components/FAQ";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router";
 import logo from "../assets/logo.png";
+import videoPlaceholder from "../assets/a.i.mp4";
 
 
 import "./Landing.css";
@@ -24,7 +25,7 @@ const testimonials = [
     title: "A Super Efficient Platform!",
     text: "Bwarted is a highly efficient platform with questions designed to test logical thinking rather than just mechanical memory, accompanied by focused and relevant explanations. Highly recommend!",
     author: "Livia Stefania",
-    username: "@stefanialivia",
+    username: "MUBS University",
   },
   {
     id: 2,
@@ -32,7 +33,7 @@ const testimonials = [
     title: "Recap Test Feature is Exceptional!",
     text: "The recap test feature is exceptional and makesBwarted my top choice. I no longer have to worry about planning my reviews, as the platform helps me stay organized and motivates me to complete them...",
     author: "Luana Corbu",
-    username: "@luanaacg99",
+    username: "Makerere University",
   },
   {
     id: 3,
@@ -40,7 +41,7 @@ const testimonials = [
     title: "The Platform I Was Looking For!",
     text: "I've been searching for a residency preparation platform that tests logic, not just memory, while ensuring that no detail is overlooked. Bwarted not only accomplishes this but goes above and beyond!",
     author: "Darius Filis",
-    username: "@darius.1408",
+    username: "Isbat university",
   },
   {
     id: 4,
@@ -48,7 +49,7 @@ const testimonials = [
     title: "A Real Help for Residency Exam Preparation!",
     text: "The questions on Bwarted are a real help in preparing for the residency exam. They are clear, emphasize information without ambiguity, and the detailed explanations and flashcards help solidify the knowledge even further.",
     author: "Delia Barbu",
-    username: "@deliabarbu12",
+    username: "Kyambogo University",
   },
 ];
 
@@ -71,7 +72,7 @@ function App() {
           <button className="btn btn-outline" onClick={gotoLogin}>
             Sign Up
           </button>
-          <button className="btn btn-primary">Get Started</button>
+          <button className="btn btn-primary" onClick={gotoDocumenttitle}>TRY DEMO</button>
         </nav>
       </header>
 
@@ -91,6 +92,12 @@ function App() {
         <button className="btn btn-primary" onClick={gotoDocumenttitle}>
           Find your exam
         </button>
+        <div className="video-container">
+          <video className="placeholder-video" autoPlay loop muted>
+            <source src={videoPlaceholder} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </main>
 
       <div className="sliders">

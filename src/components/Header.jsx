@@ -1,16 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { CircleUser, Settings } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CircleUser } from 'lucide-react';
 import './Header.css';
-
 import logo from '../assets/logo.png';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
   const navigate = useNavigate();
-  const gotoPDFViewer =()=>navigate('/Upload')
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -22,10 +20,19 @@ const ProfileMenu = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleLogout = () => {
+    alert('Logging out...'); // Replace with actual logout logic
+    setIsOpen(false);
+  };
+
   return (
     <div className="auth-buttons" ref={dropdownRef}>
-      <Settings size={30} className="setting-btn" onClick={gotoPDFViewer}/>
-      <CircleUser size={35} className="circle-btn" onClick={() => setIsOpen((prev) => !prev)} />
+      <CircleUser
+        size={35}
+        className="circle-btn"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-label="Open profile menu"
+      />
       {isOpen && (
         <div className="dropdown-menu">
           <div className="menu-header">
@@ -40,12 +47,10 @@ const ProfileMenu = () => {
             </div>
           </div>
           <ul className="menu-items">
-            
-           
             <li>
-              <a href="#logout" className="logout">
+              <button className="logout-btn" onClick={handleLogout}>
                 Sign Out
-              </a>
+              </button>
             </li>
           </ul>
         </div>
@@ -56,15 +61,20 @@ const ProfileMenu = () => {
 
 const Header = () => {
   const navigate = useNavigate();
+  const goto = useCallback((path) => () => navigate(path), [navigate]);
 
   return (
     <header className="header">
       <div className="header-container">
-       <div className="logo">
-           <img src={logo} className="header-logo" alt="Logo"/>
-       </div>  
-      
-          
+        <div className="logo">
+          <img
+            src={logo}
+            className="header-logo"
+            onClick={goto('/')}
+            alt="Logo"
+            aria-label="Go to home"
+          />
+        </div>
         <ProfileMenu />
       </div>
     </header>
@@ -72,3 +82,4 @@ const Header = () => {
 };
 
 export default Header;
+

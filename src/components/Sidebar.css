@@ -24,6 +24,7 @@
 .sidebar-nav {
   flex: 1;
   padding: 8px;
+  margin-top:150px;
   
 }
 
@@ -79,8 +80,9 @@
   color: #4b5563;
   font-size: 14px;
   border-radius:20px;
-  border:none;
+  
   cursor:pointer;
+  background-color:#f9f7f2;
 }
 
 .feedback-btn:hover {

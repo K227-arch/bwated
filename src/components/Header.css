@@ -7,7 +7,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .header-container {
@@ -21,8 +21,8 @@
 
 .header-logo {
   width:700px;
-  height:300px;
-  margin-left:-180px;
+  height:250px;
+  margin-left:-200px;
   margin-top:0px;
   
 }
@@ -180,6 +180,12 @@
 
 .logout {
   color: #25C0AE !important;
+}
+.logout-btn{
+  border-radius:20px;
+  margin-left:110px;
+  color:white;
+  background-color: #25C0AE 
 }
 
 @keyframes slideDown {

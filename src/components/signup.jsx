@@ -17,10 +17,8 @@ const gotoDocumenttitle=()=>{
           <div className="signuplogo">
             <img src={logo} className="signup-logo" alt="Logo"/>
           </div>
+         
           
-          <p>
-            <h1>Enter Password</h1>
-          </p>
           <div className="formbutton2">
             <form>
               <input
@@ -42,7 +40,7 @@ const gotoDocumenttitle=()=>{
             Set password
           </button>
         </div>
-        <img src={kisasi} alt="Img" />
+        
       </div>
     </div>
   );

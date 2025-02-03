@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import Header from './Header';
+import Sidebar from './Sidebar'
 import './dashboard.css';
 import { useNavigate } from "react-router";
 
@@ -15,13 +16,14 @@ function App() {
     <div className="layout">
       <div className="layout-main">
         <Header />
+        <Sidebar />
       </div>
 
       <div className="chat-container2">
       <header className="chat-header">
         <h1>Good morning, Abba</h1>
         <button className="new-chat-btn" onClick={gotoDocumentchat}>
-          <div className="icon">📝</div>
+          <div className="icon2">📝</div>
             Start a new chat
         </button>
       </header>

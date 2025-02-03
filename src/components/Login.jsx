@@ -25,22 +25,24 @@ function Login() {
           </div>
           
           
-            <p>
+           <p>
             <h1>Your Learning, supercharged</h1>
           </p>
           <p>
             <h5>The AI platform built to help you study faster.</h5>
-          </p>
+          </p> 
+          
+            
           
           
           <div className="formbutton">
             <form>
-              <input
+              <button
                 
-                placeholder="Continue With Google"
+                
                 class="google-input-with-icon"
                 required
-              />
+              >Continue With Google</button>
               <div className="or">OR</div>
               <input
                 type="email"
@@ -51,12 +53,12 @@ function Login() {
             </form>
           </div>
           
-            <button type="submit" className="submitbutton" onClick={navigateToPlanPage}>
+            <button type="submit" className="submitbutton2" onClick={navigateToPlanPage}>
               Continue with email
             </button>
           
         </div>
-        <img src={kisasi} alt="Img" />
+        
       </div>
     </div>
   );

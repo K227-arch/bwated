@@ -1,101 +1,51 @@
-.home-container{
-    margin-top:40px;
-    
-}
+.container-home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 
-.homebar{
-    
-    margin-left:40px;
-    margin-top:10px;
-    padding-top:-10px;
-}
-.separator{
-    border: none; /* Remove default border */
-    height: 2px; /* Thickness of the line */
-    background-color: black; /* Line color */
-    margin-left: 40px; /* Remove default margin */
-    margin-right:40px;
-}
-.submit-button3{
-    margin-left:1210px;
-    width:150px;
-    height:40px;
-    border-radius:200px;
-    cursor:pointer;
-    background-color: black;
-    color:white;
-}
-.introwords{
-    margin-left:40px;
-    margin-top:40px;
-    padding:-5px;
-    
-}
-.contents{
-    display: flex;
-      justify-content: space-between; /* Adjust spacing */
-      align-items: center;          /* Vertically align items */
-      gap: 70px;
-      flex: 1;                      /* Makes each box equal in width */
-      padding: 20px;
-      margin-left:40px;
-      margin-right:40px;
-      margin-top:50px;
-          
-}
-.contents1{
-    background-color: white;
-    height:200px;
-    padding:20px;
-    
-    border-radius:30px;
-    transition: background-color 0.3s, transform 0.3s;
-    border: 3px solid #08ac9e;
-}
-.contents1:hover {
-    background-color:#08ac9e; /* Change color on hover */
-    transform: scale(1.1);
-    color:white;
-}
-.contents2{
-    background-color: white;
-    height:200px;
-    padding:20px;
- 
-    border-radius:30px;
-    transition: background-color 0.3s, transform 0.3s; 
-    border: 3px solid #08ac9e;
-}
-.contents2:hover {
-    background-color: #08ac9e; /* Change color on hover */
-    transform: scale(1.1);
-    color:white;
-}
-.contents3{
-    
-    background-color: white;
-    height:200px;
-    padding:20px;
-    
-    border-radius:30px;
-    transition: background-color 0.3s, transform 0.3s;
-    border: 3px solid #08ac9e;
-}
-.contents3:hover {
-    background-color: #08ac9e; /* Change color on hover */
-    transform: scale(1.1);
-    color:white
-}
-span{
-    display: inline-block;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: white;
-      color: black;
-      text-align: center;
-      line-height: 40px;
-      font-size: 18px;
-      font-weight: bold;
-      border: 2px solid black;
-};
+  }
+  .home-word{
+    margin-top:100px;
+    margin-left:300px;
+  }
+  .home-word p{
+    margin-left:100px;
+  }
+  
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+    margin-top:50px;
+    margin-left:100px;
+  }
+  
+  .feature-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: left;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .icon2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .feature-description {
+    color: #666;
+    line-height: 1.6;
+  }

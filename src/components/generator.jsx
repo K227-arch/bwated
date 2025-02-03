@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./generator.css";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 function Generator() {
   const [questionType, setQuestionType] = useState("");
@@ -10,30 +10,32 @@ function Generator() {
   const [isFileUpload, setIsFileUpload] = useState(false);
   const [text, setText] = useState("");
 
-  
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Structured", "Multichoice"];
-  
-  const navigate = useNavigate()
-  
-  // Handle the generation of questions
+
+  const navigate = useNavigate();
+
+  // Handle question generation
   const handleGenerate = () => {
-    // Validate required fields
-    navigate("/Question",{state:{
-      questionType,
-      keywords,
-      complexity,
-      isFileUpload,
-      questionCount,
-    }})
+    if (!questionCount || !complexity) {
+      alert("Please select all required fields!");
+      return;
+    }
+    navigate("/Question", {
+      state: {
+        questionType,
+        keywords,
+        complexity,
+        isFileUpload,
+        questionCount,
+      },
+    });
   };
 
   return (
     <div className="generator-container">
       <div className="dropdown-group">
-        {/* Dropdown for Question Type */}
-        
-        {/* Dropdown for Question Count */}
+        {/* Question Count Dropdown */}
         <div className="dropdown-wrapper">
           <label htmlFor="questionCount">How many Questions:</label>
           <select
@@ -50,9 +52,9 @@ function Generator() {
           </select>
         </div>
 
-        {/* Dropdown for Complexity */}
+        {/* Complexity Dropdown */}
         <div className="dropdown-wrapper">
-          <label htmlFor="complexity">Question Complexity (optional):</label>
+          <label htmlFor="complexity">Question Type:</label>
           <select
             id="complexity"
             value={complexity}
@@ -67,9 +69,9 @@ function Generator() {
           </select>
         </div>
 
-        {/* Keywords Input (Optional) */}
+        {/* Keywords Input */}
         <div className="input-wrapper">
-          <label htmlFor="keywords">Keywords (optional):</label>
+          <label htmlFor="keywords">Topics (optional):</label>
           <input
             id="keywords"
             type="text"
@@ -80,18 +82,42 @@ function Generator() {
         </div>
 
         {/* File Upload Toggle */}
-        
+        <div className="input-wrapper">
+          <label>
+            <input
+              type="checkbox"
+              checked={isFileUpload}
+              onChange={() => setIsFileUpload(!isFileUpload)}
+            />
+            Upload File Instead?
+          </label>
+        </div>
 
         {/* Text Input for Custom Text */}
-        
+        {isFileUpload ? (
+          <div className="input-wrapper">
+            <label htmlFor="fileUpload">Upload File:</label>
+            <input type="file" id="fileUpload" />
+          </div>
+        ) : (
+          <div className="input-wrapper">
+            <label htmlFor="customText">Enter Custom Text:</label>
+            <textarea
+              id="customText"
+              placeholder="Enter your text..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            ></textarea>
+          </div>
+        )}
 
         {/* Generate Button */}
         <button
           className="generate-button"
           onClick={handleGenerate}
-          disabled={!questionCount }
+          disabled={!questionCount || !complexity}
         >
-          Start test
+          Start Test
         </button>
       </div>
     </div>

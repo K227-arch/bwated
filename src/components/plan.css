@@ -8,6 +8,13 @@
   align-items: stretch;
   flex-wrap: wrap;
   margin-top:200px;
+  margin-left:250px;
+}
+.plan-words{
+  margin-top:-100px;
+}
+.plan-words h1{
+  margin-left:390px;
 }
 
 .pricing-card {
@@ -21,6 +28,7 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  
 }
 
 .pricing-card:hover {

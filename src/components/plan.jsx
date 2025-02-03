@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from './Header.jsx';
+import Sidebar from './Sidebar.jsx';
 import './plan.css';
 
 
@@ -37,7 +38,13 @@ function App({children}) {
     
     <div className="pricing-container">
       <Header />
+      <Sidebar />
+      <div className="plan-words">
+        <h1>Pricing</h1>
+        <p>Start with a free account to speed up your workflow on public projects or boost your entire team with instantly-opening production environments.</p>
+      </div>
       {plans.map((plan) => (
+        
         <div 
           key={plan.name} 
           className={`pricing-card ${plan.popular ? 'popular' : ''}`}

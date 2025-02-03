@@ -4,21 +4,20 @@
   align-items: center; /* Vertically align items */
   height: 100vh; /* Full viewport height */
   padding: 20px;
-  margin-left:-80px;
+  margin-left:300px;
   overflow:hidden;
   
   
   
 }
-.signuplogo{
-  
-}
+
 .signup-logo{
-  width:600px;
-  height:300px;
+  width:700px;
+  height:200px;
   margin-top:-100px;
   margin-left:20px;
 }
+
 
 .container {
     display: flex;
@@ -103,7 +102,7 @@
   .formbutton2{
     margin: -10px auto;
     text-align: center;
-    margin-top:-100px;
+    margin-top:-80px;
   }
   .submitbutton2 {
   margin-right:-9px;
@@ -127,6 +126,7 @@
   p h5{
     margin-top:-50px;
   }
+  
 
 
 

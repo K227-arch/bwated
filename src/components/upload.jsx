@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from './Header';
+import Sidebar from './Sidebar';
 import './upload.css';
 
 // Popup Component (Placed outside to maintain structure)
@@ -8,6 +9,7 @@ const Popup = ({ onClose, handleDragOver, handleDragLeave, handleDrop, handleFil
     <div className="upload-container">
       <div className="layout-main">
         <Header />
+        <Sidebar />
       </div>
       <h1 className="upload-title">Upload a document to get started</h1>
 
