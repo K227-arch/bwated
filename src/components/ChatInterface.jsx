@@ -7,12 +7,16 @@ import OpenAI from "openai";
 
 
 
+
 export default function ChatInterface() {
   const [message, setMessage] = useState('');
   const [prompt, setPrompt] = useState("");
   const [responseText, setResponseText] = useState("");
   const [audioSrc, setAudioSrc] = useState("");
-
+  const [pdfContent, setpdfContent ] = useState('')
+  const [chatHistory, setChatHistory] = useState([]);
+  const [question, setQuestion] = useState('');
+ 
   const navigate  = useNavigate()
 
   const apiKey = import.meta.env.VITE_OPENAI_KEY;
@@ -22,32 +26,60 @@ export default function ChatInterface() {
  
   const handleGenerate = async () => {
     try {
+      
+
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini-audio-preview",
-        modalities: ["text", "audio"],
-        audio: { voice: "alloy", format: "wav" },
-        max_tokens: 50,
+        model: "gpt-4o-mini",
+        //  max_tokens: 50,
         messages: [
           {
+            role: "system",
+            content: `
+              You are a knowledgeable and supportive assistant for students. 
+              Your job is to answer their questions based solely on the provided PDF content.
+              If a question cannot be answered from the PDF, politely inform the user 
+              and encourage them to ask something relevant to the material.
+            `,
+          },
+          {
             role: "user",
-            content: prompt,
+            content: `
+              Here is the content of a PDF: "${pdfContent}". 
+              Please remember that the answers should only reference this content. 
+              The student's question is: "${question}".
+            `,
           },
         ],
       });
 
-      // Extract text response
-      const textResponse = response.choices[0].message.audio.transcript;
-      setResponseText(textResponse);
+      const initialContext = response.data.choices[0].message.content;
 
-      // Extract audio data and create a Blob URL
-      const audioData = response.choices[0].message.audio.data;
-      const audioBlob = new Blob([Uint8Array.from(atob(audioData), (c) => c.charCodeAt(0))], {
-        type: "audio/wav",
-      });
-      const audioURL = URL.createObjectURL(audioBlob);
-      setAudioSrc(audioURL);
+
+       setChatHistory([
+        {
+          role: "system",
+          content: `
+            You are a knowledgeable and supportive assistant for students. 
+            Your job is to answer their questions based solely on the provided PDF content.
+            If a question cannot be answered from the PDF, politely inform the user 
+            and encourage them to ask something relevant to the material.
+          `,
+        },
+        {
+          role: "user",
+          content: `
+            Here is the content of a PDF: "${pdfContent}". 
+            Please remember that the answers should only reference this content. 
+            The student's question is: "${question}".
+          `,
+        },
+        { role: "assistant", content: initialContext },
+      ]);
+
+
     } catch (error) {
-      console.error("Error generating text and audio:", error);
+      console.error("Error sending PDF content:", error.message);
+      alert("An error occurred while sending PDF content.");
     }
   };  
 
@@ -66,32 +98,55 @@ export default function ChatInterface() {
     }
   };
 
+  const TTSData = (data) => {
+    setQuestion(data)
+  }
+
   return (
     <div className="chat-container">
       <div className="chat-messages">
-        <div className="message">
-          <div className="avatar">AI</div>
-          <div className="message-content">
-            <p>Hello! I'm ready to help you with your PDF document. You can ask me questions or request specific information.</p>
+      {chatHistory && chatHistory.map((msg, index) => (
+        <div className={`message ${msg.role}`} key={index}>
+            <div className="avatar">{msg.role === 'user' ? 'You' : 'AI'}</div>
+            <div className="message-content">
+            <p>{msg.content}</p>   
+            {audioSrc && (
+                <>
+                  <h2>Generated Audio:</h2>
+                  <audio controls src={audioSrc}></audio>
+                </>
+              )}       
           </div>
         </div>
         
-        <div className="message user">
-          <div className="message-content">
-            <p>Can you summarize the main points of the document?</p>
+        
+        // <div className="message user">
+        //   <div className="message-content">
+        //     <p>Can you summarize the main points of the document?</p>
             
-          </div>
+        //   </div>
           
+        // </div>
+
+      ))}
+
+
+      <div className="message">
+          <div className="avatar">AI</div>
+          <div className="message-content">
+            <p>{responseText ? '...' : responseText}</p>
+          </div>
         </div>
-      </div>
+         
+       </div> 
       
       <div className="action-bar">
         
         
         <div className="input-container">
           
-          <Recording />
-          <button className="send-btn" onClick={handleSend}>
+          <Recording TranscribedText={TTSData} />
+          <button className="send-btn" onClick={handleGenerate}>
             <ArrowRight size={20} />
           </button>
         </div>
