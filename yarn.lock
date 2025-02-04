@@ -490,6 +490,27 @@
     prop-types "^15.8.1"
     react-is "^18.3.1"
 
+"@napi-rs/canvas-win32-x64-msvc@0.1.66":
+  version "0.1.66"
+  resolved "https://registry.npmjs.org/@napi-rs/canvas-win32-x64-msvc/-/canvas-win32-x64-msvc-0.1.66.tgz"
+  integrity sha512-3n34watNFqpwACDA+pt4jfQD6zR8PzfK86FBajdsgDVVZhSp6ohgbbJv+eUrXM08VUtjxTq7+U4sWspTu9+4Ug==
+
+"@napi-rs/canvas@^0.1.65":
+  version "0.1.66"
+  resolved "https://registry.npmjs.org/@napi-rs/canvas/-/canvas-0.1.66.tgz"
+  integrity sha512-NE/eQKLbUS+LCbMHRa5HnR7cc1Q4ibg/qfLUN4Ukl3CC0lq6LfHE0YbvFm/l4i5RyyS+aUjL+8IuZDD9EH3amg==
+  optionalDependencies:
+    "@napi-rs/canvas-android-arm64" "0.1.66"
+    "@napi-rs/canvas-darwin-arm64" "0.1.66"
+    "@napi-rs/canvas-darwin-x64" "0.1.66"
+    "@napi-rs/canvas-linux-arm-gnueabihf" "0.1.66"
+    "@napi-rs/canvas-linux-arm64-gnu" "0.1.66"
+    "@napi-rs/canvas-linux-arm64-musl" "0.1.66"
+    "@napi-rs/canvas-linux-riscv64-gnu" "0.1.66"
+    "@napi-rs/canvas-linux-x64-gnu" "0.1.66"
+    "@napi-rs/canvas-linux-x64-musl" "0.1.66"
+    "@napi-rs/canvas-win32-x64-msvc" "0.1.66"
+
 "@popperjs/core@^2.11.8":
   version "2.11.8"
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
@@ -2153,6 +2174,13 @@ path-type@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
+
+pdfjs-dist@^4.10.38:
+  version "4.10.38"
+  resolved "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-4.10.38.tgz"
+  integrity sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==
+  optionalDependencies:
+    "@napi-rs/canvas" "^0.1.65"
 
 picocolors@^1.0.0, picocolors@^1.1.0:
   version "1.1.1"
