@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import './upload.css';
 import * as pdfjsLib from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
-GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs`;
 
 
 // Popup Component (Placed outside to maintain structure)
@@ -64,8 +64,7 @@ const App = () => {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
-  const [text, setText] = useState('');
-  useEffect(() => {
+   useEffect(() => {
     setShowPopup(true); // Show popup when page loads
   }, []);
 
@@ -122,10 +121,9 @@ const App = () => {
         }
 
         const extractedText = textContent.join('\n');
-        setText(extractedText);
-
         
         localStorage.setItem('extractedText', extractedText);
+        console.log(extractedText)
       } catch (err) {
         console.error('Error extracting text:', err);
         alert('An error occurred while extracting text from the PDF.');
@@ -144,7 +142,7 @@ const App = () => {
           handleDragLeave={handleDragLeave} 
           handleDrop={handleDrop} 
           handleFileInput={handleFileInput} 
-          file={file} 
+          file={pdfFile} 
           isDragging={isDragging}
           extract={extractText}
         />
