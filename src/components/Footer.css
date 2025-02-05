@@ -1,15 +1,14 @@
 .footer {
   margin-top: 100px;
-  color:#e5e7eb;
+  color: #e5e7eb;
   background-color: black;
   padding: 4rem 2rem 1rem;
   font-family: system-ui, -apple-system, sans-serif;
-  width:100%;
+  width: 100%;
 }
 
 .footer-content {
   max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   gap: 4rem;
@@ -28,10 +27,10 @@
   height: 100px;
 }
 
-.footer-logo{
-  width:30px;
-  height:200px;
-  margin-left:-50px;
+.footer-logo {
+  width: 30px;
+  height: 200px;
+  margin-left: -50px;
 }
 
 .brand-name {
@@ -96,7 +95,6 @@
   text-align: left;
   color: #6b7280;
   font-size: 0.875rem;
-  margin-left:150px;
 }
 
 @media (max-width: 768px) {
@@ -112,5 +110,18 @@
 
   .footer-brand {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .footer {
+    padding: 16px;
+  }
+  .footer-content {
+    display: block;
+  }
+
+  .footer-bottom {
+    border: unset;
   }
 }

@@ -16,7 +16,6 @@ function App() {
     <div className="layout">
       <div className="layout-main">
         <Header />
-        <Sidebar />
       </div>
 
       <div className="chat-container2">

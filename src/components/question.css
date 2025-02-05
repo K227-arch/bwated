@@ -2,11 +2,13 @@
   background: white;
   border-radius: 12px;
   padding: 7rem;
+ 
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 800px;
   margin: 0 auto;
+  margin-top: 40px;
   color: #333;
-  margin-left:350px;
+  /* margin-left:350px; */
 }
 
 .quiz-header {
@@ -145,7 +147,7 @@ textarea {
 /* Responsive Design */
 @media (max-width: 768px) {
   #root {
-    padding: 1rem;
+    /* padding: 1rem; */
   }
 
   .quiz-container {

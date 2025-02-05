@@ -1,13 +1,9 @@
 body{
    background-color: lightgray;
 }
-.testscreen{
-   
-   margin-top:-70px;
-   margin-left:400px;
-}
+
 .testscreen h1{
-    margin-left:300px;
+  text-align: center;
 }
 
 
@@ -21,7 +17,7 @@ body{
     background-color: black;
     cursor: pointer;
     color:white;
-    margin-left:-195px;
+    margin-left:45px;
     transition: background-color 0.3s ease, transform 0.2s ease;
   }
   .back-button:hover {

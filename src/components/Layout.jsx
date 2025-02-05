@@ -1,18 +1,20 @@
-import React from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import './Layout.css';
+import React, { useState } from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import "./Layout.css";
+
+function App({ children, hideSideNav,isSideNavVisible }) {
 
 
- function App({ children }) {
+
+
+
   return (
     <div className="layout">
-      <Sidebar />
+      <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav}/>
       <div className="layout-main">
         <Header />
-        <main className="layout-content">
-          {children}
-        </main>
+        <main className="layout-content">{children}</main>
       </div>
     </div>
   );

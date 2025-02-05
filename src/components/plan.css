@@ -1,20 +1,17 @@
 .pricing-container {
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 0 1rem;
   display: flex;
   gap: 1.5rem;
   justify-content: center;
   align-items: stretch;
   flex-wrap: wrap;
-  margin-top:200px;
-  margin-left:250px;
+  margin-top:100px;
 }
 .plan-words{
-  margin-top:-100px;
-}
-.plan-words h1{
-  margin-left:390px;
+  text-align: center;
+  /* margin-top:-100px; */
 }
 
 .pricing-card {

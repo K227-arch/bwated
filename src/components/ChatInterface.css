@@ -3,11 +3,35 @@
   flex-direction: column;
   height: calc(100vh - 64px);
   background-color:#f9f7f2;
-  margin-left:190px;
-  margin-top:-10px;
-  width:1336px;
+  width: 100%;
   overflow: hidden;
+  position: static;
+  z-index: -1;
 }
+
+.chat-container .nav-menu-ctrl {
+  left: 30px;
+  bottom: 40px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2dd4bf;
+  /* padding: 10px; */
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  color: #fff;
+  border: unset;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.chat-container .nav-menu-ctrl:hover {
+  background-color: #000;
+  color: #ffffff;
+}
+
 
 .chat-messages {
   flex: 1;

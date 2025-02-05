@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CircleUser } from 'lucide-react';
-import './Header.css';
-import logo from '../assets/logo.png';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { CircleUser } from "lucide-react";
+import "./Header.css";
+import logo from "../assets/logo.png";
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,12 +16,12 @@ const ProfileMenu = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
-    alert('Logging out...'); // Replace with actual logout logic
+    alert("Logging out..."); // Replace with actual logout logic
     setIsOpen(false);
   };
 
@@ -66,11 +66,12 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
+        
         <div className="logo">
           <img
             src={logo}
             className="header-logo"
-            onClick={goto('/Documenttitle')}
+            onClick={goto("/Documenttitle")}
             alt="Logo"
             aria-label="Go to home"
           />
@@ -82,4 +83,3 @@ const Header = () => {
 };
 
 export default Header;
-

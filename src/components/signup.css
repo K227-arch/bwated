@@ -1,10 +1,9 @@
 .login-wrapper2{
   display: flex; /* Align items horizontally */
-  justify-content: space-between; /* Space between elements */
+  justify-content: center; /* Space between elements */
   align-items: center; /* Vertically align items */
   height: 100vh; /* Full viewport height */
   padding: 20px;
-  margin-left:300px;
   overflow:hidden;
   
   
@@ -34,9 +33,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
   text-align: center;       /* Center-align text inside the box */
   max-width: 400px;
-  
-  margin-top:10px;
-  margin-left:200px;
   flex:1;
   
   }

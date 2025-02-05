@@ -33,7 +33,6 @@ const Home = () => {
   return (
     <div className="container-home">
       <Header />
-      <Sidebar />
       <div className="home-word">
           <h1>Unlock the Power of AI in Learning with Bwated</h1>
           <p>Personalized, AI-driven education tailored to your learning style.</p>

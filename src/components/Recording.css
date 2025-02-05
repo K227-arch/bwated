@@ -55,7 +55,7 @@
 }
 
 .controls {
-  border: 1px solid green;
+  background-color: #e2e2e2;
   display: flex;
   gap: 20px;
   padding: 8px;

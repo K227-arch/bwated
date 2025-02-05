@@ -38,7 +38,6 @@ function App({children}) {
     
     <div className="pricing-container">
       <Header />
-      <Sidebar />
       <div className="plan-words">
         <h1>Pricing</h1>
         <p>Start with a free demo to speed up your workflow on public projects or boost your entire team with instantly-opening production environments.</p>

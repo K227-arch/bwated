@@ -8,13 +8,8 @@ const Popup = ({ onClose }) => {
     
     <div className="popup-overlay">
       <div className="pops">
-        <Upload />
+        <Upload globalPopupClose={onClose}/>
         
-      </div>
-      
-      <div className="popup">
-        
-        <button onClick={onClose}>Close</button>
       </div>
     </div>
   );

@@ -1,24 +1,18 @@
 .container-home {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
-
+    padding: 9px;
   }
   .home-word{
-    margin-top:100px;
-    margin-left:300px;
-  }
-  .home-word p{
-    margin-left:100px;
+    text-align: center;
+    margin-top:120px;
   }
   
   .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    padding: 1rem;
     margin-top:50px;
-    margin-left:100px;
   }
   
   .feature-card {
