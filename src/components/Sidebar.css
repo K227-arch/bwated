@@ -10,9 +10,21 @@
   overflow-x:hidden ;
   transition: 0.3s;
   position: fixed;
-  z-index: 70000000000;
+  z-index: 700;
   left:-300px;
   top: 0;
+}
+
+.blind-element {
+  height: 75px;
+}
+
+.sidemenu-wrapper {
+  position: relative;
+  width: 100%;
+  height: fit-content;
+  /* height: 100vh; */
+  border: 1px solid green;
 }
 .sidebar .nav-menu-ctrl-2 {
   top: 0px;

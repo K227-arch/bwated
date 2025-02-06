@@ -4,32 +4,16 @@ import ChatInterface from "./ChatInterface.jsx";
 import Pop from "./Pop.jsx";
 import "./Documentchat.css";
 
-function App({ children }) {
-  const [isNavVisible, setNavVisible] = useState(false);
-
-  /**
-   * Function Event Pulled from the chartInterface
-   */
-  function ShowSideNav() {
-    setNavVisible(true);
-  }
-
-  /**
-   * Function event  pulled from the Sidebar -> Layout-> to Here
-   */
-
-  function hideSideNav() {
-    setNavVisible(false);
-  }
-
+function App({ children,hideSideNav, isSideNavVisible }) {
+ 
   return (
     <div className="layout">
       <Pop />
       <div className="layout-main">
-        <Layout isSideNavVisible={isNavVisible} hideSideNav={hideSideNav} />
+        <Layout isSideNavVisible={isSideNavVisible} hideSideNav={hideSideNav} />
       </div>
       <div className="layoutmain2">
-        <ChatInterface willShowSideNav={ShowSideNav} />
+        <ChatInterface  />
       </div>
 
       <main className="layout-content">{children}</main>

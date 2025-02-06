@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircleUser } from "lucide-react";
 import "./Header.css";
-import logo from "../assets/logo.png";
+import logo from "../assets/bwated.png";
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);

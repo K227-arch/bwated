@@ -6,7 +6,7 @@ import './dashboard.css';
 import { useNavigate } from "react-router";
 
 
-function App() {
+function App({hideSideNav,isSideNavVisible}) {
   const [searchQuery, setSearchQuery] = useState('')
   const navigate=useNavigate()
   const gotoDocumentchat=()=>{
@@ -16,6 +16,8 @@ function App() {
     <div className="layout">
       <div className="layout-main">
         <Header />
+      <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav}/>
+
       </div>
 
       <div className="chat-container2">

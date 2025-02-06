@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import "./Home.css";
 
-const Home = () => {
+const Home = ({ hideSideNav, isSideNavVisible }) => {
 
 
   const navigate  = useNavigate();
@@ -33,6 +33,7 @@ const Home = () => {
   return (
     <div className="container-home">
       <Header />
+      <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
       <div className="home-word">
           <h1>Unlock the Power of AI in Learning with Bwated</h1>
           <p>Personalized, AI-driven education tailored to your learning style.</p>

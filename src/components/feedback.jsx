@@ -3,7 +3,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import './feedback.css'
 
-function App() {
+function App({ hideSideNav, isSideNavVisible }) {
   const [category, setCategory] = useState('')
   const [message, setMessage] = useState('')
 
@@ -20,7 +20,8 @@ function App() {
   return (
     <div className="feedback-container">
         <Header />
-        <Sidebar />
+        <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
+
       <h1 className="feedback-title">Platform feedback</h1>
       <p className="feedback-description">
         We would love to hear your thoughts on how we can improve bwarted,

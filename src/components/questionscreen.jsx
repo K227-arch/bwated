@@ -7,6 +7,7 @@ import './Documentchat.css';
  function App({ children }) {
   return (
       <div className="layout">
+        <button>Keith</button>
         <div className="layout-main">
         <Layout />  
         </div>

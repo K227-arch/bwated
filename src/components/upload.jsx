@@ -65,7 +65,7 @@ const Popup = ({
 };
 
 // Main App Component
-const App = ({globalPopupClose}) => {
+const App = ({globalPopupClose,hideSideNav, isSideNavVisible}) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -108,6 +108,8 @@ const App = ({globalPopupClose}) => {
 
   return (
     <div className="app">
+      <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
+
       {showPopup && (
         <Popup
           globalPopupClose={globalPopupClose}
