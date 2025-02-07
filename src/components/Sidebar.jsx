@@ -24,58 +24,65 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
     >
       <div className="blind-element"></div>
       <div className="sidemenu-wrapper">
-        <button className="nav-menu-ctrl-2" onClick={willHideSideNav}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-square-chevron-left"
-          >
-            <rect width="18" height="18" x="3" y="3" rx="2" />
-            <path d="m14 16-4-4 4-4" />
-          </svg>
-        </button>
-        <nav
-          className="sidebar-nav"
-          style={{
-            visibility: isVisible ? "visible" : "hidden",
-          }}
-        >
-          <button
-            className="nav-btn"
-            onClick={goto("/upload")}
-            aria-label="Upload PDF"
-          >
-            <Upload size={20} />
-            <div className="text">Upload a PDF</div>
+        <div className="section-1">
+          <button className="nav-menu-ctrl-2" onClick={willHideSideNav}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-square-chevron-left"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="m14 16-4-4 4-4" />
+            </svg>
           </button>
-          <button
-            className="nav-btn"
-            onClick={goto("/dashboard")}
-            aria-label="Documents"
+          <nav
+            className="sidebar-nav"
+            style={{
+              visibility: isVisible ? "visible" : "hidden",
+            }}
           >
-            <FileText size={20} />
-            <div className="text">Dashboard</div>
-          </button>
-          <button className="nav-btn" onClick={goto("/home")} aria-label="Help">
-            <Info size={20} />
-            <div className="text">Help</div>
-          </button>
-          <button
-            className="nav-btn"
-            onClick={goto("/plan")}
-            aria-label="Subscription"
-          >
-            <CreditCard size={20} />
-            <div className="text">My Subscription</div>
-          </button>
-        </nav>
+            <button
+              className="nav-btn"
+              onClick={goto("/upload")}
+              aria-label="Upload PDF"
+            >
+              <Upload size={20} />
+              <div className="text">Upload a PDF</div>
+            </button>
+            <button
+              className="nav-btn"
+              onClick={goto("/dashboard")}
+              aria-label="Documents"
+            >
+              <FileText size={20} />
+              <div className="text">Dashboard</div>
+            </button>
+            <button
+              className="nav-btn"
+              onClick={goto("/home")}
+              aria-label="Help"
+            >
+              <Info size={20} />
+              <div className="text">Help</div>
+            </button>
+            <button
+              className="nav-btn"
+              onClick={goto("/plan")}
+              aria-label="Subscription"
+            >
+              <CreditCard size={20} />
+              <div className="text">My Subscription</div>
+            </button>
+          </nav>
+        </div>
+
         <div className="down-buttons">
           <button
             className="nav-btn"

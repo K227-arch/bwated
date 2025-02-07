@@ -8,9 +8,7 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-body{
-  contain: layout;
-}
+
 
 #nav-menu-ctrl {
   left: 30px;

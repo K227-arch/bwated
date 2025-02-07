@@ -57,6 +57,7 @@ const AppRoutes = () => {
   const [loading, setLoading] = useState(false);
   const location = useLocation(); // ✅ Now inside Router
 
+
   useEffect(() => {
  
     setLoading(true);
@@ -129,6 +130,10 @@ const AppRoutes = () => {
       <button
         id="nav-menu-ctrl"
         onClick={ShowSideNav}
+
+        style={{
+          display : location.pathname == "/" ? "none" : location.pathname == "/Documenttitle"  ? "none" : "flex"
+        }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

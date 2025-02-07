@@ -4,8 +4,7 @@ import ChatInterface from "./ChatInterface.jsx";
 import Pop from "./Pop.jsx";
 import "./Documentchat.css";
 
-function App({ children,hideSideNav, isSideNavVisible }) {
- 
+function App({ children, hideSideNav, isSideNavVisible }) {
   return (
     <div className="layout">
       <Pop />
@@ -13,7 +12,7 @@ function App({ children,hideSideNav, isSideNavVisible }) {
         <Layout isSideNavVisible={isSideNavVisible} hideSideNav={hideSideNav} />
       </div>
       <div className="layoutmain2">
-        <ChatInterface  />
+        <ChatInterface isNavVisible={isSideNavVisible} />
       </div>
 
       <main className="layout-content">{children}</main>
