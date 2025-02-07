@@ -20,7 +20,7 @@ const gotoDocumenttitle=()=>{
          
           
           <div className="formbutton2">
-            <form>
+            <form className="signup-form">
               <input
                 type="email"
                 placeholder="Enter Password"

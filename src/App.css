@@ -13,8 +13,9 @@ body {
 #nav-menu-ctrl {
   left: 30px;
   bottom: 40px;
-  position: absolute;
+  position: fixed;
   display: flex;
+  z-index: 600;
   align-items: center;
   justify-content: center;
   background-color: #2dd4bf;

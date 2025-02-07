@@ -5,6 +5,7 @@
   height: 100vh; /* Full viewport height */
   padding: 20px;
   overflow:hidden;
+  margin: 0px 20px 0px 20px;
   
   
   
@@ -17,6 +18,12 @@
   margin-left:20px;
 }
 
+.signup-form {
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 
 .container {
     display: flex;
@@ -40,7 +47,6 @@
     display: flex; /* Align icon and text */
     text-align: center;
     flex-direction: column; /* Center vertically */
-    margin-left: 13px;
     background-color: white; /* Google's white button */
     color: #555; /* Neutral text color */
     font-size: 16px;
@@ -135,4 +141,48 @@ img{
   height:899px;
   margin-left:140px;
   
+}
+
+@media (max-width: 449px) {
+  .login-wrapper2 .submitbutton2 {
+    width: 300px;
+  }
+
+  .login-wrapper2 .google-input-with-icon2 {
+    width: 300px;
+  }
+
+  .login-wrapper2 .email-input2 {
+    width: 300px;
+  }
+}
+
+
+@media (max-width: 422px) {
+  .login-wrapper2 .submitbutton2 {
+    width: 250px;
+  }
+
+  .login-wrapper2 .google-input-with-icon2 {
+    width: 250px;
+  }
+
+  .login-wrapper2 .email-input2 {
+    width: 250px;
+  }
+}
+
+
+@media (max-width: 340px) {
+  .login-wrapper2 .submitbutton2 {
+    width: 210px;
+  }
+
+  .login-wrapper2 .google-input-with-icon2 {
+    width: 210px;
+  }
+
+  .login-wrapper2 .email-input2 {
+    width: 210px;
+  }
 }

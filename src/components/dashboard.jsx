@@ -20,7 +20,7 @@ function App({hideSideNav,isSideNavVisible}) {
 
       </div>
 
-      <div className="chat-container2">
+      <div className="chat-container2-dashboard">
       <header className="chat-header">
         <h1>Good morning, Abba</h1>
         <button className="new-chat-btn" onClick={gotoDocumentchat}>

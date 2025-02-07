@@ -15,57 +15,67 @@ const Popup = ({
   isDragging,
 }) => {
   return (
-    <div className="upload-container">
-      <button onClick={globalPopupClose} className="x-close-popup" title="Close">&times;</button>
-      <div className="layout-main">
-        <Header />
+    <div className="upload-wrapper">
+      <div className="upload-container">
+        <button
+          onClick={globalPopupClose}
+          className="x-close-popup"
+          title="Close"
+        >
+          &times;
+        </button>
+        <div className="layout-main">
+          <Header />
+        </div>
+        <h1 className="upload-title">Upload a document to get started</h1>
+
+        <div
+          className="upload-area"
+          style={{ borderColor: isDragging ? "#2dd4bf" : "#ccc" }}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleFileInput}
+          />
+          <label htmlFor="fileInput">
+            <button
+              className="upload-button"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("fileInput").click();
+              }}
+            >
+              Upload document
+            </button>
+          </label>
+
+          {file && <p className="file-name">Selected File: {file.name}</p>}
+        </div>
+
+        <p className="terms-text">
+          By uploading a document, you agree to and have read our{" "}
+          <a href="#terms">Terms</a> and <a href="#conditions">Conditions</a>.
+        </p>
+
+        {/* Close Button placed correctly */}
+        <button className="close-btn" onClick={onClose}>
+          Extract
+        </button>
+        <button className="close-btn" onClick={globalPopupClose}>
+          Close
+        </button>
       </div>
-      <h1 className="upload-title">Upload a document to get started</h1>
-
-      <div
-        className="upload-area"
-        style={{ borderColor: isDragging ? "#2dd4bf" : "#ccc" }}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <input
-          type="file"
-          id="fileInput"
-          style={{ display: "none" }}
-          onChange={handleFileInput}
-        />
-        <label htmlFor="fileInput">
-          <button
-            className="upload-button"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("fileInput").click();
-            }}
-          >
-            Upload document
-          </button>
-        </label>
-
-        {file && <p className="file-name">Selected File: {file.name}</p>}
-      </div>
-
-      <p className="terms-text">
-        By uploading a document, you agree to and have read our{" "}
-        <a href="#terms">Terms</a> and <a href="#conditions">Conditions</a>.
-      </p>
-
-      {/* Close Button placed correctly */}
-      <button className="close-btn" onClick={onClose}>
-        Extract
-      </button>
-      <button className="close-btn" onClick={globalPopupClose} >Close</button>
     </div>
   );
 };
 
 // Main App Component
-const App = ({globalPopupClose,hideSideNav, isSideNavVisible}) => {
+const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);

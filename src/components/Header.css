@@ -21,22 +21,12 @@
   position: relative;
 }
 
-<<<<<<< HEAD
-.header-logo {
-  width:400px;
-  height:65px;
-  margin-left:-120px;
-  margin-top:-15px;
-  cursor:pointer;
-  
-=======
 .header-container >  .logo-header {
   display: flex;
   align-items: center;
   margin-left: 40px;
   height: 75px;
   width: fit-content;
->>>>>>> 13f4a46f29b174614e761a5b81f79c1c535701b1
 }
 
 .header-logo {
@@ -219,3 +209,13 @@
   }
 }
 
+@media (max-width:374px) {
+  .header-container >  .logo-header {
+    margin-left: 20px;
+   }
+
+   .header-container .auth-buttons {
+      margin-right: 20px;
+   }
+
+}
