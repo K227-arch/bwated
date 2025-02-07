@@ -13,7 +13,7 @@
 
 
 .header-container {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -21,22 +21,29 @@
   position: relative;
 }
 
-.header-logo {
-  width:350px;
-  height:65px;
-  margin-left:-40px;
-  margin-top:-15px;
-  cursor:pointer;
-  
+.header-container >  .logo-header {
+  display: flex;
+  align-items: center;
+  margin-left: 40px;
+  height: 75px;
+  width: fit-content;
 }
+
+.header-logo {
+  width:300px;
+  height:70px;
+  cursor:pointer;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 
 
 
 .auth-buttons {
   display: flex;
   gap: 1rem;
-  margin-top:-30px;
-  margin-right: 10px;
+  margin-right: 40px;
 }
 
 .btn {

@@ -1,12 +1,27 @@
 .chat-container {
   display: flex;
-  flex-direction: column;
-  height: calc(100vh - 64px);
+  height:100%;
   background-color:#f9f7f2;
   width: 100%;
   overflow: hidden;
   position: static;
   z-index: -1;
+  transition: all .3s;
+}
+
+.boundary-sidebar {
+  width: 250px;
+  display: block;
+  height: inherit;
+  transition: all .3s;
+
+}
+
+.chat-container .boundary-wrapper{
+  flex: 1;
+  margin-right: 30px;
+  transition: all .3s;
+
 }
 
 .chat-container .nav-menu-ctrl {
@@ -59,7 +74,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 290px;
 }
 
 .message-content {
@@ -67,14 +81,13 @@
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  max-width: 30%;
+  max-width: 55%;
   margin-left:10px;
 }
 
 .message.user .message-content {
   background: linear-gradient(to right, #60a5fa, #25C0AE);
   color: white;
-  margin-right:410px;
 }
 
 .action-bar {
