@@ -28,7 +28,6 @@ import Pop from "./components/Pop.jsx";
 import "./App.css";
 
 const AppRoutes = () => {
-
   /**
    * ------------------------------------------------------
    *
@@ -57,9 +56,7 @@ const AppRoutes = () => {
   const [loading, setLoading] = useState(false);
   const location = useLocation(); // ✅ Now inside Router
 
-
   useEffect(() => {
- 
     setLoading(true);
     setTimeout(() => setLoading(false), 1000); // Simulate load delay
   }, [location]);
@@ -114,8 +111,21 @@ const AppRoutes = () => {
           }
         />
         <Route path="/PDFViewer" element={<PDFViewer />} />
-        <Route path="/Test" element={<Test />} />
-        <Route path="/Question" element={<Question />} />
+        <Route
+          path="/Test"
+          element={
+            <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+          }
+        />
+        <Route
+          path="/Question"
+          element={
+            <Question
+              hideSideNav={hideSideNav}
+              isSideNavVisible={isNavVisible}
+            />
+          }
+        />
         <Route
           path="/Feedback"
           element={
@@ -130,9 +140,17 @@ const AppRoutes = () => {
       <button
         id="nav-menu-ctrl"
         onClick={ShowSideNav}
-
         style={{
-          display : location.pathname == "/" ? "none" : location.pathname == "/Documenttitle"  ? "none" :location.pathname == "/Login" ? "none" : location.pathname == "/Signup"  ? "none" : location.pathname == "/Question"  ? "none" : "flex"
+          display:
+            location.pathname == "/"
+              ? "none"
+              : location.pathname == "/Documenttitle"
+              ? "none"
+              : location.pathname == "/Login"
+              ? "none"
+              : location.pathname == "/Signup"
+              ? "none"
+              : "flex",
         }}
       >
         <svg
@@ -142,10 +160,10 @@ const AppRoutes = () => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-menu"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-menu"
         >
           <line x1="4" x2="20" y1="12" y2="12" />
           <line x1="4" x2="20" y1="6" y2="6" />

@@ -5,7 +5,7 @@
   background-color: transparent;
   width: 100%;
   padding: 20px;
-  background-color:#f9f7f2;
+  background-color: #f9f7f2;
   margin: 0px;
 }
 
@@ -69,7 +69,9 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 10px 20px;
+  width: 150px;
+  height: 40px;
+  justify-content: center;
   border: none;
   border-radius: 25px;
   font-size: 0.9rem;
@@ -118,4 +120,17 @@
   display: flex;
   justify-content: center;
   padding: 20px;
+}
+
+@media(max-width:402px) {
+  .control-btn {
+    width: 110px;
+  }
+}
+
+@media (max-width: 381px) {
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

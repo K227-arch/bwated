@@ -96,7 +96,7 @@ function App() {
                       checked={currentAnswer === index.toString()}
                       onChange={(e) => setCurrentAnswer(e.target.value)}
                     />
-                    <span4>{option}</span4>
+                    <span>{option}</span>
                   </label>
                 ))}
               </div>
