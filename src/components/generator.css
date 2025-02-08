@@ -41,6 +41,10 @@ body{
     background-color: #fff;
     transition: border-color 0.3s ease;
   }
+
+  textarea {
+    padding: 0px;
+  }
   
   select:focus,
   input[type="text"]:focus,

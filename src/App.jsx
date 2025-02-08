@@ -132,7 +132,7 @@ const AppRoutes = () => {
         onClick={ShowSideNav}
 
         style={{
-          display : location.pathname == "/" ? "none" : location.pathname == "/Documenttitle"  ? "none" :location.pathname == "/Login" ? "none" : location.pathname == "/Signup"  ? "none" : "flex"
+          display : location.pathname == "/" ? "none" : location.pathname == "/Documenttitle"  ? "none" :location.pathname == "/Login" ? "none" : location.pathname == "/Signup"  ? "none" : location.pathname == "/Question"  ? "none" : "flex"
         }}
       >
         <svg
