@@ -5,8 +5,8 @@
 
   width: 100%;
   overflow: hidden;
-  position: relative;
-  z-index: -1;
+  /* position: relative; */
+  z-index: 1;
   transition: all 0.3s;
 }
 
@@ -87,7 +87,6 @@
 }
 
 .action-bar {
-  position: relative;
   background-color: #f9f7f2;
   display: flex;
   align-items: center;
