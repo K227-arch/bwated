@@ -4,9 +4,17 @@
   gap: 1.1rem;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   flex-wrap: wrap;
   margin-top:80px;
   margin-bottom: 50px;
+}
+.pricing-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+  justify-content: center;
 }
 .plan-words{
   margin: 0px 20px 0px 20px;

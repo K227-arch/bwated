@@ -45,34 +45,36 @@ function App({ children, hideSideNav, isSideNavVisible }) {
           boost your entire team with instantly-opening production environments.
         </p>
       </div>
-      {plans.map((plan) => (
-        <div
-          key={plan.name}
-          className={`pricing-card ${plan.popular ? "popular" : ""}`}
-        >
-          <h2 className="plan-name">{plan.name}</h2>
-          <div className="plan-description">
-            <p>{plan.description}</p>
-            <p>
-              <strong>{plan.feature}</strong>
-            </p>
+      <div className="pricing-cards-container">
+        {plans.map((plan) => (
+          <div
+            key={plan.name}
+            className={`pricing-card ${plan.popular ? "popular" : ""}`}
+          >
+            <h2 className="plan-name">{plan.name}</h2>
+            <div className="plan-description">
+              <p>{plan.description}</p>
+              <p>
+                <strong>{plan.feature}</strong>
+              </p>
+            </div>
+
+            <div className="price">
+              <span3 className="currency">$</span3>
+              <span3 className="amount">{plan.price}</span3>
+              <span3 className="period">/mo</span3>
+            </div>
+
+            <div className="discount-badge">Annual discount applied</div>
+
+            <button className="trial-button" onClick={gotoDocumenttitle}>
+              Start free trial
+            </button>
+
+            {plan.popular && <div className="popular-badge">MOST POPULAR</div>}
           </div>
-
-          <div className="price">
-            <span3 className="currency">$</span3>
-            <span3 className="amount">{plan.price}</span3>
-            <span3 className="period">/mo</span3>
-          </div>
-
-          <div className="discount-badge">Annual discount applied</div>
-
-          <button className="trial-button" onClick={gotoDocumenttitle}>
-            Start free trial
-          </button>
-
-          {plan.popular && <div className="popular-badge">MOST POPULAR</div>}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
