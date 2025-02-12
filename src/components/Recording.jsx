@@ -1,10 +1,55 @@
 import { useState } from "react";
 import "./Recording.css";
 import { useNavigate } from 'react-router-dom';
+import OpenAI from "openai";
+import { ReactMediaRecorder, useReactMediaRecorder  } from "react-media-recorder";
+
 
 function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+
+
+  const [prompt, setPrompt] = useState("");
+  const [responseText, setResponseText] = useState("");
+  const [audioSrc, setAudioSrc] = useState("");
+  const apiKey = import.meta.env.VITE_OPENAI_KEY;
+
+  const handleGenerate = async () => {
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      dangerouslyAllowBrowser: true  // Replace with your OpenAI API key
+    });
+
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini-audio-preview",
+        modalities: ["text", "audio"],
+        audio: { voice: "alloy", format: "wav" },
+        max_tokens: 50,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
+
+      // Extract text response
+      const textResponse = response.choices[0].message.audio.transcript;
+      setResponseText(textResponse);
+
+      // Extract audio data and create a Blob URL
+      const audioData = response.choices[0].message.audio.data;
+      const audioBlob = new Blob([Uint8Array.from(atob(audioData), (c) => c.charCodeAt(0))], {
+        type: "audio/wav",
+      });
+      const audioURL = URL.createObjectURL(audioBlob);
+      setAudioSrc(audioURL);
+    } catch (error) {
+      console.error("Error generating text and audio:", error);
+    }
+  }; 
 
   const navigate = useNavigate()
   const gotoTest =()=>{
