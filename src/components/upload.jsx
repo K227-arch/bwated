@@ -136,7 +136,8 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
           extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
         }
 
-        console.log(extractedText);
+         
+        localStorage.setItem('extractedText', extractedText);
       } catch (error) {
         console.error('Error extracting text: ', error);
         alert('Error extracting text from PDF.');
