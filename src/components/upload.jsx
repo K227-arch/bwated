@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import "./upload.css";
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
+ 
+  GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 // Popup Component (Placed outside to maintain structure)
 const Popup = ({
@@ -13,6 +16,7 @@ const Popup = ({
   handleFileInput,
   file,
   isDragging,
+  handleExtraction
 }) => {
   return (
     <div className="upload-wrapper">
@@ -63,7 +67,7 @@ const Popup = ({
         </p>
 
         {/* Close Button placed correctly */}
-        <button className="close-btn" onClick={onClose}>
+        <button className="close-btn" onClick={handleExtraction}>
           Extract
         </button>
         <button className="close-btn" onClick={globalPopupClose}>
@@ -116,6 +120,32 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
     console.log("File to upload:", selectedFile);
   };
 
+  const extractTextFromPDF = async () => {
+    const fileReader = new FileReader();
+
+    fileReader.onload = async () => {
+      const typedArray = new Uint8Array(fileReader.result);
+
+      try {
+        const pdfDocument = await getDocument(typedArray).promise;
+        let extractedText = '';
+
+        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+          const page = await pdfDocument.getPage(pageNumber);
+          const textContent = await page.getTextContent();
+          extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+        }
+
+        console.log(extractedText);
+      } catch (error) {
+        console.error('Error extracting text: ', error);
+        alert('Error extracting text from PDF.');
+      }
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  };
+
   return (
     <div className="app">
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
@@ -130,6 +160,7 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
           handleFileInput={handleFileInput}
           file={file}
           isDragging={isDragging}
+          handleExtraction = {extractTextFromPDF}
         />
       )}
     </div>
