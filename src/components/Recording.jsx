@@ -4,52 +4,46 @@ import { useNavigate } from 'react-router-dom';
 import OpenAI from "openai";
 import { ReactMediaRecorder, useReactMediaRecorder  } from "react-media-recorder";
 
+import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
 
 function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [question, setQuestion] = useState('');
 
-
-  const [prompt, setPrompt] = useState("");
-  const [responseText, setResponseText] = useState("");
-  const [audioSrc, setAudioSrc] = useState("");
   const apiKey = import.meta.env.VITE_OPENAI_KEY;
 
-  const handleGenerate = async () => {
-    const openai = new OpenAI({
-      apiKey: apiKey,
-      dangerouslyAllowBrowser: true  // Replace with your OpenAI API key
+  const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
+
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+  useReactMediaRecorder({ audio: true });
+
+
+  const handleUploadAndTranscribe = async () => {
+    try{ 
+        const response = await fetch(mediaBlobUrl);
+        const audioBlob = await response.blob();
+    //   const formData = new FormData();
+    //   formData.append("file", audioBlob, "audio.wav");
+    //   formData.append("model", "whisper-1");
+
+    console.log(audioBlob);
+    const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
+
+
+    const  transcription = await openai.audio.transcriptions.create({
+      file:  audioFile,
+      model: "whisper-1",
+      language: "en"
     });
-
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini-audio-preview",
-        modalities: ["text", "audio"],
-        audio: { voice: "alloy", format: "wav" },
-        max_tokens: 50,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-
-      // Extract text response
-      const textResponse = response.choices[0].message.audio.transcript;
-      setResponseText(textResponse);
-
-      // Extract audio data and create a Blob URL
-      const audioData = response.choices[0].message.audio.data;
-      const audioBlob = new Blob([Uint8Array.from(atob(audioData), (c) => c.charCodeAt(0))], {
-        type: "audio/wav",
-      });
-      const audioURL = URL.createObjectURL(audioBlob);
-      setAudioSrc(audioURL);
-    } catch (error) {
-      console.error("Error generating text and audio:", error);
+    
+    console.log(transcription.text);
+    setQuestion(transcription.text);
+    }catch (e){
+      console.log(e.message)
     }
-  }; 
+     
+  };
 
   const navigate = useNavigate()
   const gotoTest =()=>{
@@ -68,6 +62,11 @@ function App() {
               style={{ animationDelay: `${index * 0.1}s` }}
             ></div>
           ))}
+           {mediaBlobUrl && (
+              <div>
+                <audio src={mediaBlobUrl} controls />
+              </div>
+            )}
         </div>
       </div>
 
@@ -92,6 +91,33 @@ function App() {
         >
           Options {isOptionsOpen ? "▼" : "▲"}
         </button>
+        <div>
+            {status === 'recording' ? 
+            <button className="action-btn"
+                onClick= {
+                  stopRecording 
+                }
+              >
+                <Mic size={16} />
+                Stop Recording
+              </button>
+              : 
+              <button className="action-btn" onClick={startRecording}>
+                <Mic size={16} />
+                Voice Chat
+              </button>
+              } 
+              
+          </div>
+          <button
+              className='action-btn'
+                onClick= {
+                  handleUploadAndTranscribe
+                }
+              >
+                <Send size={16} />
+                send audio
+              </button>
       </div>
     </div>
   );
