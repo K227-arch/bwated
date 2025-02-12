@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Send, Mic, Link, BookOpen } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Recording from "../components/Recording";
 import "./ChatInterface.css";
 import OpenAI from "openai"; 
+import axios from "axios";
 
 
 export default function ChatInterface({ isNavVisible }) {
   const [pdfContent, setpdfContent ] = useState('')
   const [chatHistory, setChatHistory] = useState([]);
   const [question, setQuestion] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState('');
+
   const apiKey = import.meta.env.VITE_OPENAI_KEY;
 
   const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
@@ -157,12 +161,16 @@ export default function ChatInterface({ isNavVisible }) {
     }
   };
 
+
+  const HandleQn = (question) => {
+    setQuestion(question)
+  }
   
   const handleSend = () => {
-    if (message.trim() != "") {
+    if (question.trim() != "") {
       // Handle sending message
       handleQuestionSubmit();
-      setMessage("");
+      setQuestion("");
     }else {
       alert('No question asked')
     }
@@ -204,10 +212,10 @@ export default function ChatInterface({ isNavVisible }) {
                   {msg.role === 'assistant' && (
                     
                    <div className="audio-controls">
-                       <button onClick={() => readAIResponseAloud(msg.content)}>🔊</button>
+                       {/* <button onClick={() => readAIResponseAloud(msg.content)}>🔊</button>
                         <button onClick={togglePauseResume} disabled={!audio}>
                           {isPaused ? "Resume" : "Pause"}
-                        </button>
+                        </button> */}
                  </div>
                 )}
             </div>
@@ -223,10 +231,11 @@ export default function ChatInterface({ isNavVisible }) {
 
         <div className="action-bar">
           <div className="input-container">
-            <Recording />
-            <button className="send-btn" onClick={handleSend}>
-              <ArrowRight size={20} />
-            </button>
+          
+            <Recording setQns={ HandleQn } />
+              <button className="send-btn" onClick={handleSend}>
+                <ArrowRight size={20} />
+              </button>
           </div>
         </div>
       </div>

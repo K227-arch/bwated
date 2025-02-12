@@ -6,18 +6,17 @@ import { ReactMediaRecorder, useReactMediaRecorder  } from "react-media-recorder
 
 import { ArrowRight, Send, Mic, Link, BookOpen} from 'lucide-react';
 
-function App() {
+function App({ setQns }) {
   const [isPaused, setIsPaused] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [question, setQuestion] = useState('');
-
+ 
   const apiKey = import.meta.env.VITE_OPENAI_KEY;
 
   const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
 
   const { status, startRecording, stopRecording, mediaBlobUrl } =
   useReactMediaRecorder({ audio: true });
-
+ 
 
   const handleUploadAndTranscribe = async () => {
     try{ 
@@ -38,7 +37,7 @@ function App() {
     });
     
     console.log(transcription.text);
-    setQuestion(transcription.text);
+    setQns(transcription.text);
     }catch (e){
       console.log(e.message)
     }

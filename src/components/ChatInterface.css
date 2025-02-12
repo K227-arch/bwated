@@ -124,7 +124,9 @@
 
 .input-container {
   display: flex;
-  width: fit-content;
+  width: fit-content; 
+  align-items: end;
+ 
 }
 
 .chat-input {
@@ -139,9 +141,10 @@
   border-radius: 8px;
   cursor: pointer;
   height: 40px;
-  position: absolute;
+  /* position: absolute;
   right:10px;
-  top: 30px;
+  top: 30px; */
+  margin-bottom: 25px;
 }
 
 .send-btn:hover {
