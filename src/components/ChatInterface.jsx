@@ -186,12 +186,12 @@ export default function ChatInterface({ isNavVisible }) {
       <div className="boundary-wrapper">
         <div className="chat-header">
           <h2>{fileName}</h2>
-          <button 
+          {/* <button 
             className="new-upload-btn"
             onClick={handleNewUpload}
           >
             Upload New PDF
-          </button>
+          </button> */}
         </div>
         <div className="chat-messages">
           {chatHistory.map((msg, index) => (

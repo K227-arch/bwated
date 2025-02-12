@@ -24,7 +24,7 @@ const Popup = ({
     <div className="upload-wrapper">
       <div className="upload-container">
         <button
-          onClick={globalPopupClose}
+          onClick={() => globalPopupClose?.()}
           className="x-close-popup"
           title="Close"
         >
@@ -79,7 +79,7 @@ const Popup = ({
             {isExtracting ? 'Extracting...' : 'Extract'}
           </button>
         )}
-        <button className="close-btn" onClick={globalPopupClose}>
+        <button className="close-btn" onClick={() => globalPopupClose?.()}>
           Close
         </button>
       </div>
@@ -88,7 +88,7 @@ const Popup = ({
 };
 
 // Main App Component
-const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
+const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -104,7 +104,7 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
       const fileName = localStorage.getItem('fileName');
       
       if (existingPDF && fileName) {
-        globalPopupClose();
+        globalPopupClose?.();
         navigate('/Documentchat');
       }
     }
@@ -170,7 +170,7 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
         localStorage.setItem('extractedText', extractedText);
         localStorage.setItem('fileName', file.name);
         
-        globalPopupClose();
+        globalPopupClose?.();
         navigate('/Documentchat');
         
       } catch (error) {
