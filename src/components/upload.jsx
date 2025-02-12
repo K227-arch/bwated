@@ -47,6 +47,7 @@ const Popup = ({
             id="fileInput"
             style={{ display: "none" }}
             onChange={handleFileInput}
+            accept=".pdf"
           />
           <label htmlFor="fileInput">
             <button
@@ -95,8 +96,16 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setShowPopup(true); // Show popup when page loads
-  }, []);
+    // Check if PDF content exists in localStorage
+    const existingPDF = localStorage.getItem('extractedText');
+    const fileName = localStorage.getItem('fileName');
+    
+    if (existingPDF && fileName) {
+      // If PDF content exists, redirect to chat and close popup
+      globalPopupClose();
+      navigate('/Documentchat');
+    } 
+  }, [navigate, globalPopupClose]);
 
   // Drag & Drop Handlers
   const handleDragOver = (e) => {
@@ -155,7 +164,8 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
         localStorage.setItem('extractedText', extractedText);
         localStorage.setItem('fileName', file.name);
         
-         navigate('/Documentchat');
+        globalPopupClose();
+        navigate('/Documentchat');
         
       } catch (error) {
         console.error('Error extracting text: ', error);
@@ -178,7 +188,7 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
     <div className="app">
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
 
-      {showPopup && (
+      {/* {showPopup && ( */}
         <Popup
           globalPopupClose={globalPopupClose}
           onClose={() => setShowPopup(false)}
@@ -191,7 +201,7 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
           handleExtraction={extractTextFromPDF}
           isExtracting={isExtracting}
         />
-      )}
+      {/* )} */}
     </div>
   );
 };

@@ -134,3 +134,38 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.transcribed-text {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+.error-message {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffe6e6;
+  border-radius: 5px;
+  color: #cc0000;
+  font-size: 0.9em;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.listening-text {
+  font-weight: bold;
+  color: #333;
+}
+
+.listening-text.recording {
+  color: #ff4444;
+}
+
+.listening-text.transcribing {
+  color: #4444ff;
+}
