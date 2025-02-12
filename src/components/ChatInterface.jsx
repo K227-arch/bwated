@@ -8,11 +8,12 @@ import axios from "axios";
 
 
 export default function ChatInterface({ isNavVisible }) {
-  const [pdfContent, setpdfContent ] = useState('')
+  const [pdfContent, setPdfContent] = useState('');
+  const [fileName, setFileName] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState('');
+  const [error, setError] = useState(null);
 
   const apiKey = import.meta.env.VITE_OPENAI_KEY;
 
@@ -43,155 +44,74 @@ export default function ChatInterface({ isNavVisible }) {
     navigate("/upload");
   };
 
-
-  const sendPDFContentToOpenAI = async (pdfContent) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: `
-                You are a knowledgeable and supportive assistant for students. 
-                Your job is to answer their questions based solely on the provided PDF content.
-                If a question cannot be answered from the PDF, politely inform the user 
-                and encourage them to ask something relevant to the material.
-              `,
-            },
-            {
-              role: "user",
-              content: `
-                Here is the content of a PDF: "${pdfContent}". 
-                Please remember that the answers should only reference this content. 
-                The student's question is: "${question}".
-              `,
-            },
-          ],
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_KEY}`,
-          },
-        }
-      );
-  
-      const initialContext = response.data.choices[0].message.content;
-      setChatHistory([
-        {
-          role: "system",
-          content: `
-            You are a knowledgeable and supportive assistant for students. 
-            Your job is to answer their questions based solely on the provided PDF content.
-            If a question cannot be answered from the PDF, politely inform the user 
-            and encourage them to ask something relevant to the material.
-          `,
-        },
-        {
-          role: "user",
-          content: `
-            Here is the content of a PDF: "${pdfContent}". 
-            Please remember that the answers should only reference this content. 
-            The student's question is: "${question}".
-          `,
-        },
-        { role: "assistant", content: initialContext },
-      ]);
-    } catch (error) {
-      console.error("Error sending PDF content:", error.message);
-      alert("An error occurred while sending PDF content.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handleQuestionSubmit = async () => {
-    if (!chatHistory.length) {
-      sendPDFContentToOpenAI(pdfContent);
-      return;
-    }
-    if (!question.trim()) {
-      alert("Please enter a question.");
-      return;
-    }
-    setLoading(true);
-  
-    try {
-      const updatedChatHistory = [
-        ...chatHistory,
-        { role: "user", content: question },
-      ];
-  
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4o-mini",
-          messages: [
-            ...updatedChatHistory,
-            {
-              role: "system",
-              content: `
-                Always refer to the PDF content when answering questions.
-                If the answer cannot be derived from the PDF, politely respond that the information is not available in the document.
-              `,
-            },
-          ],
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_KEY}`,
-          },
-        }
-      );
-  
-      const answer = response.data.choices[0].message.content;
-      setResponse(answer);
-      // readAIResponseAloud(answer);
-      setChatHistory([...updatedChatHistory, { role: "assistant", content: answer }]);
-    } catch (error) {
-      console.error("Error answering question:", error.message);
-      alert("An error occurred while answering the question.");
-    } finally {
-      setLoading(false);
-      setQuestion("");
-    }
-  };
-
-
-  const HandleQn = (question) => {
-    setQuestion(question)
-  }
-  
-  const handleSend = () => {
-    if (question.trim() != "") {
-      // Handle sending message
-      handleQuestionSubmit();
-      setQuestion("");
-    }else {
-      alert('No question asked')
-    }
-  };
-
   useEffect(() => {
-    const getLoadedPdf  = () => {
-      const content = localStorage.getItem('extractedText');
-
-      if(content) {
-        console.log(content);
-        setpdfContent(content);
-          
-      }else{
-        console.log('none')
-      }
+    // Load PDF content and filename when component mounts
+    const content = localStorage.getItem('extractedText');
+    const storedFileName = localStorage.getItem('fileName');
+    
+    if (content) {
+      setPdfContent(content);
+      setFileName(storedFileName || 'Uploaded PDF');
+      
+      // Initialize chat with system message
+      setChatHistory([{
+        role: 'system',
+        content: `I'm analyzing the PDF "${storedFileName}". How can I help you understand it better?`
+      }]);
+    } else {
+      setError('No PDF content found. Please upload a document first.');
+      navigate('/upload');
     }
+  }, []);
 
-    getLoadedPdf();
-   
-  }, []) 
+  const handleQuestionSubmit = async (recordedQuestion) => {
+    if (!recordedQuestion?.trim()) return;
+
+    // Add user question to chat history immediately
+    const newUserMessage = { role: 'user', content: recordedQuestion };
+    setChatHistory(prev => [...prev, newUserMessage]);
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: `You are analyzing the following PDF content: "${pdfContent}". 
+                       Answer questions based solely on this content.`
+            },
+            ...chatHistory,
+            newUserMessage
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_KEY}`,
+          },
+        }
+      );
+
+      const aiResponse = response.data.choices[0].message;
+      setChatHistory(prev => [...prev, aiResponse]);
+      
+    } catch (error) {
+      console.error("Error:", error);
+      setChatHistory(prev => [...prev, {
+        role: 'system',
+        content: 'Sorry, I encountered an error. Please try again.'
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const HandleQn = (recordedQuestion) => {
+    handleQuestionSubmit(recordedQuestion);
+  }
 
   return (
     <div className="chat-container">
@@ -202,40 +122,34 @@ export default function ChatInterface({ isNavVisible }) {
         }}
       ></div>
       <div className="boundary-wrapper">
+        <div className="chat-header">
+          <h2>{fileName}</h2>
+        </div>
         <div className="chat-messages">
-
-         {chatHistory && chatHistory.map((msg, index) => (
-          <div key={index} className={`message ${msg.role}`}>
-            <div className="avatar">{msg.role === 'user' ? 'You' : 'AI'}</div>
-            <div className="message-content">
-              <p>{msg.content}</p>
-                  {msg.role === 'assistant' && (
-                    
-                   <div className="audio-controls">
-                       {/* <button onClick={() => readAIResponseAloud(msg.content)}>🔊</button>
-                        <button onClick={togglePauseResume} disabled={!audio}>
-                          {isPaused ? "Resume" : "Pause"}
-                        </button> */}
-                 </div>
-                )}
+          {chatHistory.map((msg, index) => (
+            <div key={index} className={`message ${msg.role}`}>
+              <div className="avatar">
+                {msg.role === 'user' ? '👤' : msg.role === 'system' ? '🔔' : '🤖'}
+              </div>
+              <div className="message-content">
+                <p>{msg.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
-
-          {/* <div className="message user">
-            <div className="message-content">
-              <p>Can you summarize the main points of the document?</p>
+          ))}
+          
+          {loading && (
+            <div className="message assistant">
+              <div className="avatar">🤖</div>
+              <div className="message-content">
+                <p>Thinking...</p>
+              </div>
             </div>
-          </div> */}
+          )}
         </div>
 
         <div className="action-bar">
           <div className="input-container">
-          
-            <Recording setQns={ HandleQn } />
-              <button className="send-btn" onClick={handleSend}>
-                <ArrowRight size={20} />
-              </button>
+            <Recording setQns={HandleQn} />
           </div>
         </div>
       </div>

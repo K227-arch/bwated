@@ -3,8 +3,9 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import "./upload.css";
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
- 
-  GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
+import { useNavigate } from "react-router-dom";
+
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 // Popup Component (Placed outside to maintain structure)
 const Popup = ({
@@ -16,7 +17,8 @@ const Popup = ({
   handleFileInput,
   file,
   isDragging,
-  handleExtraction
+  handleExtraction,
+  isExtracting
 }) => {
   return (
     <div className="upload-wrapper">
@@ -67,9 +69,15 @@ const Popup = ({
         </p>
 
         {/* Close Button placed correctly */}
-        <button className="close-btn" onClick={handleExtraction}>
-          Extract
-        </button>
+        {file && (
+          <button 
+            className="close-btn" 
+            onClick={handleExtraction}
+            disabled={isExtracting}
+          >
+            {isExtracting ? 'Extracting...' : 'Extract'}
+          </button>
+        )}
         <button className="close-btn" onClick={globalPopupClose}>
           Close
         </button>
@@ -83,6 +91,8 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setShowPopup(true); // Show popup when page loads
@@ -121,6 +131,12 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   };
 
   const extractTextFromPDF = async () => {
+    if (!file) {
+      alert('Please select a PDF file first');
+      return;
+    }
+
+    setIsExtracting(true);
     const fileReader = new FileReader();
 
     fileReader.onload = async () => {
@@ -136,12 +152,23 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
           extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
         }
 
-         
         localStorage.setItem('extractedText', extractedText);
+        localStorage.setItem('fileName', file.name);
+        
+         navigate('/Documentchat');
+        
       } catch (error) {
         console.error('Error extracting text: ', error);
         alert('Error extracting text from PDF.');
+      } finally {
+        setIsExtracting(false);
       }
+    };
+
+    fileReader.onerror = () => {
+      console.error('Error reading file');
+      alert('Error reading the PDF file.');
+      setIsExtracting(false);
     };
 
     fileReader.readAsArrayBuffer(file);
@@ -161,7 +188,8 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
           handleFileInput={handleFileInput}
           file={file}
           isDragging={isDragging}
-          handleExtraction = {extractTextFromPDF}
+          handleExtraction={extractTextFromPDF}
+          isExtracting={isExtracting}
         />
       )}
     </div>
