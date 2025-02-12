@@ -156,3 +156,26 @@
     max-width: 60%;
   }
 }
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.new-upload-btn {
+  padding: 8px 16px;
+  background-color: #2dd4bf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.new-upload-btn:hover {
+  background-color: #26a69a;
+}

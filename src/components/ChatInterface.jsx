@@ -168,6 +168,13 @@ export default function ChatInterface({ isNavVisible }) {
     handleQuestionSubmit(recordedQuestion);
   }
 
+  const handleNewUpload = () => {
+    // Clear existing PDF data
+    localStorage.removeItem('extractedText');
+    localStorage.removeItem('fileName');
+    navigate('/upload?new=true');
+  };
+
   return (
     <div className="chat-container">
       <div
@@ -179,6 +186,12 @@ export default function ChatInterface({ isNavVisible }) {
       <div className="boundary-wrapper">
         <div className="chat-header">
           <h2>{fileName}</h2>
+          <button 
+            className="new-upload-btn"
+            onClick={handleNewUpload}
+          >
+            Upload New PDF
+          </button>
         </div>
         <div className="chat-messages">
           {chatHistory.map((msg, index) => (

@@ -96,15 +96,18 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if PDF content exists in localStorage
-    const existingPDF = localStorage.getItem('extractedText');
-    const fileName = localStorage.getItem('fileName');
+    // Only redirect if we're not explicitly trying to upload a new file
+    const isUploadingNew = new URLSearchParams(window.location.search).get('new');
     
-    if (existingPDF && fileName) {
-      // If PDF content exists, redirect to chat and close popup
-      globalPopupClose();
-      navigate('/Documentchat');
-    } 
+    if (!isUploadingNew) {
+      const existingPDF = localStorage.getItem('extractedText');
+      const fileName = localStorage.getItem('fileName');
+      
+      if (existingPDF && fileName) {
+        globalPopupClose();
+        navigate('/Documentchat');
+      }
+    }
   }, [navigate, globalPopupClose]);
 
   // Drag & Drop Handlers
@@ -129,6 +132,9 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   const handleFileInput = (e) => {
     const files = e.target.files;
     if (files.length) {
+      // Clear existing PDF data when new file is selected
+      localStorage.removeItem('extractedText');
+      localStorage.removeItem('fileName');
       handleFiles(files);
     }
   };
@@ -187,21 +193,18 @@ const App = ({ globalPopupClose, hideSideNav, isSideNavVisible }) => {
   return (
     <div className="app">
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
-
-      {/* {showPopup && ( */}
-        <Popup
-          globalPopupClose={globalPopupClose}
-          onClose={() => setShowPopup(false)}
-          handleDragOver={handleDragOver}
-          handleDragLeave={handleDragLeave}
-          handleDrop={handleDrop}
-          handleFileInput={handleFileInput}
-          file={file}
-          isDragging={isDragging}
-          handleExtraction={extractTextFromPDF}
-          isExtracting={isExtracting}
-        />
-      {/* )} */}
+      <Popup
+        globalPopupClose={globalPopupClose}
+        onClose={() => setShowPopup(false)}
+        handleDragOver={handleDragOver}
+        handleDragLeave={handleDragLeave}
+        handleDrop={handleDrop}
+        handleFileInput={handleFileInput}
+        file={file}
+        isDragging={isDragging}
+        handleExtraction={extractTextFromPDF}
+        isExtracting={isExtracting}
+      />
     </div>
   );
 };

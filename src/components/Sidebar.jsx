@@ -14,6 +14,13 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
   const sideBarWidth = isVisible ? "250px" : "0px";
   const sideBarLeftAnchor = isVisible ? "0px" : "-300px";
 
+  const handleUploadClick = () => {
+    // Clear existing PDF data
+    localStorage.removeItem('extractedText');
+    localStorage.removeItem('fileName');
+    navigate('/upload');
+  };
+
   return (
     <aside
       className="sidebar"
@@ -50,7 +57,7 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
           >
             <button
               className="nav-btn"
-              onClick={goto("/upload")}
+              onClick={handleUploadClick}
               aria-label="Upload PDF"
             >
               <Upload size={20} />
