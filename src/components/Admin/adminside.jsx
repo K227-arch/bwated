@@ -1,14 +1,16 @@
-import { useState, react} from 'react'
+import { useState, react, useCallback} from 'react'
 import './adminside.css'
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({gotodashy}) => {
+  const navigate = useNavigate();
+  const goto = useCallback((path) => () => navigate(path), [navigate]);
   return (
     <aside className="sidebar2">
         <div className="logo2">MY KASASI</div>
         <nav>
           <ol className="nav-items">
-            <li className="nav-item">📊 Dashboard</li>
+            <li className="nav-item" onClick={gotodashy}>📊 Dashboard</li>
             <li className="nav-item">👥 Users</li>
             <li className="nav-item">📈 Traffic</li>
             <li className="nav-item">🔔 Notifications</li>
