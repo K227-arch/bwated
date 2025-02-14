@@ -96,53 +96,50 @@ function extractJSONObject(input) {
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
-            { role: "system", content: "You are an AI assistant that creates tests based on uploaded documents." },
-            {
-                role: "user",
-                content: `
+          { 
+            role: "system", 
+            content: "You are an AI assistant that creates tests based on uploaded documents." 
+          },
+          {
+            role: "user",
+            content: `
               Create a test based on the following document content:
               ---
               ${pdfContent}
               ---
 
-              Use the following parameters:
-              - questionType: "multiple" (for multiple-choice questions with 4 options) or "structured" (for open-ended questions).
-              - keywords: Focus on key topics extracted from the document (e.g., headers, repeated terms, or important concepts).
-              - complexity: Either "easy", "medium", or "hard".
-              - questionCount: Number of questions to generate.
+              Create ${questionCount} questions of type "${complexity === 'Multichoice' ? 'multiple' : 'structured'}".
+              
+              Rules:
+              ${complexity === 'Multichoice' ? `
+              - All questions must be multiple choice with exactly 4 options
+              - One option must be correct
+              - Options should be plausible but clearly distinguishable
+              ` : `
+              - All questions must be structured (open-ended)
+              - Answers should be clear and concise
+              - Include key points that should be present in a good answer
+              `}
 
-              Return only the test in the following JavaScript object format:
+              Return the test in this exact JSON format:
               {
                 "questions": [
-                    {
-                        "question": "What is recursion in programming?",
-                        "type": "multiple",
-                        "options": [
-                            "A function calling itself",
-                            "A loop inside a loop",
-                            "A function without parameters",
-                            "A method to iterate arrays"
-                        ],
-                        "answer": "A function calling itself"
-                    },
-                    {
-                        "question": "Explain the concept of memoization.",
-                        "type": "structured",
-                        "answer": "Memoization is a technique used to optimize programs by storing the results of expensive function calls and reusing them when the same inputs occur again."
-                    }
+                  ${complexity === 'Multichoice' ? `{
+                    "question": "Sample question?",
+                    "type": "multiple",
+                    "options": ["Option A", "Option B", "Option C", "Option D"],
+                    "answer": "Option A"
+                  }` : `{
+                    "question": "Sample question?",
+                    "type": "structured",
+                    "answer": "Expected answer with key points"
+                  }`}
                 ]
-              }`
-            },
-            {
-                role: "user",
-                content: `
-                  Here are the test parameters:
-                  - questionType: ${questionType}
-                  - keywords: ${keywords.map((key) => {key})}
-                  
-                  - questionCount: ${questionCount}
-                  `
-            }
+              }
+
+              Focus on these key topics: ${keywords.join(', ')}
+            `
+          }
         ],
       });
 
@@ -152,7 +149,16 @@ function extractJSONObject(input) {
         throw new Error('Invalid response format from AI');
       }
 
-      // Navigate with the questions data
+      // Validate question types
+      const isValidFormat = parsedResponse.questions.every(q => 
+        q.type === (complexity === 'Multichoice' ? 'multiple' : 'structured') &&
+        (q.type === 'multiple' ? Array.isArray(q.options) && q.options.length === 4 : true)
+      );
+
+      if (!isValidFormat) {
+        throw new Error('Generated questions do not match the requested format');
+      }
+
       navigate("/Question", { 
         state: { 
           questions: parsedResponse.questions 
