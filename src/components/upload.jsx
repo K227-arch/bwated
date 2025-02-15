@@ -30,9 +30,7 @@ const Popup = ({
         >
           &times;
         </button>
-        <div className="layout-main">
-          <Header />
-        </div>
+     
         <h1 className="upload-title">Upload a document to get started</h1>
 
         <div

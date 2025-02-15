@@ -74,11 +74,11 @@ function App({ setQns, isPlaying, onPlayPause, hasAudio, isLoading }) {
           </>
         )}
 
-        {transcribedText && !error && (
+        {/* {transcribedText && !error && (
           <div className="transcribed-text">
             <p>Transcribed: {transcribedText}</p>
           </div>
-        )}
+        )} */}
 
         {error && (
           <div className="error-message">
@@ -112,7 +112,7 @@ function App({ setQns, isPlaying, onPlayPause, hasAudio, isLoading }) {
           Options {isOptionsOpen ? "▼" : "▲"}
         </button>
 
-        <div>
+        <div className="control-btn">
           {status === 'recording' ? (
             <button 
               className="action-btn"

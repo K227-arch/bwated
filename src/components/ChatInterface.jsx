@@ -183,9 +183,11 @@ export default function ChatInterface({ isNavVisible }) {
           display: willBeAbleToPushContentWithSideBar ? "block" : "none"
         }}
       ></div>
-      <div className="boundary-wrapper">
-        <div className="chat-header">
-          <h2>{fileName}</h2>
+      <div className="boundary-wrapper" style={{
+         width: willBeAbleToPushContentWithSideBar ? "89%" : "100%"
+      }}>
+        <div className="chat-header-interface">
+          <h2 className="file-name-id">{fileName}</h2>
           {/* <button 
             className="new-upload-btn"
             onClick={handleNewUpload}
@@ -197,7 +199,7 @@ export default function ChatInterface({ isNavVisible }) {
           {chatHistory.map((msg, index) => (
             <div key={index} className={`message ${msg.role}`}>
               <div className="avatar">
-                {msg.role === 'user' ? '👤' : msg.role === 'system' ? '🔔' : '🤖'}
+                {msg.role === 'user' ? '👤' : msg.role === 'system' ? '🤖' : '🤖'}
               </div>
               <div className="message-content">
                 <p>{msg.content}</p>
