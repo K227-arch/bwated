@@ -26,7 +26,7 @@ import Loader from "./components/Loader.jsx";
 import Feedback from "./components/feedback.jsx";
 import Pop from "./components/Pop.jsx";
 import "./App.css";
-
+import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
 const AppRoutes = () => {
   /**
    * ------------------------------------------------------
@@ -90,8 +90,12 @@ const AppRoutes = () => {
             <Home hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
           }
         />
-        <Route path="/Recording" element={<Recording />} />
-        <Route path="/documenttitle" element={<Documenttitle />} />
+        
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/Recording" element={<Recording />} />
+          <Route path="/documenttitle" element={<Documenttitle />} />
+        </Route>
         <Route
           path="/documentchat"
           element={

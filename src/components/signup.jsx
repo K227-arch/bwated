@@ -1,15 +1,88 @@
-import React from "react";
-import { useNavigate } from "react-router";
+import {React, useState} from "react";
+import { useNavigate, useLocation } from "react-router";
 import kisasi from "../assets/kisasi.jpg";
 import logo from '../assets/logo.png';
 import "./signup.css";
-
+import * as yup from 'yup'; 
+import { supabase } from '@/lib/supabaseClient';
 
 const signup =()=> {
   const navigate = useNavigate()
-const gotoDocumenttitle=()=>{
-  navigate("/Documenttitle")
-}
+  const location = useLocation();
+  const { email } = location.state || ""; 
+  const [formData, setFormData] = useState({
+    email: email,
+    password: '',
+    confirmPassword: ''
+  });
+
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+
+  
+const schema = yup.object().shape({
+  email: yup.string().email('Invalid email format').required('Email is required'),
+  password: yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(/[0-9]/, 'Password requires at least one number')
+    .matches(/[a-z]/, 'Password requires at least one lowercase letter')
+    .matches(/[A-Z]/, 'Password requires at least one uppercase letter')
+    .required('Password is required'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm password is required'),
+});
+
+
+const handleSubmit = async (e) => {
+  console.log(email)
+  e.preventDefault();
+  setLoading(true);
+  
+  try {
+    // Validate form data 
+    await schema.validate(formData, { abortEarly: false });
+    
+     const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) throw error;
+
+    // If successful, navigate to document title page
+    
+
+    alert('verify your email')
+    navigate("/login");
+    console.log('success', data)
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+       const validationErrors = {};
+      error.inner.forEach(err => {
+        validationErrors[err.path] = err.message;
+      });
+      setErrors(validationErrors);
+    } else {
+       setErrors({ submit: error.message });
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+ 
   return (
     <div>
       <div className="login-wrapper2">
@@ -20,25 +93,37 @@ const gotoDocumenttitle=()=>{
          
           
           <div className="formbutton2">
-            <form className="signup-form">
-              <input
-                type="email"
+            <form className="signup-form"  onSubmit={handleSubmit}>
+            <input
+                type="password"
+                name="password"
                 placeholder="Enter Password"
                 className="google-input-with-icon2"
+                value={formData.password}
+                onChange={handleChange}
                 required
               />
-              <div className="or"></div>
+              {errors.password && <span className="error">{errors.password}</span>}
+              
               <input
-                type="email"
+                type="password"
+                name="confirmPassword"
                 placeholder="Confirm Password"
                 className="email-input2"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 required
               />
+              {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+              
+              {errors.submit && <span className="error">{errors.submit}</span>}
+              
+              <button type="submit" className="submitbutton2"  >
+                Set password
+              </button>
             </form>
           </div>
-          <button type="submit" class="submitbutton2" onClick={gotoDocumenttitle}>
-            Set password
-          </button>
+          
         </div>
         
       </div>
