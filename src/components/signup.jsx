@@ -46,14 +46,12 @@ const schema = yup.object().shape({
 
 
 const handleSubmit = async (e) => {
-  console.log(email)
   e.preventDefault();
   setLoading(true);
-  
+
   try {
-    // Validate form data 
-    await schema.validate(formData, { abortEarly: false });
-    
+     await schema.validate(formData, { abortEarly: false });
+
      const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
@@ -61,26 +59,32 @@ const handleSubmit = async (e) => {
 
     if (error) throw error;
 
-    // If successful, navigate to document title page
-    
+     const { error: errorUserCreate } = await supabase
+      .from('users')
+      .insert({ email: formData.email,  auth_id: data.user.id });
 
-    alert('verify your email')
+    if (errorUserCreate) throw errorUserCreate;   
+    alert('Please verify your email');
     navigate("/login");
-    console.log('success', data)
+
+    console.log('Success:', data);
   } catch (error) {
+    // Handle validation errors
     if (error instanceof yup.ValidationError) {
-       const validationErrors = {};
+      const validationErrors = {};
       error.inner.forEach(err => {
         validationErrors[err.path] = err.message;
       });
       setErrors(validationErrors);
     } else {
-       setErrors({ submit: error.message });
+      // Handle other errors (authentication or database)
+      setErrors({ submit: error.message });
     }
   } finally {
     setLoading(false);
   }
 };
+
 
  
   return (

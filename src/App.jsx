@@ -69,12 +69,7 @@ const AppRoutes = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/Loader" element={<Loader />} />
         <Route path="/FAQ" element={<FAQ />} />
-        <Route
-          path="/Upload"
-          element={
-            <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
+        
         <Route path="/Pop" element={<Pop />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Adminside" element={<Adminside />} />
@@ -93,27 +88,35 @@ const AppRoutes = () => {
         
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/Recording" element={<Recording />} />
-          <Route path="/documenttitle" element={<Documenttitle />} />
+              <Route path="/Recording" element={<Recording />} />
+              <Route path="/documenttitle" element={<Documenttitle />} />
+              <Route
+              path="/documentchat"
+              element={
+                <Documentchat
+                  hideSideNav={hideSideNav}
+                  isSideNavVisible={isNavVisible}
+                />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  hideSideNav={hideSideNav}
+                  isSideNavVisible={isNavVisible}
+                />
+              }
+            />
+            <Route
+              path="/Upload"
+              element={
+                <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+              }
+            />
         </Route>
-        <Route
-          path="/documentchat"
-          element={
-            <Documentchat
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
-            />
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <Dashboard
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
-            />
-          }
-        />
+        
+        
         <Route path="/PDFViewer" element={<PDFViewer />} />
         <Route
           path="/Test"

@@ -2,15 +2,14 @@ import { useState, useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import "./upload.css";
+import { supabase } from "@/lib/supabaseClient"; // Ensure this is correctly configured
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { useNavigate } from "react-router-dom";
 
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
-// Popup Component (Placed outside to maintain structure)
 const Popup = ({
   globalPopupClose,
-  onClose,
   handleDragOver,
   handleDragLeave,
   handleDrop,
@@ -18,19 +17,18 @@ const Popup = ({
   file,
   isDragging,
   handleExtraction,
-  isExtracting
+  isExtracting,
+  progress,
+  uploading,
+  uploadError,
 }) => {
   return (
     <div className="upload-wrapper">
       <div className="upload-container">
-        <button
-          onClick={() => globalPopupClose?.()}
-          className="x-close-popup"
-          title="Close"
-        >
+        <button onClick={globalPopupClose} className="x-close-popup" title="Close">
           &times;
         </button>
-     
+
         <h1 className="upload-title">Upload a document to get started</h1>
 
         <div
@@ -60,6 +58,15 @@ const Popup = ({
           </label>
 
           {file && <p className="file-name">Selected File: {file.name}</p>}
+
+          {uploading && (
+            <div>
+              <p>Uploading: {progress}%</p>
+              <progress value={progress} max="100"></progress>
+            </div>
+          )}
+
+          {uploadError && <p className="error-text">Upload Error: {uploadError}</p>}
         </div>
 
         <p className="terms-text">
@@ -67,17 +74,12 @@ const Popup = ({
           <a href="#terms">Terms</a> and <a href="#conditions">Conditions</a>.
         </p>
 
-        {/* Close Button placed correctly */}
         {file && (
-          <button 
-            className="close-btn" 
-            onClick={handleExtraction}
-            disabled={isExtracting}
-          >
+          <button className="close-btn" onClick={handleExtraction} disabled={isExtracting}>
             {isExtracting ? 'Extracting...' : 'Extract'}
           </button>
         )}
-        <button className="close-btn" onClick={() => globalPopupClose?.()}>
+        <button className="close-btn" onClick={globalPopupClose}>
           Close
         </button>
       </div>
@@ -85,28 +87,14 @@ const Popup = ({
   );
 };
 
-// Main App Component
 const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => {
-  const [showPopup, setShowPopup] = useState(false);
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Only redirect if we're not explicitly trying to upload a new file
-    const isUploadingNew = new URLSearchParams(window.location.search).get('new');
-    
-    if (!isUploadingNew) {
-      const existingPDF = localStorage.getItem('extractedText');
-      const fileName = localStorage.getItem('fileName');
-      
-      if (existingPDF && fileName) {
-        globalPopupClose?.();
-        navigate('/Documentchat');
-      }
-    }
-  }, [navigate, globalPopupClose]);
 
   // Drag & Drop Handlers
   const handleDragOver = (e) => {
@@ -130,7 +118,6 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
   const handleFileInput = (e) => {
     const files = e.target.files;
     if (files.length) {
-      // Clear existing PDF data when new file is selected
       localStorage.removeItem('extractedText');
       localStorage.removeItem('fileName');
       handleFiles(files);
@@ -138,9 +125,44 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
   };
 
   const handleFiles = (files) => {
-    const selectedFile = files[0]; // Assuming single file upload
+    const selectedFile = files[0];
     setFile(selectedFile);
-    console.log("File to upload:", selectedFile);
+    setUploadError(null);
+    uploadFile(selectedFile);
+  };
+
+  const uploadFile = async (file) => {
+    setUploading(true);
+    setProgress(0);
+    setUploadError(null);
+
+    try {
+      const user = sessionStorage.getItem("user");
+      if (!user) {
+        alert("not logged in");
+        return
+      }
+      console.log(user)
+      const { data, error } = await supabase.storage
+        .from("pdfs") 
+        .upload(`files/${file.name}`, file, {
+          cacheControl: "3600",
+          upsert: true,
+          progress: (progressEvent) => {
+            const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+            setProgress(percent);
+          },
+        });
+
+      if (error) throw error;
+      console.log("File uploaded successfully:", data);
+
+    } catch (error) {
+      console.error("Upload Error:", error.message);
+      setUploadError(error.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const extractTextFromPDF = async () => {
@@ -150,6 +172,8 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
     }
 
     setIsExtracting(true);
+    setUploadError(null);
+
     const fileReader = new FileReader();
 
     fileReader.onload = async () => {
@@ -168,11 +192,12 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
         localStorage.setItem('extractedText', extractedText);
         localStorage.setItem('fileName', file.name);
         
-        globalPopupClose?.();
+        globalPopupClose();
         navigate('/Documentchat');
         
       } catch (error) {
-        console.error('Error extracting text: ', error);
+        console.error('Extraction Error:', error);
+        setUploadError("Error extracting text from PDF.");
         alert('Error extracting text from PDF.');
       } finally {
         setIsExtracting(false);
@@ -181,6 +206,7 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
 
     fileReader.onerror = () => {
       console.error('Error reading file');
+      setUploadError("Error reading the PDF file.");
       alert('Error reading the PDF file.');
       setIsExtracting(false);
     };
@@ -191,9 +217,9 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
   return (
     <div className="app">
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
+      <Header />
       <Popup
         globalPopupClose={globalPopupClose}
-        onClose={() => setShowPopup(false)}
         handleDragOver={handleDragOver}
         handleDragLeave={handleDragLeave}
         handleDrop={handleDrop}
@@ -202,6 +228,9 @@ const App = ({ globalPopupClose = () => {}, hideSideNav, isSideNavVisible }) => 
         isDragging={isDragging}
         handleExtraction={extractTextFromPDF}
         isExtracting={isExtracting}
+        progress={progress}
+        uploading={uploading}
+        uploadError={uploadError}
       />
     </div>
   );

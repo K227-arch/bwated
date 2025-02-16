@@ -45,8 +45,10 @@ function Login() {
         if (error) {
           console.error("Sign-in error:", error.message);
         } else {
-          console.log("Sign in successful!", data);
-          // navigate("/Documenttitle");
+          console.log(data.id)
+          sessionStorage.setItem("user", (data.user));
+          console.log("Sign in successful!", data.user);
+          navigate("/dashboard");
         }
       };
 

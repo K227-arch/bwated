@@ -8,16 +8,16 @@ import "./Documentchat.css";
 function App({ children, hideSideNav, isSideNavVisible }) {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if PDF content exists
-    const pdfContent = localStorage.getItem('extractedText');
-    const fileName = localStorage.getItem('fileName');
+  // useEffect(() => {
+  //   // Check if PDF content exists
+  //   const pdfContent = localStorage.getItem('extractedText');
+  //   const fileName = localStorage.getItem('fileName');
 
-    if (!pdfContent || !fileName) {
-      // If no PDF content, redirect to upload
-      navigate('/upload');
-    }
-  }, [navigate]);
+  //   if (!pdfContent || !fileName) {
+  //     // If no PDF content, redirect to upload
+  //     navigate('/upload');
+  //   }
+  // }, [navigate]);
 
   return (
     <div className="layout">

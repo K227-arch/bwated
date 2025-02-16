@@ -63,7 +63,7 @@ export default function ChatInterface({ isNavVisible }) {
       }]);
     } else {
       setError('No PDF content found. Please upload a document first.');
-      navigate('/upload');
+      // navigate('/upload');
     }
   }, []);
 
