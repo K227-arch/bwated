@@ -1,0 +1,169 @@
+.notifications-container {
+    width: 100%;
+  display: flex;
+  gap: 1.1rem;
+  justify-content: center;
+  
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-top:80px;
+  margin-bottom: 50px;
+  }
+
+  .notifications-wrapper{
+    margin-left:270px;
+  }
+  
+  .header-noti {
+    margin-bottom: 30px;
+  }
+  
+  .header-noti h1 {
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+  
+  .header-noti nav {
+    color: #4a5568;
+  }
+  
+  .separator {
+    margin: 0 8px;
+    color: #718096;
+  }
+  
+  .stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .stat-box {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-number {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .stat-number.red { color: #e53e3e; }
+  .stat-number.orange { color: #dd6b20; }
+  .stat-number.blue { color: #3182ce; }
+  
+  .stat-label {
+    color: #718096;
+    font-size: 14px;
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-box input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    width: 250px;
+  }
+  
+  .show-entries {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .show-entries select {
+    padding: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+  }
+  
+  .tickets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .ticket-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .status {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .status.new {
+    background: #e6fffa;
+    color: #319795;
+  }
+  
+  .status.active {
+    background: #e6fffa;
+    color: #38a169;
+  }
+  
+  .ticket-id {
+    color: #4299e1;
+    font-size: 14px;
+  }
+  
+  .ticket-title {
+    color: #2d3748;
+    font-size: 16px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  
+  .ticket-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 15px;
+  }
+  
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 50%;
+  }
+  
+  .user-info .name {
+    color: #2d3748;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  
+  .user-info .time {
+    color: #718096;
+    font-size: 14px;
+  }
+  

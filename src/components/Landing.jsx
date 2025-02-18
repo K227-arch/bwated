@@ -1,14 +1,12 @@
 import React from "react";
-import am from "../assets/am.png";
-import chnt from "../assets/chnt.png";
-import hw from "../assets/hw.png";
-import kansai from "../assets/kansai.png";
-import MI from "../assets/MI.png";
-import Mirage from "../assets/Mirage.png";
-import nsambya from "../assets/nsambya.png";
-import roof from "../assets/roof.png";
-import shell from "../assets/shell.png";
-import uc from "../assets/uc.png";
+import school1 from "../assets/school-1.png";
+import school2 from "../assets/school2.png";
+import school3 from "../assets/school3.png";
+import school4 from "../assets/school4.png";
+import school5 from "../assets/school5.png";
+import school6 from "../assets/school6.png";
+import school7 from "../assets/school7.png";
+
 import FAQ from "../components/FAQ";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router";
@@ -93,7 +91,7 @@ function App() {
             Sign Up
           </button>
           <button className="btn btn-primary" onClick={gotoDocumenttitle}>
-            TRY DEMO
+            TRY FREE
           </button>
         </nav>
       </header>
@@ -123,24 +121,27 @@ function App() {
       </main>
 
       <div className="sliders">
+        
         <div className="slide-track">
-          <img src={am} className="slide" alt="" />
+          
 
-          <img src={chnt} className="slide" alt="" />
-          <img src={hw} className="slide" alt="" />
-          <img src={kansai} className="slide" alt="" />
-          <img src={MI} className="slide" alt="" />
-          <img src={Mirage} className="slide" alt="" />
-          <img src={nsambya} className="slide" alt="" />
-          <img src={roof} className="slide" alt="" />
-          <img src={shell} className="slide" alt="" />
-          <img src={uc} className="slide" alt="" />
+          
+          <img src={school1} className="slide" alt="" />
+          <img src={school2} className="slide" alt="" />
+          <img src={school3} className="slide" alt="" />
+          <img src={school4} className="slide" alt="" />
+          <img src={school5} className="slide" alt="" />
+          <img src={school6} className="slide" alt="" />
+          <img src={school7} className="slide" alt="" />
           {/* Duplicate images for seamless scrolling */}
-          <img src={am} className="slide" alt="" />
-          <img src={chnt} className="slide" alt="" />
-          <img src={hw} className="slide" alt="" />
-          <img src={kansai} className="slide" alt="" />
-          <img src={MI} className="slide" alt="" />
+          <img src={school1} className="slide" alt="" />
+          <img src={school2} className="slide" alt="" />
+          <img src={school3} className="slide" alt="" />
+          <img src={school4} className="slide" alt="" />
+          <img src={school5} className="slide" alt="" />
+          <img src={school6} className="slide" alt="" />
+          <img src={school7} className="slide" alt="" />
+          
         </div>
       </div>
 

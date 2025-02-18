@@ -24,7 +24,9 @@ import Footer from "./components/Footer.jsx";
 import Recording from "./components/Recording.jsx";
 import Loader from "./components/Loader.jsx";
 import Feedback from "./components/feedback.jsx";
+import Notifications from "./components/Admin/notifications.jsx";
 import Pop from "./components/Pop.jsx";
+import Users from "./components/Admin/Users.jsx";
 import "./App.css";
 
 const AppRoutes = () => {
@@ -78,6 +80,8 @@ const AppRoutes = () => {
         <Route path="/Pop" element={<Pop />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Adminside" element={<Adminside />} />
+        <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/Users" element={<Users />} />
         <Route
           path="/plan"
           element={

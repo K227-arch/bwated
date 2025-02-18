@@ -104,13 +104,7 @@ function App({ setQns, isPlaying, onPlayPause, hasAudio, isLoading }) {
           Quiz Mode
         </button>
 
-        <button
-          className="control-btn options"
-          onClick={() => setIsOptionsOpen(!isOptionsOpen)}
-          disabled={isLoading || transcribing}
-        >
-          Options {isOptionsOpen ? "▼" : "▲"}
-        </button>
+        
 
         <div className="control-btn">
           {status === 'recording' ? (
