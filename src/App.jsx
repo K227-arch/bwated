@@ -28,7 +28,7 @@ import Notifications from "./components/Admin/notifications.jsx";
 import Pop from "./components/Pop.jsx";
 import Users from "./components/Admin/Users.jsx";
 import "./App.css";
-
+import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
 const AppRoutes = () => {
   /**
    * ------------------------------------------------------
@@ -71,12 +71,7 @@ const AppRoutes = () => {
         <Route path="/Login" element={<Login />} />
         <Route path="/Loader" element={<Loader />} />
         <Route path="/FAQ" element={<FAQ />} />
-        <Route
-          path="/Upload"
-          element={
-            <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
+        
         <Route path="/Pop" element={<Pop />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Adminside" element={<Adminside />} />
@@ -94,26 +89,38 @@ const AppRoutes = () => {
             <Home hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
           }
         />
-        <Route path="/Recording" element={<Recording />} />
-        <Route path="/documenttitle" element={<Documenttitle />} />
-        <Route
-          path="/documentchat"
-          element={
-            <Documentchat
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
+        
+
+        <Route element={<ProtectedRoute />}>
+              <Route path="/Recording" element={<Recording />} />
+              <Route path="/documenttitle" element={<Documenttitle />} />
+              <Route
+              path="/documentchat"
+              element={
+                <Documentchat
+                  hideSideNav={hideSideNav}
+                  isSideNavVisible={isNavVisible}
+                />
+              }
             />
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <Dashboard
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  hideSideNav={hideSideNav}
+                  isSideNavVisible={isNavVisible}
+                />
+              }
             />
-          }
-        />
+            <Route
+              path="/Upload"
+              element={
+                <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+              }
+            />
+        </Route>
+        
+        
         <Route path="/PDFViewer" element={<PDFViewer />} />
         <Route
           path="/Test"

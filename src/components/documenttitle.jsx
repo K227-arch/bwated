@@ -1,14 +1,16 @@
-import { useState,react } from 'react'
+import { useState,react, useEffect } from 'react'
 import './documenttitle.css'
 import Header from './Header'
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "@/lib/authState";
+ 
 function App() {
   const [showChat, setShowChat] = useState(false)
   const [showTest, setShowTest] = useState(false)
+  const { user, loading } = useAuth();
 
+   
   const navigate = useNavigate();
-
   const handleChatClick = () => {
      navigate("/Documentchat")
   }
@@ -17,6 +19,13 @@ function App() {
     navigate("/Test")
   }
 
+  // useEffect( () => {
+  //   console.log(user) 
+  //   if (!loading){
+  //     console.log(user)
+  //   }
+  // }, []) 
+
   return (
     
     <div className="container4">
@@ -24,8 +33,7 @@ function App() {
         <Header />
       </div>
       <h1 className="title2"></h1>
-      
-      <div className="cards-container">
+       <div className="cards-container">
         <div className="card" onClick={handleChatClick}>
           <div className="card-icon">💬</div>
           <h2>Start a Chat</h2>
