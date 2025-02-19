@@ -12,7 +12,7 @@
   transition: 0.3s;
   position: fixed;
   z-index: 750;
-  
+  position:fixed;
   top: 0;
   }
   

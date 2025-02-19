@@ -1,0 +1,188 @@
+.Admindashboard {
+   
+    margin-top:40px;
+    
+  }
+  
+  .Admindashboard-wrapper{
+     margin-left:290px;
+     margin-right:20px;
+  }
+  .Admindashboard .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+   .Admindashboard .header h1 {
+    color: #2d3748;
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  .Admindashboard .update-button {
+    background-color: #3182ce;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .Admindashboard .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .Admindashboard .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .Admindashboard .stat-header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .Admindashboard .stat-title {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .Admindashboard .trend {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+  }
+  
+  .Admindashboard .trend-up {
+    color: #48bb78;
+  }
+  
+  .Admindashboard .trend-down {
+    color: #e53e3e;
+  }
+  
+  .Admindashboard .comparison {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.875rem;
+    color: #718096;
+    margin-top: 0.5rem;
+  }
+  
+  .Admindashboard .tables-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  }
+  
+  .Admindashboard .table-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .Admindashboard .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .Admindashboard .table-title {
+    font-size: 1.25rem;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  .view-all {
+    color: #3182ce;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  
+  .Admindashboard table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .Admindashboard th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .Admindashboard th {
+    color: #718096;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+  
+  .Admindashboard td {
+    color: #2d3748;
+  }
+  
+  .status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .status-active {
+    background-color: #c6f6d5;
+    color: #22543d;
+  }
+  
+  .status-completed {
+    background-color: #c6f6d5;
+    color: #22543d;
+  }
+  
+  .status-pending {
+    background-color: #fefcbf;
+    color: #744210;
+  }
+  
+  .status-upcoming {
+    background-color: #bee3f8;
+    color: #2c5282;
+  }
+  
+  .Admindashboard .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .Admindashboard .user-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background-color: #e2e8f0;
+  }
+  
+  .Admindashboard .user-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .Admindashboard .user-name {
+    font-weight: 500;
+  }
+  
+  .Admindashboard .user-email {
+    color: #718096;
+    font-size: 0.875rem;
+  }

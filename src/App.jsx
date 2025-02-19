@@ -27,6 +27,9 @@ import Feedback from "./components/feedback.jsx";
 import Notifications from "./components/Admin/notifications.jsx";
 import Pop from "./components/Pop.jsx";
 import Users from "./components/Admin/Users.jsx";
+import Token from "./components/Admin/token.jsx";
+import Packages from "./components/Admin/Packages.jsx";
+import Admindashboard from "./components/Admin/Admindashboard.jsx";
 import "./App.css";
 import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
 const AppRoutes = () => {
@@ -77,6 +80,9 @@ const AppRoutes = () => {
         <Route path="/Adminside" element={<Adminside />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/Users" element={<Users />} />
+        <Route path="/Token" element={<Token />} />
+        <Route path="/Packages" element={<Packages />} />
+        <Route path="/Admindashboard" element={<Admindashboard />} />
         <Route
           path="/plan"
           element={

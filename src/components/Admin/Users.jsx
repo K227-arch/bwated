@@ -8,7 +8,7 @@ const initialUsers = [
   { id: 3, name: 'David Lee', email: 'davidlee@example.com', plan: 'Weekly', country: 'Japan', joinedAt: 'Apr 3, 2022 10:45 PM', status: 'Active' },
   { id: 4, name: 'Sarah Johnson', email: 'sarahjohnson@example.com', plan: 'Monthly', country: 'Uganda', joinedAt: 'Apr 4, 2022 6:15 PM', status: 'Suspended' },
   { id: 5, name: 'Michael Brown', email: 'michaelbrown@example.com', plan: 'Monthly', country: 'Germany', joinedAt: 'Apr 5, 2022 3:00 PM', status: 'Active' },
-  { id: 6, name: 'Jessica Chen', email: 'jessicachen@example.com', plan: 'Weekly', country: 'United States', joinedAt: 'Apr 6, 2022 8:30 PM', status: 'Suspended' }
+  { id: 6, name: 'Jessica Chen', email: 'jessicachen@example.com', plan: 'Free', country: 'United States', joinedAt: 'Apr 6, 2022 8:30 PM', status: 'Suspended' }
 ]
 
 function App() {
@@ -63,7 +63,7 @@ function App() {
           <thead>
             <tr>
               <th>Info</th>
-              <th>Plan</th>
+              <th>Subscription Plan</th>
               <th>Country</th>
               <th>Joined At</th>
               <th>Status</th>

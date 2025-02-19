@@ -74,9 +74,12 @@ function Login() {
           
           <div className="formbutton">
             {/* login form */}
-            
+            <div>
+                <input type="email" placeholder="Email" className="email-input" onChange={(e) => setLoginEmail(e.target.value)} />
+                <input type="password" placeholder="Password" className="email-input2" onChange={(e) => setPassword(e.target.value)} />
 
-
+                <button type="submit" className="submitbutton2" onClick={() => signInWithEmail(login_email, password)}>Sign In</button>
+            </div>
             <form className="login-form" onSubmit={(e) => e.preventDefault()}>
               <button className="google-input-with-icon" required>
                 Continue With Google
@@ -87,32 +90,20 @@ function Login() {
                 placeholder="Enter your email address"
                 className="email-input"
                 required
-                onChange={(e) => setLoginEmail(e.target.value)}
+                value={email}
+                onChange={handleEmailChange}
               />
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Password"
-                className="email-input2"
-                onChange={(e) => setPassword(e.target.value)} 
-                required
-              />
-
-              
               {emailError && <span className="error-message">{emailError}</span>}
             </form>
           </div>
-
           
-
           <button 
             type="submit" 
             className="submitbutton2" 
-            onClick={() => signInWithEmail(login_email, password)}
+            onClick={navigateToPlanPage}
           >
-            Sign In
+            Continue with email
           </button>
-          
         </div>
       </div>
     </div>

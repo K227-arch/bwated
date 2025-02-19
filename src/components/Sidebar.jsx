@@ -97,7 +97,7 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
             aria-label="Log In"
           >
             <LogOut size={20} />
-            <div className="text">Log In</div>
+            <div className="text">Log Out</div>
           </button>
           <div className="feedback-section">
             <button

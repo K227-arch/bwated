@@ -12,9 +12,10 @@ const Adminside = ({ goToDashboard }) => {
       <div className="logo2">MY KASASI</div>
       <nav>
         <ol className="nav-items">
-          <li className="nav-item" onClick={goToDashboard}>📊 Dashboards</li>
+          <li className="nav-item" onClick={goto("/Admindashboard")}>📊 Dashboards</li>
           <li className="nav-item" onClick={goto("/Users")}>👥 Users</li>
-          <li className="nav-item" onClick={goto("/traffic")}>📈 Traffic</li>
+          <li className="nav-item" onClick={goto("/Packages")}>🚀 Packages</li>
+          <li className="nav-item" onClick={goto("/Token")}>📈 Traffic</li>
           <li className="nav-item" onClick={goto("/notifications")}>🔔 Notifications</li>
           <li className="nav-item" onClick={goto("/settings")}>⚙️ Settings</li>
         </ol>
