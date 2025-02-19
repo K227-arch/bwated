@@ -16,14 +16,7 @@
     "@mui/material": "^6.1.6",
     "@react-oauth/google": "^0.12.1",
     "@react-spring/web": "^9.7.5",
-<<<<<<< HEAD
-    "@uppy/core": "^4.4.2",
-    "@uppy/dashboard": "^4.3.1",
-    "@uppy/react": "^4.2.1",
-    "@uppy/tus": "^4.2.2",
-=======
     "@supabase/supabase-js": "^2.48.1",
->>>>>>> 290513c999e2d7b45588d417442ca27062b06279
     "axios": "^1.7.9",
     "flutterwave-react-v3": "^1.3.2",
     "js-cookie": "^3.0.5",
@@ -36,11 +29,8 @@
     "react-media-recorder": "^1.7.1",
     "react-router-dom": "^7.0.2",
     "react-speech-recognition": "^3.10.0",
-<<<<<<< HEAD
-    "tus-js-client": "^4.3.1"
-=======
+    "tus-js-client": "^4.3.1",
     "yup": "^1.6.1"
->>>>>>> 290513c999e2d7b45588d417442ca27062b06279
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
