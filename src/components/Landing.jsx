@@ -109,7 +109,7 @@ function App() {
           personalized learning on the best content!
         </p>
 
-        <button className="btn btn-primary" onClick={gotoDocumenttitle}>
+        <button className="btn btn-primary" onClick={gotoLogin}>
           GET STARTED
         </button>
         <div className="video-container">

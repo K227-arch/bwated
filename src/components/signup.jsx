@@ -98,15 +98,7 @@ const handleSubmit = async (e) => {
           
           <div className="formbutton2">
             <form className="signup-form"  onSubmit={handleSubmit}>
-            <input
-                type="password"
-                name="password"
-                placeholder="Enter Password"
-                className="google-input-with-icon2"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            
               {errors.password && <span className="error">{errors.password}</span>}
               
               <input
