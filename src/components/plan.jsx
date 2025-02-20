@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header.jsx";
 import Sidebar from "./Sidebar.jsx";
+import {loadStripe} from "@stripe/stripe-js";
 import "./plan.css";
 
 function App({ children, hideSideNav, isSideNavVisible }) {
@@ -32,6 +33,22 @@ function App({ children, hideSideNav, isSideNavVisible }) {
       popular: false,
     },
   ];
+  const makePayment = async (price) => {
+    const stripe = await loadStripe("pk_test_51QtYspRlnSkWgwS20mWflqa7FhSu15bjffVzSJrqXPbYZp9SN206UAsOCb9F50jjMUGW6EhwSBUlCE4cd4M56UpU00oI6FikGt");
+    
+    if (!stripe) return;
+
+    const response = await fetch("https://localhost:5000/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ price }),
+    });
+
+    const session = await response.json();
+    if (session.id) {
+      stripe.redirectToCheckout({ sessionId: session.id });
+    }
+  };
 
   return (
     <div className="pricing-container">
@@ -67,7 +84,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
 
             <div className="discount-badge">Annual discount applied</div>
 
-            <button className="trial-button" onClick={gotoDocumenttitle}>
+            <button className="trial-button" onClick={() => makePayment(plan.price)}>
               Start free trial
             </button>
 

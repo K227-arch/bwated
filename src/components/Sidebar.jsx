@@ -93,7 +93,7 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
         <div className="down-buttons">
           <button
             className="nav-btn"
-            onClick={goto("/adminside")}
+            onClick={goto("/Admindashboard")}
             aria-label="Log In"
           >
             <LogOut size={20} />
