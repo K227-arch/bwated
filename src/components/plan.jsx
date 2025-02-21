@@ -38,7 +38,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
     
     if (!stripe) return;
 
-    const response = await fetch("https://localhost:5000/create-checkout-session", {
+    const response = await fetch("http://localhost:5000/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ price }),

@@ -1,7 +1,11 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import Stripe from "stripe";
+
+dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
@@ -31,6 +35,5 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 app.listen(5000, () => console.log("Server running on port 5000"));
