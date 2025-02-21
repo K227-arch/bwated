@@ -1,5 +1,5 @@
 import {React, useState} from "react";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate } from "react-router";
 import kisasi from "../assets/kisasi.jpg";
 import logo from '../assets/logo.png';
 import "./signup.css";
@@ -8,10 +8,8 @@ import { supabase } from '@/lib/supabaseClient';
 
 const signup =()=> {
   const navigate = useNavigate()
-  const location = useLocation();
-  const { email } = location.state || ""; 
-  const [formData, setFormData] = useState({
-    email: email,
+   const [formData, setFormData] = useState({
+    email: '',
     password: '',
     confirmPassword: ''
   });
@@ -29,7 +27,7 @@ const signup =()=> {
     }));
   };
 
-
+ 
   
 const schema = yup.object().shape({
   email: yup.string().email('Invalid email format').required('Email is required'),
@@ -98,6 +96,17 @@ const handleSubmit = async (e) => {
           
           <div className="formbutton2">
             <form className="signup-form"  onSubmit={handleSubmit}>
+            <input
+                name="email"
+                type="email"
+                placeholder="Enter your email address"
+                className="email-input"
+                required
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <span className="error-message">{errors.email}</span>}
+
             <input
                 type="password"
                 name="password"

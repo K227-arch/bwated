@@ -168,7 +168,7 @@ export default function ChatInterface({ isNavVisible }) {
     handleQuestionSubmit(recordedQuestion);
   }
 
-  const handleNewUpload = () => {
+  const handleNewUpload = () => { 
     // Clear existing PDF data
     localStorage.removeItem('extractedText');
     localStorage.removeItem('fileName');

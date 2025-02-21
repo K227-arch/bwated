@@ -7,10 +7,8 @@ import { useState } from 'react';
 import { supabase } from "@/lib/supabaseClient";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [login_email, setLoginEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [password, setPassword] = useState('');
+   const [login_email, setLoginEmail] = useState('');
+   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
@@ -18,23 +16,8 @@ function Login() {
     return emailRegex.test(email);
   };
 
-  function navigateToPlanPage() {
-    if (email.trim() === '') {
-      setEmailError('Email is required');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address');
-      return;
-    }
-
-    setEmailError('');
-    navigate("/Signup", {
-      state: {
-        email: email.trim()
-      }
-    });
+  function navigateToPlanPage() { 
+    navigate("/Signup");
   }
 
   const signInWithEmail = async (email, password) => {
@@ -52,10 +35,7 @@ function Login() {
         }
       };
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    setEmailError('');
-  };
+  
 
   return (
     <div>
@@ -84,16 +64,7 @@ function Login() {
               <button className="google-input-with-icon" required>
                 Continue With Google
               </button>
-              <div className="or">OR</div>
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="email-input"
-                required
-                value={email}
-                onChange={handleEmailChange}
-              />
-              {emailError && <span className="error-message">{emailError}</span>}
+              <div className="or">OR</div> 
             </form>
           </div>
           
