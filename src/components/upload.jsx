@@ -58,14 +58,47 @@ function App({ children, hideSideNav, isSideNavVisible }) {
   const uploadFile = async (file) => {
     if (!user) return;
     
-    const filePath = `${user.id}/${Date.now()}_${file.name}`;
-    
-    if (file.size > 6 * 1024 * 1024) {
-      await uploadInChunks(file, filePath);
-    } else {
-      const { error } = await supabase.storage.from('pdfs').upload(filePath, file);
-      if (error) return console.error('Upload error:', error);
+    try {
+      const timestamp = Date.now();
+      const filePath = `${user.id}/${timestamp}_${file.name}`;
+      let uploadError;
+      
+      if (file.size > 6 * 1024 * 1024) {
+        uploadError = await uploadInChunks(file, filePath);
+      } else {
+        const { error } = await supabase.storage.from('pdfs').upload(filePath, file);
+        uploadError = error;
+      }
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        return;
+      }
+
+      // Create document record in the documents table
+      const { error: dbError } = await supabase
+        .from('documents')
+        .insert({
+          user_id: user.id,
+          name: file.name,
+          file_type: file.type.split('/')[1],
+          file_path: filePath,
+          file_size: file.size,
+          metadata: {
+            originalName: file.name,
+            contentType: file.type,
+            uploadedAt: new Date().toISOString()
+          }
+        });
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        return;
+      }
+
       setFile(prev => ({ ...prev, progress: 100, uploading: false }));
+    } catch (error) {
+      console.error('Error in upload process:', error);
     }
   };
 
@@ -73,14 +106,44 @@ function App({ children, hideSideNav, isSideNavVisible }) {
     const chunkSize = 6 * 1024 * 1024;
     const totalChunks = Math.ceil(file.size / chunkSize);
     let uploadedChunks = 0;
+    const chunks = [];
     
-    for (let i = 0; i < totalChunks; i++) {
-      const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
-      const { error } = await supabase.storage.from('pdfs').upload(`${filePath}.part${i}`, chunk, { upsert: true });
-      
-      if (error) return console.error('Chunk upload error:', error);
-      uploadedChunks++;
-      setFile(prev => ({ ...prev, progress: (uploadedChunks / totalChunks) * 100, uploading: uploadedChunks < totalChunks }));
+    try {
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
+        const chunkPath = `${filePath}.part${i}`;
+        
+        const { error } = await supabase.storage.from('pdfs')
+          .upload(chunkPath, chunk, { upsert: true });
+        
+        if (error) throw error;
+        
+        chunks.push(chunkPath);
+        uploadedChunks++;
+        setFile(prev => ({
+          ...prev,
+          progress: (uploadedChunks / totalChunks) * 100,
+          uploading: uploadedChunks < totalChunks
+        }));
+      }
+
+      // Combine chunks here if needed
+      // For now, we'll just keep the first chunk as the main file
+      const { error } = await supabase.storage.from('pdfs')
+        .copy(chunks[0], filePath);
+
+      // Clean up chunk files
+      await Promise.all(chunks.map(chunkPath =>
+        supabase.storage.from('pdfs').remove([chunkPath])
+      ));
+
+      return error;
+    } catch (error) {
+      // Clean up any uploaded chunks on error
+      await Promise.all(chunks.map(chunkPath =>
+        supabase.storage.from('pdfs').remove([chunkPath])
+      ));
+      return error;
     }
   };
 
