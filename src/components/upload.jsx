@@ -23,7 +23,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
   const [errorMessage, setErrorMessage] = useState(null);
 
   
-
+const navigate = useNavigate();
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
