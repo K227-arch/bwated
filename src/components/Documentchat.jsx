@@ -21,7 +21,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
 
   return (
     <div className="layout">
-      <Pop />
+      {/* <Pop /> */}
       <div className="layout-main">
         <Layout isSideNavVisible={isSideNavVisible} hideSideNav={hideSideNav} />
       </div>
