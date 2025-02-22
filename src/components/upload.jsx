@@ -6,11 +6,64 @@ import Sidebar from "./Sidebar.jsx";
 import { supabase } from '@/lib/supabaseClient';
 import './upload.css';
 
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
+
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
+
+
 function App({ children, hideSideNav, isSideNavVisible }) {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+
+
+  
+  const extractTextFromPDF = async () => {
+    if (!file) {
+      alert('Please select a PDF file first');
+      return;
+    }
+
+    setIsExtracting(true);
+    const fileReader = new FileReader();
+
+    fileReader.onload = async () => {
+      const typedArray = new Uint8Array(fileReader.result);
+
+      try {
+        const pdfDocument = await getDocument(typedArray).promise;
+        let extractedText = '';
+
+        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+          const page = await pdfDocument.getPage(pageNumber);
+          const textContent = await page.getTextContent();
+          extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+        }
+
+        localStorage.setItem('extractedText', extractedText);
+        localStorage.setItem('fileName', file.name);
+        
+        globalPopupClose?.();
+        navigate('/Documentchat');
+        
+      } catch (error) {
+        console.error('Error extracting text: ', error);
+        alert('Error extracting text from PDF.');
+      } finally {
+        setIsExtracting(false);
+      }
+    };
+
+    fileReader.onerror = () => {
+      console.error('Error reading file');
+      alert('Error reading the PDF file.');
+      setIsExtracting(false);
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  };
 
   useEffect(() => {
     const fetchUser = async () => {

@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import "./generator.css";
 import { useNavigate } from "react-router-dom";
 import OpenAI from "openai";
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
+import { supabase } from '@/lib/supabaseClient';
+
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 function Generator() {
   const [questionType, setQuestionType] = useState("");
@@ -13,6 +17,7 @@ function Generator() {
   const [error, setError] = useState(null);
   const [pdfContent, setPdfContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
 
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Structured", "Multichoice"];
@@ -22,6 +27,50 @@ function Generator() {
   
   const navigate = useNavigate();
 
+
+  const extractTextFromPDF = async (file) => {
+    if (!file) {
+      alert('Please select a PDF file first');
+      return;
+    }
+
+    setIsExtracting(true);
+    const fileReader = new FileReader();
+
+    fileReader.onload = async () => {
+      const typedArray = new Uint8Array(fileReader.result);
+
+      try {
+        const pdfDocument = await getDocument(typedArray).promise;
+        let extractedText = '';
+
+        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+          const page = await pdfDocument.getPage(pageNumber);
+          const textContent = await page.getTextContent();
+          extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+        } 
+        localStorage.setItem('extractedText', extractedText);
+        localStorage.setItem('fileName', file.name);
+        setPdfContent(extractedText);
+        extractKeywordsFromText(extractedText);
+        // navigate('/Documentchat');
+        
+      } catch (error) {
+        console.error('Error extracting text: ', error);
+        alert('Error extracting text from PDF.');
+      } finally {
+        setIsExtracting(false);
+      }
+    };
+
+    fileReader.onerror = () => {
+      console.error('Error reading file');
+      alert('Error reading the PDF file.');
+      setIsExtracting(false);
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  };
   // Handle file upload
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -44,7 +93,8 @@ function Generator() {
 
       const text = await file.text();
       setText(text);
-      extractKeywordsFromText(text);
+      extractTextFromPDF(file);
+      // extractKeywordsFromText(text);
     } catch (error) {
       console.error('Error reading file:', error);
       setError(error.message || 'Failed to read the uploaded file');
@@ -82,6 +132,7 @@ function extractJSONObject(input) {
     return null;
   }
 }
+
 
   const handleGenerate = async () => {
     if (!questionCount || !complexity) {
@@ -180,7 +231,7 @@ function extractJSONObject(input) {
       setPdfContent(content);
       extractKeywordsFromText(content);
     }
-  }, []);
+  }, [ ]);
 
   return (
     <div className="generator-container">
