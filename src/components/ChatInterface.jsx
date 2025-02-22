@@ -12,7 +12,7 @@ const LOCAL_RELAY_SERVER_URL =
   import { Toggle } from '@/components/chatComponentes/toggle/Toggle';
   import './ConsolePage.scss'
 
-  import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Recording from "../components/Recording";
@@ -21,7 +21,9 @@ import OpenAI from "openai";
 import axios from "axios";
 
  
-export default function ChatInterface() {
+export default function ChatInterface( {docId}) {
+
+  console.log(docId)
   /**
    * Ask user for API Key
    * If we're using the local relay server, we don't need this

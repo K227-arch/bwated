@@ -1,23 +1,21 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "./Layout.jsx";
 import ChatInterface from "./ChatInterface.jsx";
 import Pop from "./Pop.jsx";
 import "./Documentchat.css";
 
+
 function App({ children, hideSideNav, isSideNavVisible }) {
   const navigate = useNavigate();
-
+ const location = useLocation();
+ 
   // useEffect(() => {
-  //   // Check if PDF content exists
-  //   const pdfContent = localStorage.getItem('extractedText');
-  //   const fileName = localStorage.getItem('fileName');
-
-  //   if (!pdfContent || !fileName) {
-  //     // If no PDF content, redirect to upload
-  //     navigate('/upload');
+  //   if (location.state?.success === true) {
+  //     navigate("/upload");
   //   }
-  // }, [navigate]);
+  // }, [location.state]);
+  
 
   return (
     <div className="layout">
@@ -26,7 +24,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
         <Layout isSideNavVisible={isSideNavVisible} hideSideNav={hideSideNav} />
       </div>
       <div className="layoutmain2">
-        <ChatInterface isNavVisible={isSideNavVisible} />
+        <ChatInterface isNavVisible={isSideNavVisible} docId={location.documentId} />
       </div>
 
       <main className="layout-content">{children}</main>
