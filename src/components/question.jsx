@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./question.css";
+import { supabase } from "@/lib/supabaseClient";
 
 function App() {
   const location = useLocation();
@@ -10,6 +11,9 @@ function App() {
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(null);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // Get questions from navigation state
   const questions = location.state?.questions;
@@ -20,6 +24,15 @@ function App() {
       setError('No valid questions found. Please generate a test first.');
     }
   }, [questions]);
+
+  // Fetch user on component mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
 
   if (error || !questions) {
     return (
@@ -58,13 +71,14 @@ function App() {
         }
       }
     });
-    return (correctAnswers / questions.length) * 100;
+    return { score: (correctAnswers / questions.length) * 100, correctAnswers };
   };
 
-  const handleShowResults = () => {
-    const finalScore = calculateScore();
-    setScore(finalScore);
+  const handleShowResults = async () => {
+    const { score, correctAnswers } = calculateScore();
+    setScore(score);
     setShowResults(true);
+    await saveTestResults(score, correctAnswers);
   };
 
   const handleNext = () => {
@@ -79,11 +93,95 @@ function App() {
     }
   };
 
+  const saveTestResults = async (finalScore, correctAnswers) => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      // First, insert the test result
+      const { data: testResult, error: testError } = await supabase
+        .from('test_results')
+        .insert({
+          user_id: user.id,
+          score: finalScore,
+          total_questions: questions.length,
+          correct_answers: correctAnswers,
+          test_data: {}, // We'll store questions separately now
+          document_id: location.state?.documentId,
+          metadata: {
+            test_duration: calculateTestDuration(),
+            test_type: 'generated',
+            test_version: '1.0'
+          }
+        })
+        .select()
+        .single();
+
+      if (testError) throw testError;
+
+      // Then, insert all questions
+      const questionsToInsert = questions.map((question, index) => ({
+        test_id: testResult.id,
+        question_number: index + 1,
+        question_text: question.question,
+        question_type: question.type,
+        correct_answer: question.answer,
+        user_answer: userAnswers[index] || null,
+        is_correct: question.type === 'multiple' 
+          ? userAnswers[index] === question.answer
+          : calculateAnswerCorrectness(userAnswers[index], question.answer),
+        options: question.type === 'multiple' ? question.options : null,
+        metadata: {
+          category: question.category || 'general',
+          difficulty: question.difficulty || 'medium'
+        }
+      }));
+
+      const { error: questionsError } = await supabase
+        .from('test_questions')
+        .insert(questionsToInsert);
+
+      if (questionsError) throw questionsError;
+
+    } catch (error) {
+      console.error('Error saving test results:', error);
+      setSaveError('Failed to save test results');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const calculateAnswerCorrectness = (userAnswer, correctAnswer) => {
+    if (!userAnswer) return false;
+    const userAnswerLower = userAnswer.toLowerCase();
+    const correctAnswerLower = correctAnswer.toLowerCase();
+    const keyTerms = correctAnswerLower.split(' ').filter(word => word.length > 4);
+    const matchCount = keyTerms.filter(term => userAnswerLower.includes(term)).length;
+    return matchCount / keyTerms.length >= 0.5;
+  };
+
+  const calculateTestDuration = () => {
+    // Add test duration calculation logic if needed
+    return 0;
+  };
+
   if (showResults) {
     return (
       <div className="quiz-wrapper">
         <div className="quiz-container results">
           <h2>Test Results</h2>
+          {saveError && (
+            <div className="error-message">
+              {saveError}
+            </div>
+          )}
+          {isSaving && (
+            <div className="saving-message">
+              Saving your results...
+            </div>
+          )}
           <div className="score-display">
             <h3>Your Score: {score.toFixed(1)}%</h3>
             <div className="progress-bar">
@@ -111,6 +209,24 @@ function App() {
           </div>
           
           <button onClick={() => navigate('/testscreen')}>Generate New Test</button>
+
+          {isSaving ? (
+            <div className="saving-indicator">
+              <div className="spinner"></div>
+              <p>Saving your test results...</p>
+            </div>
+          ) : saveError ? (
+            <div className="error-message">
+              <p>{saveError}</p>
+              <button onClick={() => saveTestResults(score, correctAnswers)}>
+                Retry Saving
+              </button>
+            </div>
+          ) : (
+            <div className="success-message">
+              <p>Test results saved successfully!</p>
+            </div>
+          )}
         </div>
       </div>
     );

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import OpenAI from "openai";
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { supabase } from '@/lib/supabaseClient';
-
+import {fetchUser} from '@/lib/authUser';
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 function Generator() {
@@ -18,7 +18,11 @@ function Generator() {
   const [pdfContent, setPdfContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
-
+  const [user, setUser] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [extractionProgress, setExtractionProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
+  const [documentId, setDocumentId] = useState(null);
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Structured", "Multichoice"];
   
@@ -35,6 +39,7 @@ function Generator() {
     }
 
     setIsExtracting(true);
+    setExtractionProgress(0);
     const fileReader = new FileReader();
 
     fileReader.onload = async () => {
@@ -43,23 +48,29 @@ function Generator() {
       try {
         const pdfDocument = await getDocument(typedArray).promise;
         let extractedText = '';
+        const totalPages = pdfDocument.numPages;
 
-        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+        for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
           const page = await pdfDocument.getPage(pageNumber);
           const textContent = await page.getTextContent();
           extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
-        } 
+          
+          // Update extraction progress
+          setExtractionProgress((pageNumber / totalPages) * 100);
+        }
+
         localStorage.setItem('extractedText', extractedText);
         localStorage.setItem('fileName', file.name);
         setPdfContent(extractedText);
+        console.log(extractedText);
         extractKeywordsFromText(extractedText);
-        // navigate('/Documentchat');
         
       } catch (error) {
         console.error('Error extracting text: ', error);
         alert('Error extracting text from PDF.');
       } finally {
         setIsExtracting(false);
+        setExtractionProgress(0);
       }
     };
 
@@ -67,6 +78,7 @@ function Generator() {
       console.error('Error reading file');
       alert('Error reading the PDF file.');
       setIsExtracting(false);
+      setExtractionProgress(0);
     };
 
     fileReader.readAsArrayBuffer(file);
@@ -91,9 +103,10 @@ function Generator() {
         throw new Error('File size should be less than 5MB');
       }
 
-      const text = await file.text();
-      setText(text);
+      // const text = await file.text();
+      // setText(text);
       extractTextFromPDF(file);
+      uploadFile(file);
       // extractKeywordsFromText(text);
     } catch (error) {
       console.error('Error reading file:', error);
@@ -212,7 +225,8 @@ function extractJSONObject(input) {
 
       navigate("/Question", { 
         state: { 
-          questions: parsedResponse.questions 
+          questions: parsedResponse.questions,
+          documentId: documentId
         }
       });
 
@@ -231,7 +245,113 @@ function extractJSONObject(input) {
       setPdfContent(content);
       extractKeywordsFromText(content);
     }
+
+    const getUserDetails = async () => {
+      const user = await fetchUser();
+      setUser(user); 
+    };
+
+    getUserDetails()
   }, [ ]);
+
+    const uploadFile = async (file) => {
+      if (!user) return;
+      
+      setUploadProgress(0);
+      setUploadError(null);
+      
+      try {
+        const timestamp = Date.now();
+        const filePath = `${user.id}/tests/${timestamp}_${file.name}`;
+        let uploadError;
+        
+        if (file.size > 6 * 1024 * 1024) {
+          uploadError = await uploadInChunks(file, filePath);
+        } else {
+          const { error } = await supabase.storage.from('pdfs').upload(filePath, file);
+          uploadError = error;
+          setUploadProgress(100);
+        }
+  
+        if (uploadError) {
+          setUploadError(uploadError.message);
+          console.error('Upload error:', uploadError);
+          return;
+        }
+  
+        // Create document record in the documents table
+        const { data: documentData, error: dbError } = await supabase
+          .from('documents')
+          .insert({
+            user_id: user.id,
+            name: file.name,
+            file_type: file.type.split('/')[1],
+            file_path: filePath,
+            file_size: file.size,
+            file_condition: "test",
+            metadata: {
+              originalName: file.name,
+              contentType: file.type,
+              uploadedAt: new Date().toISOString()
+            }
+          })
+          .select()
+          .single();
+  
+        if (dbError) {
+          setUploadError(dbError.message);
+          console.error('Database error:', dbError);
+          return;
+        }
+  
+        // Set the document ID
+        setDocumentId(documentData.id);
+  
+      } catch (error) {
+        setUploadError(error.message);
+        console.error('Error in upload process:', error);
+      }
+    };
+ const uploadInChunks = async (file, filePath) => {
+  const chunkSize = 6 * 1024 * 1024;
+  const totalChunks = Math.ceil(file.size / chunkSize);
+  let uploadedChunks = 0;
+  const chunks = [];
+  
+  try {
+    for (let i = 0; i < totalChunks; i++) {
+      const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
+      const chunkPath = `${filePath}.part${i}`;
+      
+      const { error } = await supabase.storage.from('pdfs')
+        .upload(chunkPath, chunk, { upsert: true });
+      
+      if (error) throw error;
+      
+      chunks.push(chunkPath);
+      uploadedChunks++;
+      setUploadProgress((uploadedChunks / totalChunks) * 100);
+    }
+
+    // Combine chunks
+    const { error } = await supabase.storage.from('pdfs')
+      .copy(chunks[0], filePath);
+
+    // Clean up chunks
+    await Promise.all(chunks.map(chunkPath =>
+      supabase.storage.from('pdfs').remove([chunkPath])
+    ));
+
+    return error;
+  } catch (error) {
+    // Clean up on error
+    await Promise.all(chunks.map(chunkPath =>
+      supabase.storage.from('pdfs').remove([chunkPath])
+    ));
+    return error;
+  }
+};
+    
 
   return (
     <div className="generator-container">
@@ -306,8 +426,30 @@ function extractJSONObject(input) {
               id="fileUpload"
               accept=".pdf"
               onChange={handleFileUpload}
-              disabled={isLoading}
+              disabled={isLoading || isExtracting}
             />
+            {uploadError && (
+              <div className="error-message">{uploadError}</div>
+            )}
+            {(uploadProgress > 0 || isExtracting) && (
+              <div className="progress-container">
+                <div className="progress-bar">
+                  <div 
+                    className="progress" 
+                    style={{ 
+                      width: `${isExtracting ? extractionProgress : uploadProgress}%` 
+                    }} 
+                  />
+                </div>
+                <div className="progress-text">
+                  {isExtracting 
+                    ? `Extracting PDF... ${Math.round(extractionProgress)}%`
+                    : uploadProgress > 0 
+                      ? `Uploading... ${Math.round(uploadProgress)}%`
+                      : ''}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="input-wrapper">

@@ -124,16 +124,17 @@ const AppRoutes = () => {
                 <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
               }
             />
+             <Route
+                path="/Test"
+                element={
+                  <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                }
+              />
         </Route>
         
         
         <Route path="/PDFViewer" element={<PDFViewer />} />
-        <Route
-          path="/Test"
-          element={
-            <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
+       
         <Route
           path="/Question"
           element={
