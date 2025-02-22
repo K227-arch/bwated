@@ -53,11 +53,11 @@
 
 .filter-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: all 0.2s;
 }
 
 .filter-btn:hover {
@@ -67,8 +67,9 @@
 }
 
 .filter-btn.active {
-  background: #25c0ae;
+  background: #3b82f6;
   color: white;
+  border-color: #3b82f6;
 }
 
 .search-container {
@@ -131,6 +132,34 @@
 .date {
   color: #666;
   font-size: 0.875rem;
+}
+
+.test-card {
+  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
+}
+
+.test-stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.score {
+  font-weight: 600;
+  color: #059669;
+}
+
+.correct-answers {
+  color: #6b7280;
+}
+
+.test-type {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
 }
 
 @media (max-width: 732px) {

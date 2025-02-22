@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabaseClient'; // Fix typo in import
 function App({hideSideNav, isSideNavVisible}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [documents, setDocuments] = useState([]);
+  const [tests, setTests] = useState([]);
+  const [activeTab, setActiveTab] = useState('documents'); // 'documents' or 'tests'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
@@ -15,7 +17,7 @@ function App({hideSideNav, isSideNavVisible}) {
 
   // Fetch current user and their documents
   useEffect(() => {
-    const fetchUserAndDocuments = async () => {
+    const fetchUserData = async () => {
       try {
         // Get current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -34,6 +36,26 @@ function App({hideSideNav, isSideNavVisible}) {
         if (docsError) throw docsError;
 
         setDocuments(docs);
+
+        // Fetch tests with related document info
+        const { data: testResults, error: testsError } = await supabase
+          .from('test_results')
+          .select(`
+            *,
+            documents (
+              name,
+              file_type
+            ),
+            test_questions (
+              question_type,
+              is_correct
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        if (testsError) throw testsError;
+        setTests(testResults);
+
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err.message);
@@ -42,13 +64,22 @@ function App({hideSideNav, isSideNavVisible}) {
       }
     };
 
-    fetchUserAndDocuments();
+    fetchUserData();
   }, []);
 
   // Filter documents based on search query
-  const filteredDocuments = documents.filter(doc => 
-    doc.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getFilteredItems = () => {
+    const query = searchQuery.toLowerCase();
+    if (activeTab === 'documents') {
+      return documents.filter(doc => 
+        doc.name.toLowerCase().includes(query)
+      );
+    } else {
+      return tests.filter(test => 
+        test.documents?.name?.toLowerCase().includes(query)
+      );
+    }
+  };
 
   const gotoDocumentchat=()=>{
     navigate("/Documentchat")
@@ -101,7 +132,18 @@ function App({hideSideNav, isSideNavVisible}) {
 
         <div className="filter-section">
           <div className="filter-buttons">
-            <button className="filter-btn active">PDFs & Quizzes</button>
+            <button 
+              className={`filter-btn ${activeTab === 'documents' ? 'active' : ''}`}
+              onClick={() => setActiveTab('documents')}
+            >
+              PDFs & Documents
+            </button>
+            <button 
+              className={`filter-btn ${activeTab === 'tests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tests')}
+            >
+              Tests & Quizzes
+            </button>
           </div>
           
           <div className="search-container">
@@ -124,15 +166,20 @@ function App({hideSideNav, isSideNavVisible}) {
 
         <div className="chat-grid">
           {loading ? (
-            <div className="loading">Loading documents...</div>
+            <div className="loading">Loading {activeTab}...</div>
           ) : error ? (
             <div className="error">Error: {error}</div>
-          ) : filteredDocuments.length === 0 ? (
+          ) : getFilteredItems().length === 0 ? (
             <div className="no-documents">
-              No documents found. Upload a document to get started!
+              No {activeTab} found. {
+                activeTab === 'documents' 
+                  ? 'Upload a document to get started!' 
+                  : 'Take a test to get started!'
+              }
             </div>
-          ) : (
-            filteredDocuments.map((doc) => (
+          ) : activeTab === 'documents' ? (
+            // Existing document cards
+            getFilteredItems().map((doc) => (
               <div key={doc.id} className="chat-card" onClick={() => navigate(`/chat/${doc.id}`)}>
                 <div className="chat-preview">
                   <h3>{doc.name || 'Untitled'}</h3>
@@ -141,6 +188,27 @@ function App({hideSideNav, isSideNavVisible}) {
                   </div>
                   <div className="document-type">
                     {doc.file_type === 'pdf' ? '📄' : '📁'}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            // New test result cards
+            getFilteredItems().map((test) => (
+              <div key={test.id} className="chat-card test-card" onClick={() => navigate(`/test-results/${test.id}`)}>
+                <div className="chat-preview">
+                  <h3>{test.documents?.name || 'Untitled Document'}</h3>
+                  <div className="test-stats">
+                    <div className="score">Score: {Math.round(test.score)}%</div>
+                    <div className="correct-answers">
+                      Correct: {test.correct_answers}/{test.total_questions}
+                    </div>
+                  </div>
+                  <div className="date">
+                    {new Date(test.created_at).toLocaleDateString()}
+                  </div>
+                  <div className="test-type">
+                    {test.test_type === 'generated' ? '📝' : '✍️'}
                   </div>
                 </div>
               </div>

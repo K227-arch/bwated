@@ -130,20 +130,21 @@ const AppRoutes = () => {
                   <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
                 }
               />
+              <Route
+                path="/Question"
+                element={
+                <Question
+                  hideSideNav={hideSideNav}
+                  isSideNavVisible={isNavVisible}
+                />
+          }
+        />
         </Route>
         
         
         <Route path="/PDFViewer" element={<PDFViewer />} />
        
-        <Route
-          path="/Question"
-          element={
-            <Question
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
-            />
-          }
-        />
+        
         <Route
           path="/Feedback"
           element={
