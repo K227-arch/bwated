@@ -54,8 +54,7 @@ export default function ChatInterface() {
         : {
             apiKey: apiKey,
             dangerouslyAllowAPIKeyInBrowser: true,
-            model: "gpt-4o-mini-realtime-preview-2024-12-17"
-          }
+           }
     )
   );
 
@@ -134,7 +133,7 @@ export default function ChatInterface() {
     const wavStreamPlayer = wavStreamPlayerRef.current;
     const story = ` `;
 
-
+    client.updateSession({model: 'gpt-4o-mini-realtime-preview-2024-12-17'})
     // Set state variables
     startTimeRef.current = new Date().toISOString();
     setIsConnected(true);
