@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import adminlogo2 from "../../assets/bwated-white.png";
 import "./adminside.css";
 
 const Adminside = ({ goToDashboard }) => {
@@ -9,7 +10,15 @@ const Adminside = ({ goToDashboard }) => {
 
   return (
     <aside className="sidebar2">
-      <div className="logo2">MY KASASI</div>
+      <div className="logo2">
+        <img
+                    src={adminlogo2}
+                    className="adminlogo2"
+                    onClick={goto("/Documenttitle")}
+                    alt="Logo"
+                    aria-label="Go to home"
+          />
+      </div>
       <nav>
         <ol className="nav-items">
           <li className="nav-item" onClick={goto("/Admindashboard")}>📊 Dashboards</li>
@@ -17,7 +26,7 @@ const Adminside = ({ goToDashboard }) => {
           <li className="nav-item" onClick={goto("/Packages")}>🚀 Packages</li>
           <li className="nav-item" onClick={goto("/Token")}>📈 Traffic</li>
           <li className="nav-item" onClick={goto("/notifications")}>🔔 Notifications</li>
-          <li className="nav-item" onClick={goto("/settings")}>⚙️ Settings</li>
+         
         </ol>
       </nav>
       <div className="admin-info">
