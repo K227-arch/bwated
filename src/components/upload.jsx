@@ -5,9 +5,7 @@ import Header from "./Header.jsx";
 import Sidebar from "./Sidebar.jsx";
 import { supabase } from '@/lib/supabaseClient';
 import './upload.css';
-
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
-
+ import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack'; 
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 
@@ -17,53 +15,14 @@ function App({ children, hideSideNav, isSideNavVisible }) {
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
   const [isExtracting, setIsExtracting] = useState(false);
-
+  const [pdfContent, setPdfContent] = useState(''); 
+  const [documentId, setDocumentId] = useState(null);
+  const [extractionProgress, setExtractionProgress] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState('idle'); // 'idle', 'uploading', 'extracting', 'completed', 'error'
+  const [errorMessage, setErrorMessage] = useState(null);
 
   
-  const extractTextFromPDF = async () => {
-    if (!file) {
-      alert('Please select a PDF file first');
-      return;
-    }
-
-    setIsExtracting(true);
-    const fileReader = new FileReader();
-
-    fileReader.onload = async () => {
-      const typedArray = new Uint8Array(fileReader.result);
-
-      try {
-        const pdfDocument = await getDocument(typedArray).promise;
-        let extractedText = '';
-
-        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
-          const page = await pdfDocument.getPage(pageNumber);
-          const textContent = await page.getTextContent();
-          extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
-        }
-
-        localStorage.setItem('extractedText', extractedText);
-        localStorage.setItem('fileName', file.name);
-        
-        globalPopupClose?.();
-        navigate('/Documentchat');
-        
-      } catch (error) {
-        console.error('Error extracting text: ', error);
-        alert('Error extracting text from PDF.');
-      } finally {
-        setIsExtracting(false);
-      }
-    };
-
-    fileReader.onerror = () => {
-      console.error('Error reading file');
-      alert('Error reading the PDF file.');
-      setIsExtracting(false);
-    };
-
-    fileReader.readAsArrayBuffer(file);
-  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -98,7 +57,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
   const addFile = (newFile) => {
     if (!user) return alert("Please log in to upload a file");
     
-    const validTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
+    const validTypes = [  'application/pdf' ];
     if (!validTypes.includes(newFile.type) || newFile.size > 100 * 1024 * 1024) {
       alert("Invalid file type or size exceeds limit");
       return;
@@ -111,6 +70,10 @@ function App({ children, hideSideNav, isSideNavVisible }) {
   const uploadFile = async (file) => {
     if (!user) return;
     
+    setUploadStatus('uploading');
+    setUploadProgress(0);
+    setErrorMessage(null);
+    
     try {
       const timestamp = Date.now();
       const filePath = `${user.id}/${timestamp}_${file.name}`;
@@ -119,17 +82,20 @@ function App({ children, hideSideNav, isSideNavVisible }) {
       if (file.size > 6 * 1024 * 1024) {
         uploadError = await uploadInChunks(file, filePath);
       } else {
+        setUploadProgress(10);
         const { error } = await supabase.storage.from('pdfs').upload(filePath, file);
         uploadError = error;
+        setUploadProgress(50);
       }
 
       if (uploadError) {
-        console.error('Upload error:', uploadError);
-        return;
+        throw new Error(`Upload error: ${uploadError.message}`);
       }
 
-      // Create document record in the documents table
-      const { error: dbError } = await supabase
+      setUploadProgress(70);
+      
+      // Create document record
+      const { data: documentData, error: dbError } = await supabase
         .from('documents')
         .insert({
           user_id: user.id,
@@ -142,16 +108,34 @@ function App({ children, hideSideNav, isSideNavVisible }) {
             contentType: file.type,
             uploadedAt: new Date().toISOString()
           }
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) {
-        console.error('Database error:', dbError);
-        return;
+        throw new Error(`Database error: ${dbError.message}`);
       }
 
-      setFile(prev => ({ ...prev, progress: 100, uploading: false }));
+      setUploadProgress(90);
+ 
+      setUploadStatus('extracting');
+      await extractTextFromPDF(file);
+      
+      setUploadStatus('completed');
+      setUploadProgress(100);
+      setTimeout(() => {
+        navigate('/documentchat', { 
+          state: { 
+            success: true,
+            message: 'File uploaded successfully!',
+            documentId: documentData.id 
+          } 
+        });
+      }, 1000);
     } catch (error) {
       console.error('Error in upload process:', error);
+      setErrorMessage(error.message);
+      setUploadStatus('error');
     }
   };
 
@@ -200,6 +184,57 @@ function App({ children, hideSideNav, isSideNavVisible }) {
     }
   };
 
+  const extractTextFromPDF = async (file) => {
+    if (!file) {
+      alert('Please select a PDF file first');
+      return;
+    }
+
+    setIsExtracting(true);
+    setExtractionProgress(0);
+    const fileReader = new FileReader();
+
+    fileReader.onload = async () => {
+      const typedArray = new Uint8Array(fileReader.result);
+
+      try {
+        const pdfDocument = await getDocument(typedArray).promise;
+        let extractedText = '';
+        const totalPages = pdfDocument.numPages;
+
+        for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+          const page = await pdfDocument.getPage(pageNumber);
+          const textContent = await page.getTextContent();
+          extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+          
+          // Update extraction progress
+          setExtractionProgress((pageNumber / totalPages) * 100);
+        }
+
+        localStorage.setItem('extractedText', extractedText);
+        localStorage.setItem('fileName', file.name);
+        setPdfContent(extractedText);
+        console.log(extractedText);
+         
+      } catch (error) {
+        console.error('Error extracting text: ', error);
+        alert('Error extracting text from PDF.');
+      } finally {
+        setIsExtracting(false);
+        setExtractionProgress(0);
+      }
+    };
+
+    fileReader.onerror = () => {
+      console.error('Error reading file');
+      alert('Error reading the PDF file.');
+      setIsExtracting(false);
+      setExtractionProgress(0);
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  };
+
   const removeFile = () => {
     setFile(null);
   };
@@ -208,36 +243,76 @@ function App({ children, hideSideNav, isSideNavVisible }) {
     <div className="upload-container">
       <Header />
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
-      <div className={`upload-area ${isDragging ? 'dragging' : ''}`}
+      
+      {errorMessage && (
+        <div className="error-message">
+          <p>{errorMessage}</p>
+          <button onClick={() => setErrorMessage(null)}>Dismiss</button>
+        </div>
+      )}
+
+      <div 
+        className={`upload-area ${isDragging ? 'dragging' : ''} ${uploadStatus !== 'idle' ? 'uploading' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="cloud-icon">☁️</div>
-        <p>Choose a file or drag & drop it here</p>
-        <p className="file-info">JPEG, PNG, PDF and MP4 formats, up to 100 MB.</p>
-        <button className="upload-button" onClick={() => fileInputRef.current.click()}>
-          Upload File
-        </button>
-        <input type="file" ref={fileInputRef} onChange={handleFileInput} accept=".jpg,.jpeg,.png,.pdf,.mp4" style={{ display: 'none' }} />
-      </div>
-
-      {file && (
-        <div className="file-item">
-          <div className="file-info">
-            <div className="file-icon">{file.file.type.includes('pdf') ? '📄' : '📁'}</div>
-            <div className="file-details">
-              <div className="file-name">{file.file.name}</div>
-              <div className="file-size">{Math.round(file.file.size / 1024)} KB of 100 MB</div>
-            </div>
-            <button className="remove-button" onClick={removeFile}>✕</button>
-          </div>
-          <div className="progress-bar">
-            <div className="progress" style={{ width: `${file.progress}%` }} />
-            <div className="progress-text">{file.uploading ? 'Uploading...' : 'Completed'}</div>
-          </div>
+        <div className="cloud-icon">
+          {uploadStatus === 'idle' && '☁️'}
+          {uploadStatus === 'uploading' && '📤'}
+          {uploadStatus === 'extracting' && '📄'}
+          {uploadStatus === 'completed' && '✅'}
+          {uploadStatus === 'error' && '❌'}
         </div>
-      )}
+        
+        {uploadStatus === 'idle' ? (
+          <>
+            <p>Choose a file or drag & drop it here</p>
+            <p className="file-info">Upload PDF format only</p>
+            <button 
+              className="upload-button" 
+              onClick={() => fileInputRef.current.click()}
+            >
+              Upload File
+            </button>
+          </>
+        ) : (
+          <div className="upload-status">
+            <h3>{file?.file.name}</h3>
+            <div className="progress-container">
+              <div className="progress-bar">
+                <div 
+                  className="progress" 
+                  style={{ width: `${uploadProgress}%` }} 
+                />
+              </div>
+              <div className="progress-text">
+                {uploadStatus === 'uploading' && `Uploading... ${Math.round(uploadProgress)}%`}
+                {uploadStatus === 'extracting' && `Extracting text... ${Math.round(extractionProgress)}%`}
+                {uploadStatus === 'completed' && 'Upload completed!'}
+                {uploadStatus === 'error' && 'Upload failed'}
+              </div>
+            </div>
+            
+            {uploadStatus !== 'completed' && (
+              <button 
+                className="cancel-button" 
+                onClick={removeFile}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        )}
+        
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={handleFileInput} 
+          accept=".pdf" 
+          style={{ display: 'none' }} 
+        />
+      </div>
     </div>
   );
 }
