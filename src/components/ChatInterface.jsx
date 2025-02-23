@@ -1,3 +1,6 @@
+import { ArrowUp, Mic, Send, StopCircle } from "lucide-react";
+import "./ChatInterface.css";
+
 const LOCAL_RELAY_SERVER_URL =
   import.meta.env.REACT_APP_LOCAL_RELAY_SERVER_URL || '';
 
@@ -7,8 +10,7 @@ const LOCAL_RELAY_SERVER_URL =
   import { instructions } from '@/utils/conversation_config.js';
   import { WavRenderer } from '@/utils/wav_renderer';
   
-  import { X, Edit, Zap, ArrowUp, ArrowDown } from 'react-feather';
-  import { Button } from '@/components/chatComponentes/button/Button';
+   import { Button } from '@/components/chatComponentes/button/Button';
   import { Toggle } from '@/components/chatComponentes/toggle/Toggle';
   import './ConsolePage.scss'
 
@@ -470,227 +472,108 @@ export default function ChatInterface( {docId}) {
    * Render the application
    */
   return (
-    <div data-component="ConsolePage" style={{paddingLeft: '300px'}}>
-      <div className="content-top" >
-        <div className="content-title">
-          {/* <img src="/openai-logomark.svg" />
-          <span>realtime console</span> */}
+    <div className="chat-layout">
+      <div className="chat-container">
+        <div className="chat-header">
+          <div className="header-content">
+            <h2>AI Chat Assistant</h2>
+            <div className="connection-indicator">
+              <span className={`status-dot ${isConnected ? 'active' : ''}`} />
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </div>
+          </div>
         </div>
-        <div className="content-api-key">
-          {!LOCAL_RELAY_SERVER_URL && (
-            <Button
-              icon={Edit}
-              iconPosition="end"
-              buttonStyle="flush"
-              label={`api key: ${apiKey.slice(0, 3)}...`}
-              onClick={() => resetAPIKey()}
-            />
+
+        <div className="messages-wrapper">
+          {items.length === 0 ? (
+            <div className="empty-chat">
+              <div className="empty-illustration">
+                <svg>...</svg>
+              </div>
+              <h3>Start Your Conversation</h3>
+              <p>Ask questions about your document or start a voice chat</p>
+            </div>
+          ) : (
+            <div className="messages-container">
+              {items.map((message) => (
+                <div 
+                  key={message.id} 
+                  className={`message-bubble ${message.role}`}
+                >
+                  <div className="message-content">
+                    <div className="message-header">
+                      <span className="sender-name">
+                        {message.role === 'user' ? 'You' : 'AI Assistant'}
+                      </span>
+                      <span className="message-time">
+                        {new Date(message.created_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    
+                    <div className="message-text">
+                      {message.formatted.transcript || message.formatted.text}
+                    </div>
+
+                    {message.formatted.file && (
+                      <div className="audio-player">
+                        <audio 
+                          src={message.formatted.file.url} 
+                          controls 
+                          className="modern-audio-player"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
-      <div className="content-main">
-        <div className="content-logs">
-          <div className="content-block events">
-            <div className="visualization">
-              <div className="visualization-entry client">
-                <canvas ref={clientCanvasRef} />
-              </div>
-              <div className="visualization-entry server">
-                <canvas ref={serverCanvasRef} />
-              </div>
-            </div>
-            <div className="content-block-title">events</div>
-            <div className="content-block-body" ref={eventsScrollRef}>
-              {!realtimeEvents.length && `awaiting connection...`}
-              {realtimeEvents.map((realtimeEvent, i) => {
-                const count = realtimeEvent.count;
-                const event = { ...realtimeEvent.event };
-                if (event.type === 'input_audio_buffer.append') {
-                  event.audio = `[trimmed: ${event.audio.length} bytes]`;
-                } else if (event.type === 'response.audio.delta') {
-                  event.delta = `[trimmed: ${event.delta.length} bytes]`;
-                }
-                return (
-                  <div className="event" key={event.event_id}>
-                    <div className="event-timestamp">
-                      {formatTime(realtimeEvent.time)}
-                    </div>
-                    <div className="event-details">
-                      <div
-                        className="event-summary"
-                        onClick={() => {
-                          // toggle event details
-                          const id = event.event_id;
-                          const expanded = { ...expandedEvents };
-                          if (expanded[id]) {
-                            delete expanded[id];
-                          } else {
-                            expanded[id] = true;
-                          }
-                          setExpandedEvents(expanded);
-                        }}
-                      >
-                        <div
-                          className={`event-source ${
-                            event.type === 'error'
-                              ? 'error'
-                              : realtimeEvent.source
-                          }`}
-                        >
-                          {realtimeEvent.source === 'client' ? (
-                            <ArrowUp />
-                          ) : (
-                            <ArrowDown />
-                          )}
-                          <span>
-                            {event.type === 'error'
-                              ? 'error!'
-                              : realtimeEvent.source}
-                          </span>
-                        </div>
-                        <div className="event-type">
-                          {event.type}
-                          {count && ` (${count})`}
-                        </div>
-                      </div>
-                      {!!expandedEvents[event.event_id] && (
-                        <div className="event-payload">
-                          {JSON.stringify(event, null, 2)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="content-block conversation">
-            <div className="content-block-title">conversation</div>
-            <div className="content-block-body" data-conversation-content>
-              {!items.length && `awaiting connection...`}
-              {items.map((conversationItem, i) => {
-                return (
-                  <div className="conversation-item" key={conversationItem.id}>
-                    <div className={`speaker ${conversationItem.role || ''}`}>
-                      <div>
-                        {(
-                          conversationItem.role || conversationItem.type
-                        ).replaceAll('_', ' ')}
-                      </div>
-                      <div
-                        className="close"
-                        onClick={() =>
-                          deleteConversationItem(conversationItem.id)
-                        }
-                      >
-                        <X />
-                      </div>
-                    </div>
-                    <div className={`speaker-content`}>
-                      {/* tool response */}
-                      {conversationItem.type === 'function_call_output' && (
-                        <div>{conversationItem.formatted.output}</div>
-                      )}
-                      {/* tool call */}
-                      {!!conversationItem.formatted.tool && (
-                        <div>
-                          {conversationItem.formatted.tool.name}(
-                          {conversationItem.formatted.tool.arguments})
-                        </div>
-                      )}
-                      {!conversationItem.formatted.tool &&
-                        conversationItem.role === 'user' && (
-                          <div>
-                            {conversationItem.formatted.transcript ||
-                              (conversationItem.formatted.audio?.length
-                                ? '(awaiting transcript)'
-                                : conversationItem.formatted.text ||
-                                  '(item sent)')}
-                          </div>
-                        )}
-                      {!conversationItem.formatted.tool &&
-                        conversationItem.role === 'assistant' && (
-                          <div>
-                            {conversationItem.formatted.transcript ||
-                              conversationItem.formatted.text ||
-                              '(truncated)'}
-                          </div>
-                        )}
-                      {conversationItem.formatted.file && (
-                        <audio
-                          src={conversationItem.formatted.file.url}
-                          controls
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="content-actions">
-            <Toggle
-              defaultValue={false}
-              labels={['manual', 'vad']}
-              values={['none', 'server_vad']}
-              onChange={(_, value) => changeTurnEndType(value)}
-            />
-            <div className="spacer" />
-            {isConnected && canPushToTalk && (
-              <Button
-                label={isRecording ? 'release to send' : 'push to talk'}
-                buttonStyle={isRecording ? 'alert' : 'regular'}
-                disabled={!isConnected || !canPushToTalk}
+
+        <div className="chat-footer">
+          <div className="controls-container">
+            <div className="main-controls">
+              <button
+                className={`voice-button ${isRecording ? 'recording' : ''}`}
                 onMouseDown={startRecording}
                 onMouseUp={stopRecording}
-              />
-            )}
-            <div className="spacer" />
-            <Button
-              label={isConnected ? 'disconnect' : 'connect'}
-              iconPosition={isConnected ? 'end' : 'start'}
-              icon={isConnected ? X : Zap}
-              buttonStyle={isConnected ? 'regular' : 'action'}
-              onClick={
-                isConnected ? disconnectConversation : connectConversation
-              }
-            />
+                disabled={!isConnected || !canPushToTalk}
+              >
+                {isRecording ? (
+                  <StopCircle className="icon" />
+                ) : (
+                  <Mic className="icon" />
+                )}
+                {isRecording ? 'Stop' : 'Hold to Talk'}
+              </button>
+
+              <button
+                className={`connect-button ${isConnected ? 'connected' : ''}`}
+                onClick={isConnected ? disconnectConversation : connectConversation}
+              >
+                {isConnected ? 'End Chat' : 'Start Chat'}
+              </button>
+            </div>
+
+            <div className="mode-selector">
+              <span className="mode-label">Mode:</span>
+              <div className="mode-buttons">
+                <button 
+                  className={`mode-button ${canPushToTalk ? 'active' : ''}`}
+                  onClick={() => changeTurnEndType('none')}
+                >
+                  Manual
+                </button>
+                <button 
+                  className={`mode-button ${!canPushToTalk ? 'active' : ''}`}
+                  onClick={() => changeTurnEndType('server_vad')}
+                >
+                  Auto
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        {/* <div className="content-right">
-          <div className="content-block map">
-            <div className="content-block-title">get_weather()</div>
-            <div className="content-block-title bottom">
-              {marker?.location || 'not yet retrieved'}
-              {!!marker?.temperature && (
-                <>
-                  <br />
-                  🌡️ {marker.temperature.value} {marker.temperature.units}
-                </>
-              )}
-              {!!marker?.wind_speed && (
-                <>
-                  {' '}
-                  🍃 {marker.wind_speed.value} {marker.wind_speed.units}
-                </>
-              )}
-            </div>
-            <div className="content-block-body full">
-              {coords && (
-                <Map
-                  center={[coords.lat, coords.lng]}
-                  location={coords.location}
-                />
-              )}
-            </div>
-          </div>
-          <div className="content-block kv">
-            <div className="content-block-title">set_memory()</div>
-            <div className="content-block-body content-kv">
-              {JSON.stringify(memoryKv, null, 2)}
-            </div>
-          </div>
-        </div> */}
       </div>
     </div>
   );
