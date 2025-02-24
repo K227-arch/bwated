@@ -5,6 +5,7 @@ import logo from '../assets/logo.png';
 import "./login.css";
 import { useState } from 'react';
 import { supabase } from "@/lib/supabaseClient";
+import { ToastContainer, toast } from 'react-toastify';
 
 function Login() {
    const [login_email, setLoginEmail] = useState('');
@@ -26,6 +27,7 @@ function Login() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     
         if (error) {
+          toast(error.message);
           console.error("Sign-in error:", error.message);
         } else {
           console.log(data.id)
@@ -39,6 +41,7 @@ function Login() {
 
   return (
     <div>
+      <ToastContainer />
       <div className="login-wrapper">
         <div className="container-login">
           <div className="logologin">

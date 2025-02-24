@@ -56,7 +56,7 @@ function App({hideSideNav, isSideNavVisible}) {
         if (testsError) throw testsError;
         setTests(testResults);
 
-      } catch (err) {
+      } catch (err) { 
         console.error('Error fetching data:', err);
         setError(err.message);
       } finally {
