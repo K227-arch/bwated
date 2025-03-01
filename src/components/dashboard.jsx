@@ -3,13 +3,13 @@ import Header from './Header';
 import Sidebar from './Sidebar'
 import './dashboard.css';
 import { useNavigate } from "react-router";
-import { supabase } from '@/lib/supabaseClient'; // Fix typo in import
+import { supabase } from '@/lib/supabaseClient';  
 
 function App({hideSideNav, isSideNavVisible}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [documents, setDocuments] = useState([]);
   const [tests, setTests] = useState([]);
-  const [activeTab, setActiveTab] = useState('documents'); // 'documents' or 'tests'
+  const [activeTab, setActiveTab] = useState('documents');  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
