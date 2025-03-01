@@ -11,8 +11,11 @@ function App() {
   const [dataChannel, setDataChannel] = useState(null);
   const [error, setError] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [audioStreams, setAudioStreams] = useState({});
   const peerConnection = useRef(null);
   const audioElement = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
   async function startSession() {
     try {
@@ -61,6 +64,34 @@ function App() {
             noiseSuppression: true
           }
         });
+        
+        // Create MediaRecorder instance
+        const mediaRecorder = new MediaRecorder(stream);
+        let audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioStream = new MediaStream([audioBlob]);
+          
+          // Store the audio stream with the latest event ID
+          const latestEventId = events[0]?.event_id;
+          if (latestEventId) {
+            setAudioStreams(prev => ({
+              ...prev,
+              [latestEventId]: audioStream
+            }));
+          }
+          
+          audioChunks = [];
+        };
+
+        // Store mediaRecorder in ref for later use
+        mediaRecorderRef.current = mediaRecorder;
+        
         stream.getTracks().forEach(track => pc.addTrack(track, stream));
       } catch (mediaError) {
         throw new Error('Microphone access denied');
@@ -91,7 +122,7 @@ function App() {
       await pc.setLocalDescription(offer);
 
       // Send offer to server
-      const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17`, {
+      const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-4o-mini-realtime-preview-2024-12-17`, {
         method: "POST",
         body: offer.sdp,
         headers: {
@@ -142,6 +173,7 @@ function App() {
 
   // Stop current session, clean up peer connection and data channel
   function stopSession() {
+    setIsTranscribing(false); // Add this line
     // Close data channel first
     if (dataChannel) {
       dataChannel.close();
@@ -167,6 +199,7 @@ function App() {
       audioElement.current = null;
     }
 
+    setAudioStreams({});
     setIsSessionActive(false);
   }
 
@@ -216,33 +249,27 @@ function App() {
       dataChannel.addEventListener("open", () => {
         setIsSessionActive(true);
         setEvents([]);
-        sendTextMessage(`speak english you are a tutor who drives conversations related to this passage and helps students understand the text better and only answer to questions in relation to this context.
-The structure of an atom:
- 
-An atom is the smallest particle of an element that can take part in a chemical reaction. An 
-atom consists of three particles namely;
-▪ Electrons
-▪ Neutrons
-▪ Protons 
-An atom is made of a central part called the nucleus around which electrons revolve. 
-The nucleus is positively charged because it consists of protons which are positively charged 
-and neutrons which have no charge. The properties of the particles of an atom are as shown 
-in the table below.
-Name Symbol Mass Charge
-Protons
-Neutrons
-Electrons 
-P
-n
-e
-1
-1
-0
- 
-        `);
+        sendTextMessage(`hey there!`); 
+         
       });
     }
   }, [dataChannel]);
+
+  useEffect(() => {
+    if (events.length > 0) {
+      const lastEvent = events[0]; // events are prepended, so latest is at index 0
+      
+      // Start transcribing when a response.create event is received
+      if (lastEvent.type === "response.create") {
+        setIsTranscribing(true);
+      }
+      
+      // Stop transcribing when receiving content completion event
+      if (lastEvent.type === "content.complete") {
+        setIsTranscribing(false);
+      }
+    }
+  }, [events]);
 
   return (
    <div className="chat-interface">
@@ -255,7 +282,7 @@ e
       
       <main className="chat-main">
         <section className="chat-messages">
-          <EventLog events={events} />
+          <EventLog events={events} isTranscribing={isTranscribing} audioStreams={audioStreams} />
         </section>
         
         <section className="chat-controls">
@@ -268,16 +295,7 @@ e
             isSessionActive={isSessionActive}
             isConnecting={isConnecting}
           />
-        </section>
-        
-        <section className="chat-tools">
-          <ToolPanel
-            sendClientEvent={sendClientEvent}
-            sendTextMessage={sendTextMessage}
-            events={events}
-            isSessionActive={isSessionActive}
-          />
-        </section>
+        </section> 
       </main>
     </div>
   );

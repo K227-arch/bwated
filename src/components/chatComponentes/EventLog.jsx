@@ -1,51 +1,56 @@
-import { ArrowUp, ArrowDown } from "react-feather";
 import { useState } from "react";
+import './even.css';
+import AudioMessage from './AudioMessage';
 
-function Event({ event, timestamp }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const isClient = event.event_id && !event.event_id.startsWith("event_");
-
-  return (
-    <div className="flex flex-col gap-2 p-2 rounded-md bg-gray-50">
-      <div
-        className="flex items-center gap-2 cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        {isClient ? (
-          <ArrowDown className="text-blue-400" />
-        ) : (
-          <ArrowUp className="text-green-400" />
-        )}
-        <div className="text-sm text-gray-500">
-          {isClient ? "client:" : "server:"}
-          &nbsp;{event.type} | {timestamp}
+function Message({ event, audioStream }) {
+  // Handle user text messages
+  if (event.type === "conversation.item.create" && event.item?.role === "user") {
+    return (
+      <div className="user-message">
+        <div className="message-content">
+          {event.item.content[0].text}
+          {audioStream && <AudioMessage stream={audioStream} />}
         </div>
       </div>
-      <div
-        className={`text-gray-500 bg-gray-200 p-2 rounded-md overflow-x-auto ${
-          isExpanded ? "block" : "hidden"
-        }`}
-      >
-        <pre className="text-xs">{JSON.stringify(event, null, 2)}</pre>
+    );
+  }
+
+  // Handle AI responses (both text and transcribed audio)
+  if (event.type === "response.audio_transcript.done" || 
+      (event.type === "content.part" && event.content?.text)) {
+    return (
+      <div className="ai-message">
+        <div className="message-content">
+          {event.transcript || event.content.text}
+        </div>
       </div>
+    );
+  }
+
+  return null;
+}
+
+export default function EventLog({ events, isTranscribing, audioStreams }) {
+  return (
+    <div className="messages-container">
+      {events.length === 0 ? (
+        <div className="empty-state">Start a conversation...</div>
+      ) : (
+        <div className="messages-list">
+          {events.map((event, index) => (
+            <Message 
+              key={event.event_id || index} 
+              event={event} 
+              audioStream={audioStreams[event.event_id]}
+            />
+          ))}
+          {isTranscribing && (
+            <div className="ai-message">
+              <div className="typing-indicator">AI is typing...</div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
-
-const EventLog = ({ events }) => {
-  return (
-    <div className="event-log">
-      {events.map((event, index) => (
-        <div
-          key={event.event_id || index}
-          className={`message ${event.item?.role === 'user' ? 'user' : 'assistant'}`}
-        >
-          {event.item?.content?.[0]?.text}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default EventLog;
