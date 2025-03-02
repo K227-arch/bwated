@@ -1,0 +1,169 @@
+.test-details-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.test-details-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.back-button:hover {
+  color: #333;
+}
+
+.test-summary {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  color: #666;
+}
+
+.test-score {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c7be5;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.question-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.question-card.correct {
+  border-left: 4px solid #28a745;
+}
+
+.question-card.incorrect {
+  border-left: 4px solid #dc3545;
+}
+
+.question-number {
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.answers {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.user-answer, .correct-answer {
+  margin-bottom: 0.5rem;
+}
+
+.correct-text {
+  color: #28a745;
+}
+
+.incorrect-text {
+  color: #dc3545;
+}
+
+.explanation {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.explanation p {
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.test-stats {
+  display: flex;
+  gap: 2rem;
+  margin: 1rem 0;
+  color: #666;
+}
+
+.question-type-breakdown {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.type-stat {
+  text-align: center;
+}
+
+.type-stat h4 {
+  margin: 0;
+  color: #333;
+}
+
+.type-stat p {
+  margin: 0.5rem 0 0;
+  color: #666;
+}
+
+.options-list {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.options-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.option {
+  padding: 0.5rem 1rem;
+  margin: 0.25rem 0;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.option.selected {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+.option.correct {
+  border-color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.option.selected.correct {
+  background-color: rgba(40, 167, 69, 0.2);
+}
+
+.option.selected:not(.correct) {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}

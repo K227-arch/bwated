@@ -32,6 +32,8 @@ import Packages from "./components/Admin/Packages.jsx";
 import Admindashboard from "./components/Admin/Admindashboard.jsx";
 import "./App.css";
 import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
+import TestDetails from './components/TestDetails';
+
 const AppRoutes = () => {
   /**
    * ------------------------------------------------------
@@ -139,6 +141,8 @@ const AppRoutes = () => {
                 />
           }
         />
+          <Route path="/test-results/:testId" element={<TestDetails />} />
+
         </Route>
         
         
