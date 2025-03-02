@@ -12,14 +12,15 @@
 
 
 .chat-header {
-  margin-top: 80px;
+  margin-top: -70px;
   text-align: center;
   margin-bottom: 2rem;
 }
 
 .chat-header h1 {
   font-size: 2rem;
-  margin-bottom: -4rem;
+  margin-top:-10px;
+  
   color: #333;
 }
 
