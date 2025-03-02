@@ -4,13 +4,14 @@ import { createServer as createViteServer } from "vite";
 import "dotenv/config";
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import dotenv from "dotenv"
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+dotenv.config();
 const port = process.env.PORT || 3000;
 const apiKey = process.env.VITE_OPENAI_KEY;
-
+console.log(apiKey)
 // Configure Vite middleware for React client
 const vite = await createViteServer({
   server: { middlewareMode: true },
