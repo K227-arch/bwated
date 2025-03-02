@@ -31,7 +31,7 @@ const Adminside = ({ goToDashboard }) => {
       </nav>
       <div className="admin-info">
         <div className="admin-avatar">A</div>
-        Administrator
+        Administrators
       </div>
     </aside>
   );
