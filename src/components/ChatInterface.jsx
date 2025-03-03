@@ -160,7 +160,7 @@ function App() {
         role: "user",
         content: [{
           type: "input_text",
-          text: `You are a tutor who drives conversations related to atomic structure and helps students understand the text better. Only answer questions in relation to this context.`
+          // text: ` `
         }]
       },
       event_id: crypto.randomUUID()
