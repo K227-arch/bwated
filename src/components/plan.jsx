@@ -56,7 +56,7 @@ function App({ children, hideSideNav, isSideNavVisible }) {
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
 
       <div className="plan-words">
-        <h1>Pricing</h1>
+        <h1>Pricings</h1>
         <p>
           Start with a free demo to speed up your workflow on public projects or
           boost your entire team with instantly-opening production environments.
