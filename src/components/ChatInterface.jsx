@@ -23,7 +23,7 @@ function App() {
       setError(null);
 
       // Get an ephemeral key from the server
-      const tokenResponse = await fetch(`${window.location.origin}/token`);
+      const tokenResponse = await fetch(`https://bwat.netlify.app/.netlify/functions/api/token`);
       if (!tokenResponse.ok) {
         throw new Error('Failed to get authentication token');
       }
