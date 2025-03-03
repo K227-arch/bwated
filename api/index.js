@@ -133,7 +133,7 @@ const vite = await createViteServer({
   appType: "custom",
 });
 app.use(vite.middlewares);
-
+app.get('/', (req, res) => res.status(200).json({ message : "connected successfully"}) )
 // API route for token generation
 app.get("/token", async (req, res) => {
   try {
