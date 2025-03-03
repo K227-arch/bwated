@@ -202,7 +202,7 @@ function App() {
     setAudioStreams({});
     setIsSessionActive(false);
   }
-
+//comment
   // Send a message to the model
   function sendClientEvent(message) {
     if (dataChannel) {
