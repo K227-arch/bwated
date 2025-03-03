@@ -23,7 +23,7 @@ function App() {
       setError(null);
 
       // Get an ephemeral key from the server
-      const tokenResponse = await fetch("http://localhost:3000/token");
+      const tokenResponse = await fetch(`${window.location.origin}/token`);
       if (!tokenResponse.ok) {
         throw new Error('Failed to get authentication token');
       }
