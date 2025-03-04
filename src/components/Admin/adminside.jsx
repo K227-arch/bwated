@@ -23,6 +23,7 @@ const Adminside = ({ goToDashboard }) => {
         <ol className="nav-items">
           <li className="nav-item" onClick={goto("/Admindashboard")}>📊 Dashboards</li>
           <li className="nav-item" onClick={goto("/Users")}>👥 Users</li>
+          <li className="nav-item" onClick={goto("/Transactions")}>💳 Transactions</li>
           <li className="nav-item" onClick={goto("/Packages")}>🚀 Packages</li>
           <li className="nav-item" onClick={goto("/Token")}>📈 Traffic</li>
           <li className="nav-item" onClick={goto("/notifications")}>🔔 Notifications</li>

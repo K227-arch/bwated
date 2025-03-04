@@ -30,6 +30,7 @@ import Users from "./components/Admin/Users.jsx";
 import Token from "./components/Admin/token.jsx";
 import Packages from "./components/Admin/Packages.jsx";
 import Admindashboard from "./components/Admin/Admindashboard.jsx";
+import Transactions from "./components/Admin/Transactions.jsx";
 import "./App.css";
 import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
 import TestDetails from './components/TestDetails';
@@ -80,6 +81,7 @@ const AppRoutes = () => {
         <Route path="/Pop" element={<Pop />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Adminside" element={<Adminside />} />
+        <Route path="/Transactions" element={<Transactions />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/Users" element={<Users />} />
         <Route path="/Token" element={<Token />} />

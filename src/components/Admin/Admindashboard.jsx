@@ -22,7 +22,7 @@ function App() {
   const recentTransactions = [
     { id: 1, name: 'Brian Wilson', plan: 'Daily', amount: 2.00, status: 'Completed', date: 'Apr 1, 2022 2:00 PM' },
     { id: 2, name: 'Daniel Lee', plan: 'Weekly', amount: 10.00, status: 'Upcoming', date: 'Apr 7, 2022 5:45 PM' },
-    { id: 3, name: 'Eva Hernandez', plan: 'Premium', amount: 40.00, status: 'Pending', date: 'Apr 4, 2022 6:15 PM' }
+    { id: 3, name: 'Eva Hernandez', plan: 'Monthly', amount: 40.00, status: 'Pending', date: 'Apr 4, 2022 6:15 PM' }
   ]
 
   return (
