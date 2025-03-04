@@ -24,7 +24,7 @@ function App() {
       <Adminside />
       <div className="user-wrapper">
         <header>
-          <h1>PACKAGES</h1>
+          <h1>TRANSACTIONS</h1>
           <div className="navigation">
             <span>Dashboard</span>
             <span className="separator">/</span>
@@ -36,7 +36,7 @@ function App() {
           <div className="search">
             <input
               type="text"
-              placeholder="Search packages..."
+              placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
