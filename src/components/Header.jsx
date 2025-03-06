@@ -27,6 +27,7 @@ const ProfileMenu = () => {
 
   return (
     <div className="auth-buttons" ref={dropdownRef}>
+
       <CircleUser
         size={35}
         className="circle-btn"
@@ -71,7 +72,7 @@ const Header = () => {
           <img
             src={logo}
             className="header-logo"
-            onClick={goto("/Documenttitle")}
+            onClick={goto("/Dashboard")}
             alt="Logo"
             aria-label="Go to home"
           />

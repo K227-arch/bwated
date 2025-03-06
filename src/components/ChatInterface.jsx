@@ -695,6 +695,7 @@ function App() {
 
   return (
    <div className="chat-interface">
+      <ToastContainer />
       <nav className="chat-nav">
         <div className="nav-content">
           <h1>AI Tutor Chat</h1>
