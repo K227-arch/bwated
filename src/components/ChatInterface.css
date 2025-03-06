@@ -645,3 +645,82 @@
     transform: translateY(0);
   }
 }
+
+.loading-status-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loading-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #666;
+}
+
+.loading-spinner {
+  border: 2px solid;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.progress-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-label {
+  min-width: 140px;
+  font-size: 14px;
+  color: #666;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #3498db;
+  transition: width 0.3s ease;
+}
+
+.progress-percentage {
+  min-width: 48px;
+  text-align: right;
+  font-size: 14px;
+  color: #666;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.history-indicator {
+  font-size: 0.875rem;
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.nav-content {
+  display: flex;
+  flex-direction: column;
+}
