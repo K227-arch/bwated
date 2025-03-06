@@ -1,9 +1,22 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 .messages-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
+  padding: 20px;
   overflow-y: auto;
+  flex-grow: 1;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .messages-list {
@@ -13,30 +26,99 @@
 }
 
 .user-message, .ai-message {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 70%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
   align-self: flex-end;
-  background-color: #007AFF;
+  background: #2b5876;
   color: white;
+  border-bottom-right-radius: 4px;
 }
 
 .ai-message {
   align-self: flex-start;
-  background-color: #F0F0F0;
-  color: #333;
+  background: #1f1f1f;
+  color: white;
+  border-bottom-left-radius: 4px;
 }
 
 .typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-style: italic;
-  color: #666;
+  font-size: 0.9em;
+  color: #888;
 }
 
 .empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  color: #666;
+  color: #888;
   padding: 2rem;
+  height: 100%;
+  font-size: 1.2em;
+  font-style: italic;
+}
+
+.message-wrapper {
+  display: flex;
+  margin: 16px 0;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.message-wrapper.user {
+  justify-content: flex-end;
+}
+
+.message-wrapper.ai {
+  justify-content: flex-start;
+}
+
+.message-content {
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.dots {
+  display: flex;
+  gap: 2px;
+}
+
+.dots span {
+  animation: bounce 1s infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }

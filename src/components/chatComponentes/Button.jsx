@@ -1,3 +1,4 @@
+import './Button.css'
 export default function Button({ icon, children, onClick, className }) {
   return (
     <button
@@ -9,3 +10,4 @@ export default function Button({ icon, children, onClick, className }) {
     </button>
   );
 }
+ 

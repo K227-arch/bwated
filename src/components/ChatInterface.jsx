@@ -513,7 +513,7 @@ function App() {
         role: "user",
         content: [{
           type: "input_text",
-          text: `You are my tutor. Keep responses short and precise unless asked for more detail. ${
+          text: `You are my tutor.Always speak in English and  Keep responses short and precise unless asked for more detail. and if asked something unrelated with the context kindly tell the user to ask questions related to the content ${
             chatHistory.length > 0 
               ? "We've discussed this text before - continue from our previous conversation." 
               : "I will share a text for you to help me understand."
