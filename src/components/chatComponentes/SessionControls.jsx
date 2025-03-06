@@ -71,7 +71,7 @@ export default function SessionControls({
 }) {
   return (
     <div className="controls-container">
-      {  <ChatIndicator />}
+      { isSessionActive && <ChatIndicator />}
       {isSessionActive ? (
         <SessionActive
           stopSession={stopSession}

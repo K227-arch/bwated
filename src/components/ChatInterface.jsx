@@ -187,7 +187,7 @@ function App() {
       // Filter only AI responses with proper content
       const aiResponses = messages.filter(msg => {
         // Check for content.part messages
-        if (msg.type === "content.part" && msg.content?.text) {
+        if (msg.type === "response.audio_transcript.done"  ) {
           return true;
         }
         // Check for conversation items from assistant
@@ -197,13 +197,7 @@ function App() {
           return true;
         }
         return false;
-      }).map(msg => ({
-        type: msg.type,
-        content: msg.type === "content.part" ? 
-          msg.content.text : 
-          msg.item.content[0].text,
-        timestamp: msg.timestamp || Date.now()
-      }));
+      }) 
   
       console.log('Saving AI responses:', aiResponses);
   
@@ -513,7 +507,7 @@ function App() {
         role: "user",
         content: [{
           type: "input_text",
-          text: `You are my tutor.Always speak in English and  Keep responses short and precise unless asked for more detail. and if asked something unrelated with the context kindly tell the user to ask questions related to the content ${
+          text: `You are my tutor. Always speak in English and  Keep responses short and precise unless asked for more detail. and if asked something unrelated with the context kindly tell the user to ask questions related to the content ${
             chatHistory.length > 0 
               ? "We've discussed this text before - continue from our previous conversation." 
               : "I will share a text for you to help me understand."
@@ -596,7 +590,7 @@ function App() {
     }
   }
 
-  // Stop current session, clean up peer connection and data channel
+  // Modify the stopSession function to keep messages
   function stopSession() {
     setIsTranscribing(false);
     
@@ -632,7 +626,6 @@ function App() {
 
     setAudioStreams({});
     setIsSessionActive(false);
-    setEvents([]);
   }
 
   // Send a message to the model
@@ -652,7 +645,7 @@ function App() {
     }
   }
 
-  // Attach event listeners to the data channel when a new one is created
+  // Update the useEffect for dataChannel to not clear messages on open
   useEffect(() => {
     if (dataChannel) {
       dataChannel.addEventListener("message", (e) => {
@@ -668,8 +661,6 @@ function App() {
 
       dataChannel.addEventListener("open", () => {
         setIsSessionActive(true);
-        setEvents([]);
-        // Removed sendTextMessage("hey there!")
       });
     }
   }, [dataChannel]);
