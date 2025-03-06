@@ -3,6 +3,7 @@ import "./ChatInterface.css";
 import EventLog from "./chatComponentes/EventLog";
 import SessionControls from "./chatComponentes/SessionControls";
 import ToolPanel from "./chatComponentes/ToolPanel";
+import { ToastContainer, toast } from 'react-toastify';
 import ReactDOMServer from 'react-dom/server';
 
 function App() {
@@ -273,6 +274,7 @@ function App() {
 
   return (
    <div className="chat-interface">
+      <ToastContainer />
       <nav className="chat-nav">
         <div className="nav-content">
           <h1>AI Tutor Chat</h1>

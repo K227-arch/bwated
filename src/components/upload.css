@@ -209,6 +209,9 @@
   font-size: 18px;
   padding: 5px;
 }
+.cloud-icon{
+  gap:10px;
+}
 
 .remove-button:hover {
   color: #bb2d3b;
