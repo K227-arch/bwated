@@ -4,6 +4,8 @@ import Sidebar from './Sidebar'
 import './dashboard.css';
 import { useNavigate } from "react-router";
 import { supabase } from '@/lib/supabaseClient';  
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack'; 
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 function App({hideSideNav, isSideNavVisible}) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,9 +83,7 @@ function App({hideSideNav, isSideNavVisible}) {
     }
   };
 
-  const gotoDocumentchat=()=>{
-    navigate("/Documentchat")
-  }
+   
  
   const handleChatClick = () => {
      navigate("/upload")
@@ -92,6 +92,46 @@ function App({hideSideNav, isSideNavVisible}) {
   const handleTestClick = () => {
     navigate("/Test")
   }
+const extractTextFromPDF = async (url) => {
+  try {
+    // First fetch the PDF file from the URL
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch PDF');
+    
+    const pdfBlob = await response.blob();
+    const typedArray = new Uint8Array(await pdfBlob.arrayBuffer());
+
+    const pdfDocument = await getDocument(typedArray).promise;
+    let extractedText = '';
+    const totalPages = pdfDocument.numPages;
+
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+      const page = await pdfDocument.getPage(pageNumber);
+      const textContent = await page.getTextContent();
+      extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+    }
+
+    localStorage.setItem('extractedText', extractedText);
+    console.log('Text extracted successfully:', extractedText);
+    return extractedText;
+
+  } catch (error) {
+    console.error('Error extracting text: ', error);
+    throw error;
+  }
+};
+
+  const handleDocumentClick =async (doc) => {
+    localStorage.setItem('documentId', doc.doc_id);
+    const { data } = supabase.storage.from('pdfs').getPublicUrl(doc.file_path);
+    console.log(data.publicUrl)
+     
+    extractTextFromPDF(data.publicUrl)
+    navigate("/Documentchat", {
+      state: { docId: doc.doc_id }
+    });
+   
+  };
 
   return (
     <div className="layout">
@@ -183,7 +223,11 @@ function App({hideSideNav, isSideNavVisible}) {
           ) : activeTab === 'documents' ? (
             // Existing document cards
             getFilteredItems().map((doc) => (
-              <div key={doc.id} className="chat-card" onClick={() => navigate(`/chat/${doc.id}`)}>
+              <div 
+                key={doc.id} 
+                className={`chat-card ${doc.file_type === 'pdf' ? 'clickable' : ''}`} 
+                onClick={() => handleDocumentClick(doc)}
+              >
                 <div className="chat-preview">
                   <h3>{doc.name || 'Untitled'}</h3>
                   <div className="date">

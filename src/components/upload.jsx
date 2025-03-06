@@ -68,8 +68,11 @@ const navigate = useNavigate();
   };
 
   const uploadFile = async (file) => {
-    if (!user) return;
-    
+    if (!user ) return;
+    if(file.size > 6 * 1024 * 1024) {
+      alert('File size cannot exceed 6MB');
+      return;
+    }
     setUploadStatus('uploading');
     setUploadProgress(0);
     setErrorMessage(null);
@@ -79,14 +82,18 @@ const navigate = useNavigate();
       const filePath = `${user.id}/${timestamp}_${file.name}`;
       let uploadError;
       
-      if (file.size > 6 * 1024 * 1024) {
-        uploadError = await uploadInChunks(file, filePath);
-      } else {
+      // if (file.size > 6 * 1024 * 1024) {
+      //   alert('Maximum File size should be 6 Mbs');
+      //   return
+      //   // lets allow only that for now cause an eror
+      //   // uploadError = await uploadInChunks(file, filePath);
+      // } else 
+      
         setUploadProgress(10);
         const { error } = await supabase.storage.from('pdfs').upload(filePath, file);
         uploadError = error;
         setUploadProgress(50);
-      }
+      
 
       if (uploadError) {
         throw new Error(`Upload error: ${uploadError.message}`);

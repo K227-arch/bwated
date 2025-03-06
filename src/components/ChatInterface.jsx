@@ -5,6 +5,7 @@ import SessionControls from "./chatComponentes/SessionControls";
 import ReactDOMServer from 'react-dom/server';
 import { encode, decode } from "gpt-tokenizer";
 import { supabase } from '@/lib/supabaseClient';
+import { useLocation } from 'react-router-dom';
 
 // Add these constants at the top
 const MAX_TOKENS_PER_CHUNK = 2000; // Conservative limit for GPT-4
@@ -23,6 +24,8 @@ function App() {
   const peerConnection = useRef(null);
   const audioElement = useRef(null);
   const mediaRecorderRef = useRef(null);
+  const location = useLocation();
+ 
 
   // Add new states for text processing
   const [processedText, setProcessedText] = useState('');
@@ -306,7 +309,8 @@ function App() {
   useEffect(() => {
     const initializeChat = async () => {
       const storedText = localStorage.getItem('extractedText') || '';
-      const documentId = localStorage.getItem('docId');
+      const { documentId } = location.state;
+      console.log(documentId)
       
       if (documentId) {
         console.log('Initializing chat with document ID:', documentId);
@@ -436,7 +440,7 @@ function App() {
           if (dc.readyState === 'open') {
             sendInitialPrompt(dc);
           }
-        }, 1000);
+        }, 2000);
       };
 
       dc.onclose = () => {
@@ -572,7 +576,7 @@ function App() {
             role: "user",
             content: [{
               type: "input_text",
-              text: "Provide a concise summary of the key points from this text. Keep your response focused and brief."
+              text: "Provide a concise summary of the key points from this text. Keep your response focused and brief. If questions asked are out of context provided, politely tell the user to stay on contex. remember to be exiting and happy while sharing"
             }]
           },
           event_id: crypto.randomUUID()

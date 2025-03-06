@@ -120,6 +120,20 @@
   transform: translateY(-2px);
 }
 
+.chat-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chat-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chat-card.clickable:active {
+  transform: translateY(0);
+}
+
 .chat-preview {
   display: flex;
   justify-content: space-between;
