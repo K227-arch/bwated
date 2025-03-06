@@ -165,7 +165,7 @@ function App() {
           timestamp: msg.timestamp,
           event_id: crypto.randomUUID()
         }));
-        setEvents(formattedMessages);
+        // setEvents(formattedMessages);
         return formattedMessages;
       }
       return [];
@@ -182,7 +182,7 @@ function App() {
   const saveChatHistory = async (messages) => {
     setLoadingStates(prev => ({ ...prev, saving: true }));
     if (!docId) return;
-
+  
     try {
       // Filter only AI responses with proper content
       const aiResponses = messages.filter(msg => {
@@ -204,23 +204,30 @@ function App() {
           msg.item.content[0].text,
         timestamp: msg.timestamp || Date.now()
       }));
-
+  
       console.log('Saving AI responses:', aiResponses);
-
-      // Update or create record
+  
+      // Use upsert with ON CONFLICT DO UPDATE
       const { error } = await supabase
         .from('chat_history')
         .upsert({
           doc_id: docId,
           messages: aiResponses,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'doc_id',
+          ignoreDuplicates: false
         });
-
-      if (error) throw error;
+  
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
       console.log('Chat history saved successfully');
     } catch (error) {
       console.error('Error saving chat history:', error);
-      setError('Failed to save chat history');
+      setError('Failed to save chat history: ' + error.message);
     } finally {
       setLoadingStates(prev => ({ ...prev, saving: false }));
     }
