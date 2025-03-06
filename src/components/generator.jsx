@@ -6,7 +6,7 @@ import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { supabase } from '@/lib/supabaseClient';
 import {fetchUser} from '@/lib/authUser';
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
-
+ 
 function Generator() {
   const [questionType, setQuestionType] = useState("");
   const [questionCount, setQuestionCount] = useState("");
@@ -23,6 +23,8 @@ function Generator() {
   const [extractionProgress, setExtractionProgress] = useState(0);
   const [uploadError, setUploadError] = useState(null);
   const [documentId, setDocumentId] = useState(null);
+  const [userPdfs, setUserPdfs] = useState([]);
+  const [selectedPdf, setSelectedPdf] = useState('');
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Structured", "Multichoice"];
   
@@ -83,6 +85,36 @@ function Generator() {
 
     fileReader.readAsArrayBuffer(file);
   };
+
+  const extractTextFromPDFURL = async (url) => {
+    try {
+      // First fetch the PDF file from the URL
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch PDF');
+      
+      const pdfBlob = await response.blob();
+      const typedArray = new Uint8Array(await pdfBlob.arrayBuffer());
+  
+      const pdfDocument = await getDocument(typedArray).promise;
+      let extractedText = '';
+      const totalPages = pdfDocument.numPages;
+  
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        const page = await pdfDocument.getPage(pageNumber);
+        const textContent = await page.getTextContent();
+        extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
+      }
+  
+      localStorage.setItem('extractedText', extractedText);
+      console.log('Text extracted successfully:', extractedText);
+      return extractedText;
+  
+    } catch (error) {
+      console.error('Error extracting text: ', error);
+      throw error;
+    }
+  };
+  
   // Handle file upload
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -248,10 +280,16 @@ function extractJSONObject(input) {
 
     const getUserDetails = async () => {
       const user = await fetchUser();
-      setUser(user); 
+     
+      if (user) {
+        console.log(user)
+        fetchUserPdfs(user);
+        setUser(user); 
+      }
     };
+    
 
-    getUserDetails()
+    getUserDetails() 
   }, [ ]);
 
     const uploadFile = async (file) => {
@@ -312,6 +350,9 @@ function extractJSONObject(input) {
         console.error('Error in upload process:', error);
       }
     };
+
+
+
  const uploadInChunks = async (file, filePath) => {
   const chunkSize = 6 * 1024 * 1024;
   const totalChunks = Math.ceil(file.size / chunkSize);
@@ -350,6 +391,37 @@ function extractJSONObject(input) {
     ));
     return error;
   }
+};
+
+const fetchUserPdfs = async (user) => {
+  if (!user) return;
+  
+  try {
+    const { data, error } = await supabase
+      .from('documents')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('file_type', 'pdf');
+    
+    if (error) throw error;
+    setUserPdfs(data || []);
+  } catch (error) {
+    console.error('Error fetching PDFs:', error);
+    setError('Failed to load your PDFs');
+  }
+};
+
+const handlePdfSelect = async (e) => {
+  const pdfId = e.target.value;
+  
+  
+  if (!pdfId) return;
+  console.log(pdfId)
+  
+   const { data } = supabase.storage.from('pdfs').getPublicUrl(pdfId);
+  console.log(data.publicUrl)
+  const text = extractTextFromPDFURL(data.publicUrl)
+  setPdfContent(text)
 };
     
 
@@ -403,6 +475,24 @@ function extractJSONObject(input) {
             onChange={(e) => keywords.map((key) => {key})}
             placeholder="Keywords will be generated automatically"
           />
+        </div>
+
+        {/* PDF Selector Dropdown */}
+        <div className="input-wrapper">
+          <label htmlFor="pdfSelect">Select Existing PDF:</label>
+          <select
+            id="pdfSelect"
+            value={selectedPdf}
+            onChange={handlePdfSelect}
+            disabled={isLoading || isExtracting}
+          >
+            <option value="">-- Select a PDF --</option>
+            {userPdfs.map((pdf) => (
+              <option key={pdf.id} value={pdf.file_path}>
+                {pdf.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* File Upload Toggle */}
