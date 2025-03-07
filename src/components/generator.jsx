@@ -414,14 +414,26 @@ const fetchUserPdfs = async (user) => {
 const handlePdfSelect = async (e) => {
   const pdfId = e.target.value;
   
-  
   if (!pdfId) return;
-  console.log(pdfId)
   
-   const { data } = supabase.storage.from('pdfs').getPublicUrl(pdfId);
-  console.log(data.publicUrl)
-  const text = extractTextFromPDFURL(data.publicUrl)
-  setPdfContent(text)
+  try {
+    setIsExtracting(true);
+    setError(null);
+
+    const { data } = supabase.storage.from('pdfs').getPublicUrl(pdfId);
+    console.log('PDF Public URL:', data.publicUrl);
+
+    const extractedText = await extractTextFromPDFURL(data.publicUrl);
+    
+    setPdfContent(extractedText);
+    extractKeywordsFromText(extractedText);
+    setSelectedPdf(pdfId);
+  } catch (error) {
+    console.error('Error selecting PDF:', error);
+    setError('Failed to extract text from PDF');
+  } finally {
+    setIsExtracting(false);
+  }
 };
     
 
@@ -486,7 +498,9 @@ const handlePdfSelect = async (e) => {
             onChange={handlePdfSelect}
             disabled={isLoading || isExtracting}
           >
-            <option value="">-- Select a PDF --</option>
+            <option value="">
+              {isExtracting ? 'Extracting PDF...' : '-- Select a PDF --'}
+            </option>
             {userPdfs.map((pdf) => (
               <option key={pdf.id} value={pdf.file_path}>
                 {pdf.name}

@@ -39,7 +39,7 @@ function App() {
       <div className="quiz-wrapper">
         <div className="error-container">
           <h2>Error: {error || 'No questions available'}</h2>
-          <button onClick={() => navigate('/testscreen')}>Return to Test Generator</button>
+          <button onClick={() => navigate('/test')}>Return to Test Generator</button>
         </div>
       </div>
     );
@@ -54,6 +54,67 @@ function App() {
     }));
   };
 
+  const compareStructuredAnswers = (userAnswer, correctAnswer) => {
+    if (!userAnswer || !correctAnswer) return 0;
+
+    // Preprocess answers
+    const preprocessAnswer = (answer) => {
+      return answer
+        .toLowerCase()
+        .replace(/[.,;:!?]/g, '')  // Remove punctuation
+        .split(/\s+/)  // Split into words
+        .filter(word => word.length > 1);  // Remove very short words
+    };
+
+    const userWords = preprocessAnswer(userAnswer);
+    const correctWords = preprocessAnswer(correctAnswer);
+
+    // Calculate similarity metrics
+    const keywordMatches = correctWords.filter(word => 
+      userWords.includes(word) && word.length > 3
+    );
+
+    // Calculate coverage and precision
+    const coverageScore = keywordMatches.length / correctWords.length;
+    const precisionScore = keywordMatches.length / userWords.length;
+
+    // Combine scores with different weights
+    const finalScore = (
+      (coverageScore * 0.6) +  // 60% weight to coverage
+      (precisionScore * 0.4)   // 40% weight to precision
+    ) * 100;
+
+    // Additional context-aware scoring
+    const contextualBonus = calculateContextualBonus(userAnswer, correctAnswer);
+
+    return Math.min(finalScore + contextualBonus, 100);
+  };
+
+  const calculateContextualBonus = (userAnswer, correctAnswer) => {
+    // Implement more advanced NLP-like comparison
+    const userSentences = userAnswer.split(/[.!?]+/).length;
+    const correctSentences = correctAnswer.split(/[.!?]+/).length;
+
+    // Bonus for structural similarity
+    let structuralBonus = 0;
+    if (userSentences === correctSentences) {
+      structuralBonus += 5;
+    }
+
+    // Check for key phrases
+    const keyPhrases = correctAnswer
+      .toLowerCase()
+      .match(/\b([a-z]{4,})\b/g) || [];
+    
+    const matchedPhrases = keyPhrases.filter(phrase => 
+      userAnswer.toLowerCase().includes(phrase)
+    );
+
+    structuralBonus += matchedPhrases.length * 3;
+
+    return Math.min(structuralBonus, 10);
+  };
+
   const calculateScore = () => {
     let correctAnswers = 0;
     questions.forEach((question, index) => {
@@ -62,23 +123,39 @@ function App() {
           correctAnswers++;
         }
       } else {
-        const userAnswer = userAnswers[index]?.toLowerCase() || '';
-        const correctAnswer = question.answer.toLowerCase();
-        const keyTerms = correctAnswer.split(' ').filter(word => word.length > 4);
-        const matchCount = keyTerms.filter(term => userAnswer.includes(term)).length;
-        if (matchCount / keyTerms.length >= 0.5) { // 50% match threshold
+        // Use the new structured answer comparison
+        const score = compareStructuredAnswers(
+          userAnswers[index], 
+          question.answer
+        );
+        
+        // Consider the answer correct if score is above 60%
+        if (score >= 60) {
           correctAnswers++;
         }
       }
     });
-    return { score: (correctAnswers / questions.length) * 100, correctAnswers };
+    return { 
+      score: (correctAnswers / questions.length) * 100, 
+      correctAnswers 
+    };
   };
 
   const handleShowResults = async () => {
     const { score, correctAnswers } = calculateScore();
     setScore(score);
     setShowResults(true);
-    await saveTestResults(score, correctAnswers);
+    
+    try {
+      const performanceResults = await saveTestResults(score, correctAnswers);
+      
+      // Optionally, you can store or display additional performance metrics
+      if (performanceResults) {
+        console.log('Performance Metrics:', performanceResults.performanceMetrics);
+      }
+    } catch (error) {
+      console.error('Error in showing results:', error);
+    }
   };
 
   const handleNext = () => {
@@ -100,20 +177,69 @@ function App() {
     setSaveError(null);
 
     try {
+      // Calculate detailed scoring
+      const detailedScores = questions.map((question, index) => {
+        if (question.type === 'multiple') {
+          return {
+            type: 'multiple',
+            isCorrect: userAnswers[index] === question.answer,
+            score: userAnswers[index] === question.answer ? 100 : 0
+          };
+        } else {
+          const similarityScore = compareStructuredAnswers(
+            userAnswers[index], 
+            question.answer
+          );
+          return {
+            type: 'structured',
+            isCorrect: similarityScore >= 60,
+            score: similarityScore
+          };
+        }
+      });
+
+      // Calculate weighted overall score
+      const weightedScores = detailedScores.map(score => score.score);
+      const averageScore = weightedScores.reduce((a, b) => a + b, 0) / weightedScores.length;
+
+      // Calculate performance metrics
+      const multipleChoiceQuestions = detailedScores.filter(q => q.type === 'multiple');
+      const structuredQuestions = detailedScores.filter(q => q.type === 'structured');
+
+      const performanceMetrics = {
+        multipleChoice: {
+          total: multipleChoiceQuestions.length,
+          correct: multipleChoiceQuestions.filter(q => q.isCorrect).length,
+          accuracy: (multipleChoiceQuestions.filter(q => q.isCorrect).length / multipleChoiceQuestions.length) * 100
+        },
+        structuredQuestions: {
+          total: structuredQuestions.length,
+          correct: structuredQuestions.filter(q => q.isCorrect).length,
+          averageSimilarity: structuredQuestions.reduce((a, q) => a + q.score, 0) / structuredQuestions.length
+        }
+      };
+
       // First, insert the test result
       const { data: testResult, error: testError } = await supabase
         .from('test_results')
         .insert({
           user_id: user.id,
-          score: finalScore,
+          score: averageScore,
           total_questions: questions.length,
           correct_answers: correctAnswers,
-          test_data: {}, // We'll store questions separately now
+          test_data: {
+            detailedScores,
+            performanceMetrics
+          },
           document_id: location.state?.documentId,
           metadata: {
             test_duration: calculateTestDuration(),
             test_type: 'generated',
-            test_version: '1.0'
+            test_version: '1.0',
+            question_types: {
+              multiple: multipleChoiceQuestions.length,
+              structured: structuredQuestions.length
+            }
           }
         })
         .select()
@@ -122,22 +248,24 @@ function App() {
       if (testError) throw testError;
 
       // Then, insert all questions
-      const questionsToInsert = questions.map((question, index) => ({
-        test_id: testResult.id,
-        question_number: index + 1,
-        question_text: question.question,
-        question_type: question.type,
-        correct_answer: question.answer,
-        user_answer: userAnswers[index] || null,
-        is_correct: question.type === 'multiple' 
-          ? userAnswers[index] === question.answer
-          : calculateAnswerCorrectness(userAnswers[index], question.answer),
-        options: question.type === 'multiple' ? question.options : null,
-        metadata: {
-          category: question.category || 'general',
-          difficulty: question.difficulty || 'medium'
-        }
-      }));
+      const questionsToInsert = questions.map((question, index) => {
+        const detailedScore = detailedScores[index];
+        return {
+          test_id: testResult.id,
+          question_number: index + 1,
+          question_text: question.question,
+          question_type: question.type,
+          correct_answer: question.answer,
+          user_answer: userAnswers[index] || null,
+          is_correct: detailedScore.isCorrect,
+          similarity_score: detailedScore.type === 'structured' ? detailedScore.score : null,
+          options: question.type === 'multiple' ? question.options : null,
+          metadata: {
+            category: question.category || 'general',
+            difficulty: question.difficulty || 'medium'
+          }
+        };
+      });
 
       const { error: questionsError } = await supabase
         .from('test_questions')
@@ -145,21 +273,18 @@ function App() {
 
       if (questionsError) throw questionsError;
 
+      // Return additional performance insights
+      return {
+        averageScore,
+        performanceMetrics
+      };
+
     } catch (error) {
       console.error('Error saving test results:', error);
       setSaveError('Failed to save test results');
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const calculateAnswerCorrectness = (userAnswer, correctAnswer) => {
-    if (!userAnswer) return false;
-    const userAnswerLower = userAnswer.toLowerCase();
-    const correctAnswerLower = correctAnswer.toLowerCase();
-    const keyTerms = correctAnswerLower.split(' ').filter(word => word.length > 4);
-    const matchCount = keyTerms.filter(term => userAnswerLower.includes(term)).length;
-    return matchCount / keyTerms.length >= 0.5;
   };
 
   const calculateTestDuration = () => {
@@ -190,22 +315,37 @@ function App() {
           </div>
           
           <div className="answers-review">
-            {questions.map((question, index) => (
-              <div key={index} className="question-review">
-                <h4>Question {index + 1}</h4>
-                <p>{question.question}</p>
-                <div className="answer-comparison">
-                  <div className="user-answer">
-                    <strong>Your Answer:</strong>
-                    <p>{userAnswers[index] || 'Not answered'}</p>
-                  </div>
-                  <div className="correct-answer">
-                    <strong>Correct Answer:</strong>
-                    <p>{question.answer}</p>
+            {questions.map((question, index) => {
+              const userAnswer = userAnswers[index];
+              const isCorrect = question.type === 'multiple' 
+                ? userAnswer === question.answer
+                : compareStructuredAnswers(userAnswer, question.answer) >= 60;
+
+              return (
+                <div key={index} className={`question-review ${isCorrect ? 'correct' : 'incorrect'}`}>
+                  <h4>Question {index + 1}</h4>
+                  <p>{question.question}</p>
+                  <div className="answer-comparison">
+                    <div className="user-answer">
+                      <strong>Your Answer:</strong>
+                      <p>{userAnswer || 'Not answered'}</p>
+                    </div>
+                    <div className="correct-answer">
+                      <strong>Correct Answer:</strong>
+                      <p>{question.answer}</p>
+                    </div>
+                    {question.type !== 'multiple' && (
+                      <div className="answer-score">
+                        <strong>Answer Similarity:</strong>
+                        <p>
+                          {compareStructuredAnswers(userAnswer, question.answer).toFixed(1)}%
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           <button onClick={() => navigate('/testscreen')}>Generate New Test</button>

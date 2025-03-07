@@ -39,24 +39,37 @@ function App({hideSideNav, isSideNavVisible}) {
 
         setDocuments(docs);
 
-        // Fetch tests with related document info
+        // Improved test results fetch with more comprehensive selection
         const { data: testResults, error: testsError } = await supabase
           .from('test_results')
           .select(`
-            *,
+            id,
+            score,
+            total_questions,
+            correct_answers,
+            created_at,
             documents (
+              id,
               name,
               file_type
             ),
-            test_questions (
-              question_type,
-              is_correct
-            )
+            test_data,
+            metadata
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
+
         if (testsError) throw testsError;
-        setTests(testResults);
+
+        // Transform the results to ensure compatibility
+        const transformedTests = testResults.map(test => ({
+          ...test,
+          document_name: test.documents?.name || 'Untitled Document',
+          test_type: test.metadata?.test_type || 'generated',
+          question_types: test.metadata?.question_types || {}
+        }));
+
+        setTests(transformedTests);
 
       } catch (err) { 
         console.error('Error fetching data:', err);
@@ -78,7 +91,7 @@ function App({hideSideNav, isSideNavVisible}) {
       );
     } else {
       return tests.filter(test => 
-        test.documents?.name?.toLowerCase().includes(query)
+        test.document_name.toLowerCase().includes(query)
       );
     }
   };
@@ -242,14 +255,24 @@ const extractTextFromPDF = async (url) => {
           ) : (
             // New test result cards
             getFilteredItems().map((test) => (
-              <div key={test.id} className="chat-card test-card" onClick={() => navigate(`/test-results/${test.id}`)}>
+              <div 
+                key={test.id} 
+                className="chat-card test-card" 
+                onClick={() => navigate(`/test-results/${test.id}`)}
+              >
                 <div className="chat-preview">
-                  <h3>{test.documents?.name || 'Untitled Document'}</h3>
+                  <h3>{test.document_name}</h3>
                   <div className="test-stats">
                     <div className="score">Score: {Math.round(test.score)}%</div>
                     <div className="correct-answers">
                       Correct: {test.correct_answers}/{test.total_questions}
                     </div>
+                    {test.question_types && (
+                      <div className="question-type-breakdown">
+                        <span>Multiple Choice: {test.question_types.multiple || 0}</span>
+                        <span>Structured: {test.question_types.structured || 0}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="date">
                     {new Date(test.created_at).toLocaleDateString()}
