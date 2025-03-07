@@ -2248,6 +2248,11 @@ get-symbol-description@^1.0.2:
     es-errors "^1.3.0"
     get-intrinsic "^1.2.4"
 
+get@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/get/-/get-1.4.0.tgz"
+  integrity sha512-RIEc0E/y2dTo/90Or33BNQzRNW5R1cchwQQgR9JroZkqxrCFeOlU3/u7nAbpteDR7ziFbmeaQtDTJ3s6B/6vtQ==
+
 glob-parent@^6.0.2:
   version "6.0.2"
   resolved "https://registry.npmjs.org/glob-parent/-/glob-parent-6.0.2.tgz"
@@ -4028,6 +4033,11 @@ toidentifier@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
+
+tokenizer@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/tokenizer/-/tokenizer-0.1.0.tgz"
+  integrity sha512-AdGT3w9DLrBa767o+gXgNuEHeRUcCuKnjLv6nlkM60TAzdT0HqZuDMVBGtqIybeOA62YLLV7/7g2+DHRr1fvjQ==
 
 toposort@^2.0.2:
   version "2.0.2"
