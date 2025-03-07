@@ -52,6 +52,29 @@ function App() {
     processing: 0
   });
 
+  // Modify token tracker to include separate categories
+  const [tokenTracker, setTokenTracker] = useState({
+    input: {
+      maxTokens: 0,
+      currentSessionTokens: 0,
+      tokenEvents: []
+    },
+    output: {
+      maxTokens: 0,
+      currentSessionTokens: 0,
+      tokenEvents: []
+    },
+    cache: {
+      maxTokens: 0,
+      currentSessionTokens: 0,
+      tokenEvents: []
+    },
+    total: {
+      maxTokens: 0,
+      currentSessionTokens: 0
+    }
+  });
+
   // Add loading indicator components
   const LoadingSpinner = ({ size = '24px', color = '#3498db' }) => (
     <div 
@@ -596,6 +619,49 @@ function App() {
 
   // Modify the stopSession function to keep messages
   function stopSession() {
+    // Log comprehensive token usage
+    console.log('Detailed Session Token Usage:', {
+      input: {
+        maxTokens: tokenTracker.input.maxTokens,
+        eventCount: tokenTracker.input.tokenEvents.length
+      },
+      output: {
+        maxTokens: tokenTracker.output.maxTokens,
+        eventCount: tokenTracker.output.tokenEvents.length
+      },
+      cache: {
+        maxTokens: tokenTracker.cache.maxTokens,
+        eventCount: tokenTracker.cache.tokenEvents.length
+      },
+      total: {
+        maxTokens: tokenTracker.total.maxTokens,
+        currentSessionTokens: tokenTracker.total.currentSessionTokens
+      }
+    });
+
+    // Reset token tracker
+    setTokenTracker({
+      input: {
+        maxTokens: 0,
+        currentSessionTokens: 0,
+        tokenEvents: []
+      },
+      output: {
+        maxTokens: 0,
+        currentSessionTokens: 0,
+        tokenEvents: []
+      },
+      cache: {
+        maxTokens: 0,
+        currentSessionTokens: 0,
+        tokenEvents: []
+      },
+      total: {
+        maxTokens: 0,
+        currentSessionTokens: 0
+      }
+    });
+
     setIsTranscribing(false);
     
     if (dataChannel) {
@@ -632,7 +698,7 @@ function App() {
     setIsSessionActive(false);
   }
 
-  // Send a message to the model
+  // Modify sendClientEvent to categorize tokens
   function sendClientEvent(message) {
     if (!dataChannel || dataChannel.readyState !== 'open') {
       console.error('Data channel not available or not open');
@@ -640,6 +706,48 @@ function App() {
     }
 
     try {
+      // Categorize tokens based on message type
+      const messageTokens = encode(JSON.stringify(message)).length;
+      
+      let tokenCategory = 'input'; // Default to input
+      if (message.type === 'cache_retrieval') {
+        tokenCategory = 'cache';
+      } else if (message.type === 'response.create' || message.type === 'content.part') {
+        tokenCategory = 'output';
+      }
+
+      setTokenTracker(prev => {
+        // Update specific category
+        const categoryTokens = prev[tokenCategory];
+        const newCategoryTokens = {
+          maxTokens: Math.max(categoryTokens.maxTokens, categoryTokens.currentSessionTokens + messageTokens),
+          currentSessionTokens: categoryTokens.currentSessionTokens + messageTokens,
+          tokenEvents: [
+            ...categoryTokens.tokenEvents, 
+            {
+              type: message.type,
+              tokens: messageTokens,
+              timestamp: Date.now()
+            }
+          ]
+        };
+
+        // Calculate total tokens
+        const totalTokens = 
+          prev.input.currentSessionTokens + 
+          prev.output.currentSessionTokens + 
+          prev.cache.currentSessionTokens;
+
+        return {
+          ...prev,
+          [tokenCategory]: newCategoryTokens,
+          total: {
+            maxTokens: Math.max(prev.total.maxTokens, totalTokens + messageTokens),
+            currentSessionTokens: totalTokens + messageTokens
+          }
+        };
+      });
+
       message.event_id = message.event_id || crypto.randomUUID();
       dataChannel.send(JSON.stringify(message));
       setEvents((prev) => [message, ...prev]);
@@ -696,6 +804,59 @@ function App() {
       totalChunks: textChunks.length
     });
   }, [events, isProcessingText, currentChunkIndex, textChunks.length, dataChannel]);
+
+  // Add effect to track tokens in received events with categorization
+  useEffect(() => {
+    if (events.length > 0) {
+      const lastEvent = events[0];
+      
+      try {
+        const eventTokens = encode(JSON.stringify(lastEvent)).length;
+        
+        setTokenTracker(prev => {
+          // Determine token category
+          let tokenCategory = 'input'; // Default to input
+          if (lastEvent.type === 'cache_retrieval') {
+            tokenCategory = 'cache';
+          } else if (lastEvent.type === 'response.create' || lastEvent.type === 'content.part') {
+            tokenCategory = 'output';
+          }
+
+          // Update specific category
+          const categoryTokens = prev[tokenCategory];
+          const newCategoryTokens = {
+            maxTokens: Math.max(categoryTokens.maxTokens, categoryTokens.currentSessionTokens + eventTokens),
+            currentSessionTokens: categoryTokens.currentSessionTokens + eventTokens,
+            tokenEvents: [
+              ...categoryTokens.tokenEvents, 
+              {
+                type: lastEvent.type,
+                tokens: eventTokens,
+                timestamp: Date.now()
+              }
+            ]
+          };
+
+          // Calculate total tokens
+          const totalTokens = 
+            prev.input.currentSessionTokens + 
+            prev.output.currentSessionTokens + 
+            prev.cache.currentSessionTokens;
+
+          return {
+            ...prev,
+            [tokenCategory]: newCategoryTokens,
+            total: {
+              maxTokens: Math.max(prev.total.maxTokens, totalTokens + eventTokens),
+              currentSessionTokens: totalTokens + eventTokens
+            }
+          };
+        });
+      } catch (error) {
+        console.error('Error calculating event tokens:', error);
+      }
+    }
+  }, [events]);
 
   return (
    <div className="chat-interface">
