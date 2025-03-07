@@ -1,15 +1,43 @@
-import {PaymentElement} from '@stripe/react-stripe-js';
-import React from 'react';
-const CheckoutForm = () => {
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from '@/lib/supabaseClient';
 
-  // console.log("asdasdaassssssssssssssssss");
-  return (
-    <form>
-      <h1>asdasdaassssssssssssssssss</h1>
-      <PaymentElement />
-      <button>Submit</button>
-    </form>
-  );
+const PaymentSuccess = () => {
+  const [searchParams] = useSearchParams();
+  const [user, setUser] = useState(null);
+  const sessionId = searchParams.get("session_id");
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    const confirmPayment = async () => {
+      if (!sessionId || !user) return;
+
+      try {
+        const response = await axios.post(`http://localhost:5000/confirm-payment`, {
+          sessionId,
+          userId: user.id,
+          credits: 100, // Amount of credits purchased
+          bonus: 10, // Any extra bonuses
+        });
+
+        console.log("Payment confirmed:", response.data);
+      } catch (error) {
+        console.error("Payment confirmation failed:", error.response?.data || error.message);
+      }
+    };
+
+    confirmPayment();
+  }, [sessionId, user]);
+
+  return <h1>Payment Successful! Redirecting...</h1>;
 };
 
-export default CheckoutForm; 
+export default PaymentSuccess;

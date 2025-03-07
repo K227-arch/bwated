@@ -31,7 +31,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
           .eq('user_id', user.id)
           .single();
 
-        if (balanceError) throw balanceError;
+        if (balanceError) throw balanceError; 
         setBalance(balanceData?.balance || 0);
       } catch (error) {
         console.error('Error fetching user or balance:', error);
