@@ -34,7 +34,7 @@ import Transactions from "./components/Admin/Transactions.jsx";
 import "./App.css";
 import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
 import TestDetails from './components/TestDetails';
-
+import CheckoutForm from './components/CheckoutForm';
 const AppRoutes = () => {
   /**
    * ------------------------------------------------------
@@ -87,12 +87,7 @@ const AppRoutes = () => {
         <Route path="/Token" element={<Token />} />
         <Route path="/Packages" element={<Packages />} />
         <Route path="/Admindashboard" element={<Admindashboard />} />
-        <Route
-          path="/plan"
-          element={
-            <Plan hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
+       
         <Route
           path="/home"
           element={
@@ -146,7 +141,18 @@ const AppRoutes = () => {
           <Route path="/test-results/:testId" element={<TestDetails />} />
 
         </Route>
-        
+        <Route
+          path="/plan"
+          element={
+            <Plan hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <CheckoutForm hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+          }
+        />
         
         <Route path="/PDFViewer" element={<PDFViewer />} />
        
