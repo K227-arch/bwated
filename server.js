@@ -68,7 +68,7 @@ app.post("/confirm-payment", async (req, res) => {
     // Get the actual amount paid from Stripe session (converting cents to dollars)
     const amountPaid = session.amount_total / 100; // Convert cents to dollars
     console.log(amountPaid);
-    // Fetch the user's balance
+    // Fetch the user's balanceP
     let { data: userAccount, error } = await supabase
       .from("user_accounts")
       .select("balance")

@@ -12,6 +12,7 @@ const PaymentSuccess = () => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      console.log(user);  
     };
     getUser();
   }, []);
