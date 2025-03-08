@@ -4,7 +4,7 @@ import Sidebar from './Sidebar'
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import './TestDetails.css';
-
+ 
 function TestDetails({hideSideNav, isSideNavVisible}) {
   const { testId } = useParams();
   const navigate = useNavigate();
