@@ -16,6 +16,11 @@ app.use(cors());
 app.use(express.json());
 
 // Create a checkout session
+app.get('/', (req, res) => {
+  res.status(200).send('Server is working!');
+});
+
+
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const { amount, userId, email, credits, bonus } = req.body;
