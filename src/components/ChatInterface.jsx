@@ -367,6 +367,14 @@ function App() {
     }
   }, [events, docId]);
 
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Starts a new chat session by establishing a WebRTC peer connection with the OpenAI server.
+   * @async
+   * @function
+   * @returns {void}
+   */
+/******  95ed3611-4bae-49c9-98df-59778e912942  *******/
   async function startSession() {
     setLoadingStates(prev => ({ ...prev, connection: true }));
     try {

@@ -81,7 +81,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
 
     try {
       // Create Checkout Session for deposit
-      const response = await fetch("http://localhost:5000/create-checkout-session", {
+      const response = await fetch("https://bwat.netlify.app/.netlify/functions/api/create-checkout-session", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

@@ -22,7 +22,7 @@ const PaymentSuccess = () => {
       if (!sessionId || !user) return;
 
       try {
-        const response = await axios.post(`http://localhost:5000/confirm-payment`, {
+        const response = await axios.post(`https://bwat.netlify.app/.netlify/functions/api/confirm-payment`, {
           sessionId,
           userId: user.id,
           credits: 100, // Amount of credits purchased
