@@ -1,30 +1,153 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import Adminside from "./adminside";
 import { useNavigate } from "react-router-dom";
 import "./Admindashboard.css";
+import { supabase } from '@/lib/supabaseClient';
 
 const Admindashboard = () => {
   const navigate = useNavigate();
   const goto = useCallback((path) => () => navigate(path), [navigate]);
 
-  const [stats] = useState({
-    newUsers: { value: 487, trend: 116.44, lastMonth: 225, thisYear: 187500 },
-    newSubscribers: { value: 78, trend: -37.1, lastMonth: 124, thisYear: 759 },
-    totalIncome: { value: 17855, trend: 2072.14, lastMonth: 822, thisYear: 87042 },
-    totalSpending: { value: 856, trend: 277.09, lastMonth: 227, thisYear: 11510 },
+  const [stats, setStats] = useState({
+    newUsers: { value: 0, trend: 0, lastMonth: 0, thisYear: 0 },
+    newSubscribers: { value: 0, trend: 0, lastMonth: 0, thisYear: 0 }, 
+    totalIncome: { value: 0, trend: 0, lastMonth: 0, thisYear: 0 },
+    totalSpending: { value: 0, trend: 0, lastMonth: 0, thisYear: 0 }
   });
 
-  const newUsers = [
-    { id: 1, name: "John Doe", email: "johndoe@example.com", joinedAt: "Apr 1, 2022 2:00 PM", status: "Active", plan: "Free" },
-    { id: 2, name: "Jane Smith", email: "janesmith@example.com", joinedAt: "Apr 2, 2022 4:30 PM", status: "Active", plan: "Free" },
-    { id: 3, name: "David Lee", email: "davidlee@example.com", joinedAt: "Apr 3, 2022 10:45 PM", status: "Active", plan: "Weekly" },
-  ];
+  const [newUsers, setNewUsers] = useState([]);
+  const [recentTransactions, setRecentTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const recentTransactions = [
-    { id: 1, name: "Brian Wilson", plan: "Daily", amount: 2.0, status: "Completed", date: "Apr 1, 2022 2:00 PM" },
-    { id: 2, name: "Daniel Lee", plan: "Weekly", amount: 10.0, status: "Upcoming", date: "Apr 7, 2022 5:45 PM" },
-    { id: 3, name: "Eva Hernandez", plan: "Monthly", amount: 40.0, status: "Pending", date: "Apr 4, 2022 6:15 PM" },
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch recent users
+        const { data: users, error: usersError } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (usersError) throw usersError;
+        setNewUsers(users.map(user => ({
+          id: user.id,
+          name: user.full_name || 'Anonymous',
+          email: user.email,
+          joinedAt: new Date(user.created_at).toLocaleString(),
+          status: user.status || 'Active',
+          plan: user.subscription_tier || 'Free'
+        })));
+
+        // Fetch transactions
+        const { data: transactions, error: transactionsError } = await supabase
+          .from('transactions')
+          .select('*')
+          .order('created_at', { ascending: false });
+    
+        if (transactionsError) throw transactionsError;
+    
+        // Extract user auth IDs
+        const userAuthIds = transactions.map((t) => t.user_id);
+    
+        // Fetch users separately
+        const { data: transactionUsers, error: usersError2 } = await supabase
+          .from('users')
+          .select('auth_id, email')
+          .in('auth_id', userAuthIds);
+    
+        if (usersError2) throw usersError2;
+    
+        // Merge transactions with user emails
+        const transactionsWithUsers = transactions.map((t) => ({
+          ...t,
+          user_email: transactionUsers.find((u) => u.auth_id === t.user_id)?.email || null,
+        }));
+
+        setRecentTransactions(transactionsWithUsers.slice(0,3).map(tx => ({
+          id: tx.id,
+          name: tx.user_email || 'Anonymous',
+          plan: tx.type,
+          amount: tx.amount,
+          status: tx.status,
+          date: new Date(tx.created_at).toLocaleString()
+        })));
+
+        // Calculate stats
+        const now = new Date();
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const thisYearStart = new Date(now.getFullYear(), 0, 1);
+
+        // Users stats
+        const { count: totalUsers } = await supabase
+          .from('users')
+          .select('*', { count: 'exact' });
+
+        const { count: lastMonthUsers } = await supabase
+          .from('users')
+          .select('*', { count: 'exact' })
+          .gte('created_at', lastMonthStart.toISOString());
+
+        // Transactions stats
+        const { data: allTransactions } = await supabase
+          .from('transactions')
+          .select('amount, created_at')
+          .eq('status', 'Completed');
+
+        const thisMonthIncome = allTransactions
+          .filter(tx => new Date(tx.created_at) >= lastMonthStart)
+          .reduce((sum, tx) => sum + tx.amount, 0);
+
+        const lastMonthIncome = allTransactions
+          .filter(tx => {
+            const txDate = new Date(tx.created_at);
+            return txDate >= new Date(now.getFullYear(), now.getMonth() - 2, 1) &&
+                   txDate < lastMonthStart;
+          })
+          .reduce((sum, tx) => sum + tx.amount, 0);
+
+        const thisYearIncome = allTransactions
+          .filter(tx => new Date(tx.created_at) >= thisYearStart)
+          .reduce((sum, tx) => sum + tx.amount, 0);
+
+        setStats({
+          newUsers: {
+            value: totalUsers || 0,
+            trend: lastMonthUsers ? ((lastMonthUsers / totalUsers) * 100) - 100 : 0,
+            lastMonth: lastMonthUsers || 0,
+            thisYear: totalUsers || 0
+          },
+          newSubscribers: {
+            value: Math.floor(totalUsers * 0.2) || 0,
+            trend: 0,
+            lastMonth: Math.floor(lastMonthUsers * 0.2) || 0,
+            thisYear: Math.floor(totalUsers * 0.2) || 0
+          },
+          totalIncome: {
+            value: Math.round(thisMonthIncome),
+            trend: lastMonthIncome ? ((thisMonthIncome / lastMonthIncome) * 100) - 100 : 0,
+            lastMonth: Math.round(lastMonthIncome),
+            thisYear: Math.round(thisYearIncome)
+          },
+          totalSpending: {
+            value: Math.round(thisMonthIncome * 0.1),
+            trend: 0,
+            lastMonth: Math.round(lastMonthIncome * 0.1),
+            thisYear: Math.round(thisYearIncome * 0.1)
+          }
+        });
+
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
     <div className="Admindashboard">
@@ -40,7 +163,7 @@ const Admindashboard = () => {
               <div className="stat-header">
                 ${data.value}
                 <span className={`trend ${data.trend >= 0 ? "trend-up" : "trend-down"}`}>
-                  {data.trend >= 0 ? "↑" : "↓"} {Math.abs(data.trend)}%
+                  {data.trend >= 0 ? "↑" : "↓"} {Math.abs(data.trend).toFixed(2)}%
                 </span>
               </div>
               <div className="stat-title">{key.replace(/([A-Z])/g, " $1").trim()}</div>

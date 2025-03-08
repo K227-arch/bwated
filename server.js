@@ -53,25 +53,47 @@ app.post("/create-checkout-session", async (req, res) => {
 app.post("/confirm-payment", async (req, res) => {
   try {
     const { sessionId, userId, credits, bonus } = req.body;
+    console.log(req.body);
 
     if (!sessionId || !userId) {
       return res.status(400).json({ message: "Invalid request data" });
     }
 
+    // Retrieve session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status !== "paid") {
       return res.status(400).json({ message: "Payment not completed" });
     }
-
-    // Fetch the user’s balance
-    const { data: userAccount, error } = await supabase
+    
+    // Get the actual amount paid from Stripe session (converting cents to dollars)
+    const amountPaid = session.amount_total / 100; // Convert cents to dollars
+    console.log(amountPaid);
+    // Fetch the user's balanceP
+    let { data: userAccount, error } = await supabase
       .from("user_accounts")
       .select("balance")
       .eq("user_id", userId)
       .single();
-    
-    if (error) throw error;
-    const newBalance = (userAccount?.balance || 0) + (credits + bonus) / 10;
+
+    if (error && error.code === "PGRST116") {
+      // No user account found, create a new one with a 0 balance
+      const { data: newAccount, error: createError } = await supabase
+        .from("user_accounts")
+        .insert({ user_id: userId, balance: 0 })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+      userAccount = newAccount;
+    } else if (error) {
+      throw error;
+    }
+
+    // Formula: 100 credits = 1 dollar, so credits/100 = amount in dollars
+    const creditAmount = (credits + bonus) / 100; 
+
+    // Calculate new balance
+    const newBalance = (userAccount?.balance || 0) + amountPaid ;
 
     // Update balance
     const { error: updateError } = await supabase
@@ -85,9 +107,10 @@ app.post("/confirm-payment", async (req, res) => {
     await supabase.from("transactions").insert({
       user_id: userId,
       type: "Deposit",
-      amount: session.amount_total / 100,
+      amount: amountPaid, // Securely getting amount from Stripe session
       credits: credits + bonus,
       status: "Completed",
+      created_at: new Date().toISOString(),
     });
 
     res.json({ message: "Payment successful", newBalance });
@@ -96,6 +119,7 @@ app.post("/confirm-payment", async (req, res) => {
     res.status(500).json({ message: "Payment confirmation failed" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

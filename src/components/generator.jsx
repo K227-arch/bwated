@@ -5,6 +5,8 @@ import OpenAI from "openai";
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { supabase } from '@/lib/supabaseClient';
 import {fetchUser} from '@/lib/authUser';
+import { encode } from "gpt-tokenizer";
+
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
  
 function Generator() {
@@ -25,6 +27,13 @@ function Generator() {
   const [documentId, setDocumentId] = useState(null);
   const [userPdfs, setUserPdfs] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState('');
+  const [tokenCounts, setTokenCounts] = useState({
+    input: 0,
+    output: 0,
+    cache: 0,
+    total: 0
+  });
+  
   const questionCounts = ["5", "10", "15", "20", "25"];
   const complexityLevels = ["Structured", "Multichoice"];
   
@@ -33,6 +42,14 @@ function Generator() {
   
   const navigate = useNavigate();
 
+  const calculateTokens = (text) => {
+    try {
+      return encode(text).length;
+    } catch (error) {
+      console.error('Error calculating tokens:', error);
+      return 0;
+    }
+  };
 
   const extractTextFromPDF = async (file) => {
     if (!file) {
@@ -57,13 +74,21 @@ function Generator() {
           const textContent = await page.getTextContent();
           extractedText += textContent.items.map((item) => item.str).join(' ') + '\n';
           
-          // Update extraction progress
           setExtractionProgress((pageNumber / totalPages) * 100);
         }
 
         localStorage.setItem('extractedText', extractedText);
         localStorage.setItem('fileName', file.name);
         setPdfContent(extractedText);
+        
+        // Calculate input tokens
+        const inputTokens = calculateTokens(extractedText);
+        setTokenCounts(prev => ({
+          ...prev,
+          input: inputTokens,
+          total: inputTokens + prev.output + prev.cache
+        }));
+        
         console.log(extractedText);
         extractKeywordsFromText(extractedText);
         
@@ -88,7 +113,6 @@ function Generator() {
 
   const extractTextFromPDFURL = async (url) => {
     try {
-      // First fetch the PDF file from the URL
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch PDF');
       
@@ -106,6 +130,15 @@ function Generator() {
       }
   
       localStorage.setItem('extractedText', extractedText);
+      
+      // Calculate cache tokens
+      const cacheTokens = calculateTokens(extractedText);
+      setTokenCounts(prev => ({
+        ...prev,
+        cache: cacheTokens,
+        total: prev.input + prev.output + cacheTokens
+      }));
+      
       console.log('Text extracted successfully:', extractedText);
       return extractedText;
   
@@ -135,11 +168,8 @@ function Generator() {
         throw new Error('File size should be less than 5MB');
       }
 
-      // const text = await file.text();
-      // setText(text);
       extractTextFromPDF(file);
       uploadFile(file);
-      // extractKeywordsFromText(text);
     } catch (error) {
       console.error('Error reading file:', error);
       setError(error.message || 'Failed to read the uploaded file');
@@ -238,12 +268,20 @@ function extractJSONObject(input) {
           }
         ],
       });
-
+      console.log(completion)
       const parsedResponse = extractJSONObject(completion.choices[0].message.content);
       
       if (!parsedResponse || !parsedResponse.questions) {
         throw new Error('Invalid response format from AI');
       }
+
+      // Calculate output tokens
+      const outputTokens = calculateTokens(JSON.stringify(parsedResponse));
+      setTokenCounts(prev => ({
+        ...prev,
+        output: outputTokens,
+        total: prev.input + outputTokens + prev.cache
+      }));
 
       // Validate question types
       const isValidFormat = parsedResponse.questions.every(q => 
@@ -254,13 +292,14 @@ function extractJSONObject(input) {
       if (!isValidFormat) {
         throw new Error('Generated questions do not match the requested format');
       }
-
-      navigate("/Question", { 
-        state: { 
-          questions: parsedResponse.questions,
-          documentId: documentId
-        }
-      });
+        console.log(tokenCounts)
+      // navigate("/Question", { 
+      //   state: { 
+      //     questions: parsedResponse.questions,
+      //     documentId: documentId,
+      //     tokenCounts: tokenCounts
+      //   }
+      // });
 
     } catch (error) {
       console.error('Error generating test:', error);
@@ -441,6 +480,14 @@ const handlePdfSelect = async (e) => {
     <div className="generator-container">
       <div className="dropdown-group">
         {error && <div className="error-message">{error}</div>}
+        
+        {/* Token Count Display */}
+        {/* <div className="token-info">
+          <p>Input Tokens: {tokenCounts.input}</p>
+          <p>Output Tokens: {tokenCounts.output}</p>
+          <p>Cache Tokens: {tokenCounts.cache}</p>
+          <p>Total Tokens: {tokenCounts.total}</p>
+        </div> */}
         
         {/* Question Count Dropdown */}
         <div className="dropdown-wrapper">
