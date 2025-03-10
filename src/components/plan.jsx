@@ -107,7 +107,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
       if (!session.id) {
         throw new Error('Failed to create checkout session');
       }
-
+      
       // Redirect to Stripe Checkout
       const stripe = await stripePromise;
       const result = await stripe.redirectToCheckout({ 
