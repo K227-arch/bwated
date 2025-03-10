@@ -293,13 +293,13 @@ function extractJSONObject(input) {
         throw new Error('Generated questions do not match the requested format');
       }
         console.log(tokenCounts)
-      // navigate("/Question", { 
-      //   state: { 
-      //     questions: parsedResponse.questions,
-      //     documentId: documentId,
-      //     tokenCounts: tokenCounts
-      //   }
-      // });
+      navigate("/Question", { 
+        state: { 
+          questions: parsedResponse.questions,
+          documentId: documentId,
+          tokenCounts: tokenCounts
+        }
+      });
 
     } catch (error) {
       console.error('Error generating test:', error);
