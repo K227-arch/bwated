@@ -181,7 +181,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
       <Sidebar isVisible={isSideNavVisible} willHideSideNav={hideSideNav} />
 
       <div className="plan-words">
-        <h1>Billing & Credits</h1>
+        <h1>PRICING</h1>
         <p>
           Add credits to your account to access advanced AI features and 
           continue using our services seamlessly.
@@ -243,9 +243,10 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
           <h2 className="plan-name">Custom Deposit</h2>
           <div className="custom-deposit-input">
             <div className="input-group">
-              <span className="currency-symbol">$</span>
+              <span className="currency-symbol"></span>
               <input 
                 type="number" 
+                className='pricing'
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="Enter amount (min $5)"
@@ -276,7 +277,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
           </button>
         </div>
       </div>
-
+    { /*
       <div className="transaction-history">
         <h2>Recent Transactions</h2>
         <table>
@@ -301,7 +302,7 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </div>*/}
     </div>
   );
 }
