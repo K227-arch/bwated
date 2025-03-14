@@ -33,6 +33,7 @@
   text-align: center; /* Center-align text inside the box */
   max-width: 400px;
   flex: 1;
+  height:550px;
 }
 .google-input-with-icon {
   display: flex; /* Align icon and text */
@@ -142,6 +143,7 @@ img {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  margin-left:10px;
 }
 
 @media (max-width: 449px) {

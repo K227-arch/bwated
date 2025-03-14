@@ -58,6 +58,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
     transition: all 0.3s ease; /* Smooth hover effect */
     width:320px;
+    margin-left:10px;
     
   }
   .google-input-with-icon2:hover {
