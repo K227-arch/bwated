@@ -17,19 +17,19 @@ import "./Landing.css";
 const features = [
   {
     icon: "⚡",
-    title: "AI Rubric generation",
+    title: "Live Class",
     description:
       "Bwated creates detailed rubrics for your entire assignment with one click.",
   },
   {
     icon: "🔄",
-    title: "AI Regrade",
+    title: "Test yourself",
     description:
       "Bwated grades exactly the way you do. Give it instructions, the same way you would instruct a TA.",
   },
   {
     icon: "↻",
-    title: "AI Parsing",
+    title: "Discussion Group Sessions",
     description:
       "Reuse your old assignments by uploading them to Bwated, in seconds.",
   },
