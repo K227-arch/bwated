@@ -155,9 +155,9 @@ const extractTextFromPDF = async (url) => {
 
       <div className="chat-container2-dashboard">
         <header className="chat-header">
-            {/*<div className="morning">
+            <div className="morning">
             <h1>Good morning, {user?.user_metadata?.full_name || 'User'}</h1>
-          </div>*/}
+          </div>
           
           
           <div className="container4">
