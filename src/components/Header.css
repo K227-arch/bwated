@@ -120,7 +120,15 @@
 }
 .circle-btn{
   cursor:pointer;
-  color:#25C0AE
+  color:#25C0AE;
+  margin-right:20px;
+}
+
+.circle-btn2{
+  cursor:pointer;
+  color:#25C0AE;
+  margin-right:20px;
+  margin-top:5px;
 }
 
 .menu-header {

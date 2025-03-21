@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircleUser } from "lucide-react";
+import { CircleUser, BellRing } from "lucide-react";
 import "./Header.css";
 import logo from "../assets/bwated.png";
 
@@ -27,7 +27,10 @@ const ProfileMenu = () => {
 
   return (
     <div className="auth-buttons" ref={dropdownRef}>
-
+      <BellRing 
+       size={30}
+       className="circle-btn2"
+       aria-label="Open profile menu" />
       <CircleUser
         size={35}
         className="circle-btn"
