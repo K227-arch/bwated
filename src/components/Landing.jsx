@@ -90,7 +90,7 @@ function App() {
           <button className="btn btn-outline" onClick={gotoLogin}>
             Sign Up
           </button>
-          <button className="btn btn-primary" onClick={gotoDocumenttitle}>
+          <button className="btn btn-primary" onClick={gotoLogin}>
             TRY FREE
           </button>
         </nav>
