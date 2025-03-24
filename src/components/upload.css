@@ -238,7 +238,7 @@
   transform: translate(-50%, -50%);
   color: #000;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 500; 
 }
 
 .progress-container {

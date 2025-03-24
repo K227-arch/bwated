@@ -98,15 +98,15 @@ function App() {
 
       <main className="hero">
         <h1>
-          Are you ready to
+        A teacher made just
           <br />
-          <span4 className="highlight">hack</span4> your exams?
+          <span4 className="highlight">for</span4> you.
         </h1>
 
         <p className="subtitle">
-          Save yourself time and stress with
+        Learning can be hard sometimes, 
           <br />
-          personalized learning on the best content!
+        and in times like that we intend to reduce your stress by teaching you in a way that helps you learn faster.
         </p>
 
         <button className="btn btn-primary" onClick={gotoLogin}>
@@ -147,21 +147,6 @@ function App() {
 
       <FAQ />
 
-      <div className="features-container">
-        <h2 className="features-title2">Features</h2>
-        <h1 className="features-heading">
-          Powerful AI tools to supercharge your assessment
-        </h1>
-        <div className="features-grid">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card2">
-              <div className="feature-icon2">{feature.icon}</div>
-              <h3 className="feature-title2">{feature.title}</h3>
-              <p className="feature-description2">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
 
       <div className="testimonials-container">
         <h1>What Your Colleagues Say</h1>
@@ -190,6 +175,21 @@ function App() {
                   <div className="author-username">{testimonial.username}</div>
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="features-container">
+        <h2 className="features-title2">Features</h2>
+        <h1 className="features-heading">
+          Powerful AI tools to supercharge your assessment
+        </h1>
+        <div className="features-grid">
+          {features.map((feature, index) => (
+            <div key={index} className="feature-card2">
+              <div className="feature-icon2">{feature.icon}</div>
+              <h3 className="feature-title2">{feature.title}</h3>
+              <p className="feature-description2">{feature.description}</p>
             </div>
           ))}
         </div>
