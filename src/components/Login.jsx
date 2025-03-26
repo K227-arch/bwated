@@ -76,7 +76,7 @@ function Login() {
             className="submitbutton2" 
             onClick={navigateToPlanPage}
           >
-            Continue with email
+            Sign Up
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
+import { Trash } from "lucide-react";
 import Sidebar from './Sidebar'
 import './dashboard.css';
 import { useNavigate } from "react-router";
@@ -278,7 +279,8 @@ function App({ hideSideNav, isSideNavVisible }) {
                       {new Date(test.created_at).toLocaleDateString()}
                     </div>
                     <div className="test-type">
-                      {test.test_type === 'generated' ? '📝' : '✍️'}
+                      {test.test_type === 'generated' ? '📝' : '✍️' }
+                      <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
                     </div>
                   </div>
 
