@@ -160,11 +160,10 @@ function App({ hideSideNav, isSideNavVisible }) {
           </div>
           
           
-          <div className="container4">
+          <div className="container4 header-part-2">
             <div className="layout-main">
               <Header />
             </div>
-            <h1 className="title2"></h1>
             <div className="cards-container">
               <div className="card" onClick={handleChatClick}>
                 <div className="card-icon">💬</div>
@@ -242,10 +241,7 @@ function App({ hideSideNav, isSideNavVisible }) {
                 onClick={() => handleDocumentClick(doc)}
               >
                 <div className="chat-preview">
-                  <h3>{doc.name || 'Untitled'}</h3>
-                  <div>
-                    
-                  </div>
+                  <h3 title={doc.name || 'Untitled'}>{doc.name || 'Untitled'}</h3>
                   <div className="date">
                     {new Date(doc.created_at).toLocaleDateString()}
                   </div>
