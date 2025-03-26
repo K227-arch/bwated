@@ -55,6 +55,7 @@
 }
 
 .filter-section {
+  width:80% ;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -160,7 +161,6 @@
   white-space: nowrap;          /* Prevents the text from wrapping to a new line */
   overflow: hidden;             /* Hides the overflow text */
   text-overflow: ellipsis; 
-
   width: 300px;
   justify-content: center;
 }
@@ -289,6 +289,11 @@
   }
 }
 
+
+/*
+  The blue cards color
+*/
+
 @media(max-width:653px) {
   .chat-card .date  {
     margin-left: -40px;
@@ -326,7 +331,26 @@
   
 }
 
-@media(max-width:1096px) {
-  .chat-card {
+
+/*
+  The chat cards without color
+*/
+
+@media (max-width:498px) {
+
+  .chat-card-main  {
+   flex-direction: column;
+   gap: 30px;
+  }
+  .chat-card-main .chat-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media(max-width:366px) {
+  .chat-card-main .chat-preview h3{ 
+    
   }
 }
