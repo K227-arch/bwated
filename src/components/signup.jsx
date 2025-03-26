@@ -132,7 +132,7 @@ const handleSubmit = async (e) => {
               {errors.submit && <span className="error">{errors.submit}</span>}
               
               <button type="submit" className="submitbutton2"  >
-                Set password
+                SIGN UP
               </button>
             </form>
           </div>

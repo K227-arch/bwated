@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Trash } from "lucide-react";
 import "./generator.css";
 import { useNavigate } from "react-router-dom";
 import OpenAI from "openai";
