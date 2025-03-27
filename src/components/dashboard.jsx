@@ -248,6 +248,7 @@ function App({ hideSideNav, isSideNavVisible }) {
                   </div>
                   <div className="document-type">
                     {doc.file_type === 'pdf' ? '📄' : '📁'}
+                    <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
                   </div>
                 </div>
               </div>
