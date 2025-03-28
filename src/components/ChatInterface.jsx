@@ -5,6 +5,7 @@ import { encode, decode } from "gpt-tokenizer";
 import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 import { supabase } from '@/lib/supabaseClient';
+import { canAffordTokens } from "./Calc";
 
 const App = () => {
   const [messages, setMessages] = useState([]);
@@ -21,6 +22,7 @@ const App = () => {
   const [showMessages, setShowMessages] = useState(false);
   const [name , setName] = useState('');
   const [totalTokensUsed, setTotalTokensUsed] = useState(0); // State to track total tokens used
+  const [error, setError] = useState(null);
 
   // Voice options
   const voices = [
@@ -47,8 +49,8 @@ const App = () => {
       try {
         const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
         console.log('Total tokens in PDF:', totalTokens);
-        setTotalTokensUsed(prev => prev + totalTokens); // Update total tokens used
-        localStorage.setItem('totalTokensUsed', totalTokensUsed + totalTokens); // Store in local storage
+        // setTotalTokensUsed(prev => prev + totalTokens); // Update total tokens used
+        // localStorage.setItem('totalTokensUsed', totalTokensUsed + totalTokens); // Store in local storage
 
         // Start loading state
         setIsLoading(true);
@@ -180,9 +182,20 @@ const App = () => {
     });
 
     try {
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      const canAfford = await canAffordTokens(totalTokensUsed);
+      console.log("sadasdas", canAfford);
+      if (!canAfford) {
+        setError('Insufficient tokens to generate the test.');
+        return;
+      }
+
+      // Reset totalTokensUsed in local storage after successful check
+      localStorage.setItem('totalTokensUsed', '0');
+
       // Include PDF context in system message if available
       const systemMessage = pdfText && !isPdfContext
-        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student ${name}. Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing ${name} by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
+        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student ${name} that u include in your conversations by mentioning the name and giving examples including them . Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing ${name} by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
         : `As an engaging instructor, you will lead discussions with a podcast-like teaching style characterized by natural intonation, clear pronunciation, and dynamic pacing. Your delivery combines authority with warmth - using rhetorical questions, storytelling, and real-world examples to maintain ${name}'s interest. Start each response with a brief context-setting introduction before diving into explanations. Break down complex topics into clear segments, provide illuminating analogies, and smoothly transition between concepts. Regularly check ${name}'s understanding through targeted questions while maintaining an encouraging tone. Your speech should convey enthusiasm for the subject matter while ensuring key points are emphasized through strategic pauses and varied vocal expression. Remember to address ${name} by name and adapt your explanations based on their demonstrated comprehension level.`;
 
       const response = await openai.chat.completions.create({
@@ -252,7 +265,7 @@ const App = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h1>Bwated</h1>
-      
+      {error && error}
       {/* Voice Selection Dropdown */}
       <div style={{ 
         marginBottom: "20px",

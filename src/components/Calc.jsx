@@ -30,6 +30,8 @@ console.log(user)
       if (updateResult.error) {
         console.error('Error updating user credit:', updateResult.error);
         return false; // Return false if the update fails
+      }else{
+        return true;
       }
     }
   } catch (error) {
