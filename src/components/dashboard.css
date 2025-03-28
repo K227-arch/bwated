@@ -6,7 +6,6 @@
   align-items: center;
   overflow-x: hidden;
   margin-bottom: 10px;
-
 }
 
 .chat-header {
@@ -26,15 +25,15 @@
 }
 
 .chat-header .morning {
-  top: 100px;
-  /* position: absolute; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
   width: 100%;
 }
 
 .chat-header .header-part-2 {
   position: relative;
-  top: -100px;
-  height: inherit;
 }
 
 .new-chat-btn {
@@ -52,8 +51,15 @@
   height: 50px;
 }
 
+.title-page-wrapper {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .filter-section {
-  width:80% ;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,11 +123,11 @@
   margin-top: 20px;
   /* grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); */
   /* gap: 1rem; */
-  width: 80%;
+  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap:8px;
+  gap: 8px;
 }
 
 .chat-card {
@@ -153,17 +159,15 @@
   grid-template-columns: 300px 1fr 1fr;
 }
 
-.chat-card-main .chat-preview h3{
+.chat-card-main .chat-preview h3 {
   display: flex;
   align-items: center;
-  white-space: nowrap;          /* Prevents the text from wrapping to a new line */
-  overflow: hidden;             /* Hides the overflow text */
-  text-overflow: ellipsis; 
-  width: 300px;
+  text-align: center;
+  overflow: hidden; /* Hides the overflow text */
   justify-content: center;
 }
 
-.chat-card-main .chat-preview div{
+.chat-card-main .chat-preview div {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -179,7 +183,6 @@
 
 .chat-card .chat-vie {
   display: flex;
-  margin-left: 50px;
   align-items: center;
   gap: 0px;
 }
@@ -206,6 +209,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
 }
 
 .chat-preview h3 {
@@ -226,7 +230,6 @@
 .test-stats {
   display: flex;
   justify-content: space-between;
-  margin: 0.5rem 0;
   font-size: 0.875rem;
   color: #4b5563;
   align-items: center;
@@ -258,47 +261,45 @@
   }
 }
 
-@media (max-width:526px) {
+@media (max-width: 526px) {
   .filter-section {
     flex-direction: column;
   }
 
-  .filter-section>div {
+  .filter-section > div {
     margin: 7px 0px 7px 0px;
   }
 }
 
-
-@media(max-width:1113px) {
-  .chat-grid{
+@media (max-width: 1113px) {
+  .chat-grid {
     width: 85%;
   }
 }
 
-@media(max-width:893px) {
-  .chat-grid{
+@media (max-width: 893px) {
+  .chat-grid {
     width: 90%;
   }
 }
 
-@media(max-width:791px) {
-  .chat-grid{
+@media (max-width: 791px) {
+  .chat-grid {
     width: 100%;
   }
 }
-
 
 /*
   The blue cards color
 */
 
-@media(max-width:653px) {
-  .chat-card .date  {
+@media (max-width: 653px) {
+  .chat-card .date {
     margin-left: -40px;
   }
 }
 
-@media(max-width:711px) {
+@media (max-width: 711px) {
   .chat-card .chat-preview {
     display: block;
   }
@@ -323,22 +324,17 @@
 
   .chat-card .chat-vie .test-stats .correct-answers {
     margin-left: -35px;
-  
   }
-
-  
 }
-
 
 /*
   The chat cards without color
 */
 
-@media (max-width:498px) {
-
-  .chat-card-main  {
-   flex-direction: column;
-   gap: 30px;
+@media (max-width: 498px) {
+  .chat-card-main {
+    flex-direction: column;
+    gap: 30px;
   }
   .chat-card-main .chat-preview {
     display: flex;
@@ -347,8 +343,21 @@
   }
 }
 
-@media(max-width:366px) {
-  .chat-card-main .chat-preview h3{ 
-    
+@media (max-width: 1126px) {
+  .title-page-wrapper {
+    width: 80%;
+  }
+}
+
+@media (max-width: 585px) {
+  .title-page-wrapper {
+    width: 90%;
+  }
+}
+
+
+@media (max-width: 513px) {
+  .title-page-wrapper {
+    width: 100%;
   }
 }

@@ -16,7 +16,6 @@
 }
 
 .cards-container {
-  margin-top: 70px;
   display: flex;
   justify-content: center;
   gap: 2rem;
@@ -26,7 +25,7 @@
 }
 
 .card {
-  margin-top: 100px;
+  
   background: #f5f5f5;
   border-radius: 12px;
   padding: 2rem;

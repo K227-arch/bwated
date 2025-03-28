@@ -204,7 +204,8 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
         </div>
       )}
 
-      <div className="pricing-cards-container">
+<div className="pricing-card-wrapper">
+<div className="pricing-cards-container">
         {depositOptions.map((deposit) => (
           <div
             key={deposit.id}
@@ -277,6 +278,8 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
           </button>
         </div>
       </div>
+</div>
+      
     { /*
       <div className="transaction-history">
         <h2>Recent Transactions</h2>

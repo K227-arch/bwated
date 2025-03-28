@@ -8,6 +8,13 @@
   margin: 0px 20px 0px 20px;
 }
 
+.cl-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .login-logo {
   width: 700px;
   height: 200px;
@@ -156,7 +163,10 @@ img {
   }
 
   .login-wrapper .email-input {
-    width: 300px;
+    width: 334px;
+  }
+  .login-wrapper .email-input2 {
+    width: 334px;
   }
 }
 
@@ -173,6 +183,9 @@ img {
   .login-wrapper .email-input {
     width: 250px;
   }
+  .login-wrapper .email-input2 {
+    width: 250px;
+  }
 }
 
 
@@ -185,7 +198,5 @@ img {
     width: 210px;
   }
 
-  .login-wrapper .email-input {
-    width: 210px;
-  }
+  
 }

@@ -57,7 +57,7 @@ function Login() {
           
           <div className="formbutton">
             {/* login form */}
-            <div>
+            <div className="cl-wrapper">
                 <input type="email" placeholder="Email" className="email-input" onChange={(e) => setLoginEmail(e.target.value)} />
                 <input type="password" placeholder="Password" className="email-input2" onChange={(e) => setPassword(e.target.value)} />
 

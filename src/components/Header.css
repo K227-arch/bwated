@@ -227,3 +227,13 @@
    }
 
 }
+
+@media(max-width:408px) {
+  .header-logo {
+    width:300px;
+    height:40px;
+    cursor:pointer;
+    margin-left: -10px;
+    margin-right: 0px;
+  }
+}

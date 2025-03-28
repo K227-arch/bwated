@@ -47,7 +47,7 @@
   background: white;
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .question-card.correct {
@@ -76,7 +76,8 @@
   border-radius: 4px;
 }
 
-.user-answer, .correct-answer {
+.user-answer,
+.correct-answer {
   margin-bottom: 0.5rem;
 }
 
@@ -101,16 +102,15 @@
 
 .test-stats {
   display: flex;
-  gap: 2rem;
-  margin: 1rem 0;
   color: #666;
+  gap: 20px;
+  margin-right: 20px;
 }
 
 .question-type-breakdown {
   display: flex;
   gap: 2rem;
-  margin-top: 1rem;
-  padding: 1rem;
+
   border-radius: 8px;
 }
 
@@ -165,4 +165,22 @@
 .option.selected:not(.correct) {
   border-color: #dc3545;
   background-color: rgba(220, 53, 69, 0.1);
+}
+
+@media (max-width: 675px) {
+  .chat-card .chat-preview h3 {
+    margin-bottom: 20px;
+  }
+  .test-stats {
+    gap: 0px;
+  }
+
+  .question-type-breakdown {
+    gap: 0rem;
+  }
+
+  .chat-card .chat-preview .chat-vie .date {
+    margin-left: -62px;
+    margin-top: 20px;
+  }
 }

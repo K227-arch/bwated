@@ -9,7 +9,7 @@
 .feedback-container {
   display: flex;
   flex-direction: column;
-  width: 80%;
+  width: 50%;
   align-self: center;
   margin: 40px auto;
   padding: 20px;
@@ -17,8 +17,6 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 100px;
-  margin-left: 20px;
-  margin-right: 20px;
 }
 
 .feedback-title {
@@ -83,4 +81,18 @@
 .submit-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+
+@media(max-width:773px){
+  .feedback-container {
+    width: 70%;
+  }
+}
+
+
+@media(max-width:503px){
+  .feedback-container {
+    width: 80%;
+  }
 }
