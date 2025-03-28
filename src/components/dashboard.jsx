@@ -6,6 +6,7 @@ import "./dashboard.css";
 import { useNavigate } from "react-router";
 import { supabase } from "@/lib/supabaseClient";
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist/webpack";
+
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
 
 function App({ hideSideNav, isSideNavVisible }) {
@@ -18,16 +19,17 @@ function App({ hideSideNav, isSideNavVisible }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch current user and their documents
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Get current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
         const { data: userData, error: userCheckError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('auth_id', user.id)
+          .from("users")
+          .select("*")
+          .eq("auth_id", user.id)
           .single();
 
         if (userCheckError) {
@@ -67,7 +69,6 @@ function App({ hideSideNav, isSideNavVisible }) {
 
         setUser(user);
 
-        // Fetch documents for current user
         const { data: docs, error: docsError } = await supabase
           .from("documents")
           .select("*")
@@ -75,10 +76,8 @@ function App({ hideSideNav, isSideNavVisible }) {
           .order("created_at", { ascending: false });
 
         if (docsError) throw docsError;
-
         setDocuments(docs);
 
-        // Improved test results fetch with more comprehensive selection
         const { data: testResults, error: testsError } = await supabase
           .from("test_results")
           .select(
@@ -102,7 +101,6 @@ function App({ hideSideNav, isSideNavVisible }) {
 
         if (testsError) throw testsError;
 
-        // Transform the results to ensure compatibility
         const transformedTests = testResults.map((test) => ({
           ...test,
           document_name: test.documents?.name || "Untitled Document",
@@ -122,21 +120,18 @@ function App({ hideSideNav, isSideNavVisible }) {
     fetchUserData();
   }, []);
 
-  // Filter documents based on search query
   const getFilteredItems = () => {
     const query = searchQuery.toLowerCase();
     if (activeTab === "documents") {
       return documents.filter((doc) => doc.name.toLowerCase().includes(query));
     } else {
-      return tests.filter((test) =>
-        test.document_name.toLowerCase().includes(query)
-      );
+      return tests.filter((test) => test.document_name.toLowerCase().includes(query));
     }
   };
 
   function truncateText(text) {
     return text.length > 26 ? text.slice(0, 26) + "..." : text;
-}
+  }
 
   const handleChatClick = () => {
     navigate("/upload");
@@ -145,9 +140,9 @@ function App({ hideSideNav, isSideNavVisible }) {
   const handleTestClick = () => {
     navigate("/Test");
   };
+
   const extractTextFromPDF = async (url) => {
     try {
-      // First fetch the PDF file from the URL
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch PDF");
 
@@ -161,8 +156,7 @@ function App({ hideSideNav, isSideNavVisible }) {
       for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
         const page = await pdfDocument.getPage(pageNumber);
         const textContent = await page.getTextContent();
-        extractedText +=
-          textContent.items.map((item) => item.str).join(" ") + "\n";
+        extractedText += textContent.items.map((item) => item.str).join(" ") + "\n";
       }
 
       localStorage.setItem("extractedText", extractedText);
@@ -197,7 +191,6 @@ function App({ hideSideNav, isSideNavVisible }) {
           <div className="morning">
             <h1>Hello {user?.user_metadata?.full_name || "User."}</h1>
           </div>
-
           <div className="header-part-2">
             <div className="layout-main">
               <Header />
@@ -206,19 +199,12 @@ function App({ hideSideNav, isSideNavVisible }) {
               <div className="card" onClick={handleChatClick}>
                 <div className="card-icon">💬</div>
                 <h2>Start a Chat</h2>
-                <p>
-                  Need to study? Enter a chat and ask about anything you're not
-                  sure about.
-                </p>
+                <p>Need to study? Enter a chat and ask about anything you're not sure about.</p>
               </div>
-
               <div className="card" onClick={handleTestClick}>
                 <div className="card-icon">📝</div>
                 <h2>Take a Test</h2>
-                <p>
-                  Feeling confident? Test your knowledge with some multiple
-                  choice questions.
-                </p>
+                <p>Feeling confident? Test your knowledge with some multiple choice questions.</p>
               </div>
             </div>
 
@@ -236,17 +222,13 @@ function App({ hideSideNav, isSideNavVisible }) {
           <div className="filter-section">
             <div className="filter-buttons">
               <button
-                className={`filter-btn ${
-                  activeTab === "documents" ? "active" : ""
-                }`}
+                className={`filter-btn ${activeTab === "documents" ? "active" : ""}`}
                 onClick={() => setActiveTab("documents")}
               >
                 PDFs & Documents
               </button>
               <button
-                className={`filter-btn ${
-                  activeTab === "tests" ? "active" : ""
-                }`}
+                className={`filter-btn ${activeTab === "tests" ? "active" : ""}`}
                 onClick={() => setActiveTab("tests")}
               >
                 Tests & Quizzes
@@ -271,37 +253,15 @@ function App({ hideSideNav, isSideNavVisible }) {
             </div>
           </div>
 
-        <div className="chat-grid">
-          {loading ? (
-            <div className="loading">Loading {activeTab}...</div>
-          ) : error ? (
-            <div className="error">Error: {error}</div>
-          ) : getFilteredItems().length === 0 ? (
-            <div className="no-documents">
-              No {activeTab} found. {
-                activeTab === 'documents'
-                  ? 'Upload a document to get started!'
-                  : 'Take a test to get started!'
-              }
-            </div>
-          ) : activeTab === 'documents' ? (
-            // Existing document cards
-            getFilteredItems().map((doc) => (
-              <div
-                key={doc.id}
-                className={`chat-card-main ${doc.file_type === 'pdf' ? 'clickable' : ''}`}
-                onClick={() => handleDocumentClick(doc)}
-              >
-                <div className="chat-preview">
-                  <h3 title={doc.name || 'Untitled'}>{doc.name || 'Untitled'}</h3>
-                  <div className="date">
-                    {new Date(doc.created_at).toLocaleDateString()}
-                  </div>
-                  <div className="document-type">
-                    {doc.file_type === 'pdf' ? '📄' : '📁'}
-                    <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
-                  </div>
-                </div>
+          <div className="chat-grid">
+            {loading ? (
+              <div className="loading">Loading {activeTab}...</div>
+            ) : error ? (
+              <div className="error">Error: {error}</div>
+            ) : getFilteredItems().length === 0 ? (
+              <div className="no-documents">
+                No {activeTab} found.{" "}
+                {activeTab === "documents" ? "Upload a document to get started!" : "Take a test to get started!"}
               </div>
             ))
           ) : (
