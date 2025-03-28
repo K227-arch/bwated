@@ -1,941 +1,670 @@
-import { useEffect, useRef, useState } from "react";
-import "./ChatInterface.css";
-import EventLog from "./chatComponentes/EventLog";
-import SessionControls from "./chatComponentes/SessionControls";
-import ReactDOMServer from 'react-dom/server';
+import React, { useState, useRef, useEffect } from "react";
+import OpenAI from "openai";
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import { encode, decode } from "gpt-tokenizer";
-import { supabase } from '@/lib/supabaseClient';
-import { useLocation } from 'react-router-dom';
+import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-// Add these constants at the top
-const MAX_TOKENS_PER_CHUNK = 2000; // Conservative limit for GPT-4
-const CHUNK_OVERLAP = 200; // Tokens of overlap between chunks
 
-// Add Supabase client setup near the top
- 
-function App() {
-  const [isSessionActive, setIsSessionActive] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [dataChannel, setDataChannel] = useState(null);
-  const [error, setError] = useState(null);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [audioStreams, setAudioStreams] = useState({});
-  const peerConnection = useRef(null);
-  const audioElement = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const location = useLocation();
- 
+const App = () => {
+  const [messages, setMessages] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const recognitionRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const activeAudiosRef = useRef(new Set());
+  const [pdfText, setPdfText] = useState("");
+  const [pdfName, setPdfName] = useState("");
+  const fileInputRef = useRef(null);
+  const [selectedVoice, setSelectedVoice] = useState("alloy");
+  const [showMessages, setShowMessages] = useState(false);
+  
+  // Voice options
+  const voices = [
+    { id: "alloy", name: "Alloy" },
+    { id: "echo", name: "Echo" },
+    { id: "fable", name: "Fable" },
+    { id: "onyx", name: "Onyx" },
+    { id: "nova", name: "Nova" },
+    { id: "shimmer", name: "Shimmer" }
+  ];
 
-  // Add new states for text processing
-  const [processedText, setProcessedText] = useState('');
-  const [textChunks, setTextChunks] = useState([]);
-  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-  const [isProcessingText, setIsProcessingText] = useState(false);
-  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  // Add new states for document tracking
-  const [docId, setDocId] = useState(null);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  useEffect(() => {
+    const getContent = async () => {
+      const extractedText = localStorage.getItem('extractedText') || ''; // Ensure we get the extracted text
+      if (!extractedText) {
+        console.warn('No extracted text found in local storage.');
+        return; // Exit if no text is found
+      }
 
-  // Add loading states
-  const [loadingStates, setLoadingStates] = useState({
-    connection: false,
-    history: false,
-    processing: false,
-    saving: false,
-    chunking: false
-  });
-  const [progress, setProgress] = useState({
-    chunks: 0,
-    processing: 0
-  });
+      try {
+        const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
+      console.log('Total tokens in PDF:', totalTokens);
 
-  // Modify token tracker to include separate categories
-  const [tokenTracker, setTokenTracker] = useState({
-    input: {
-      maxTokens: 0,
-      currentSessionTokens: 0,
-      tokenEvents: []
-    },
-    output: {
-      maxTokens: 0,
-      currentSessionTokens: 0,
-      tokenEvents: []
-    },
-    cache: {
-      maxTokens: 0,
-      currentSessionTokens: 0,
-      tokenEvents: []
-    },
-    total: {
-      maxTokens: 0,
-      currentSessionTokens: 0
+      // Start loading state
+      setIsLoading(true);
+
+      // If tokens exceed 122,000, break into chunks
+      if (totalTokens > 122000) {
+        const chunks = breakIntoChunks(extractedText, 122000);
+        for (const chunk of chunks) {
+          await sendChunkToModel(chunk);
+        }
+      } else {
+        // Send the entire text if within limits
+        await sendChunkToModel(extractedText);
+        console.log('No limits, sending entire text');
+      }
+      }catch (e) {
+        console.log(e)
+      }
+
+      // Stop loading state after processing
+      setIsLoading(false);
+    };
+
+    // Call the function to get content
+    getContent();
+  }, []); // Ensure this array is empty to run only once
+
+  useEffect(() => {
+    scrollToBottom();  
+  }, [messages]);
+
+  const stopAllAudios = () => {
+    activeAudiosRef.current.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    activeAudiosRef.current.clear();
+  };
+
+  const startListening = () => {
+    stopAllAudios();
+
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Speech recognition is not supported in this browser');
+      return;
     }
-  });
 
-  // Add loading indicator components
-  const LoadingSpinner = ({ size = '24px', color = '#3498db' }) => (
-    <div 
-      className="loading-spinner" 
-      style={{ 
-        width: size, 
-        height: size, 
-        borderColor: color,
-        borderTopColor: 'transparent' 
-      }} 
-    />
-  );
+    recognitionRef.current = new window.webkitSpeechRecognition();
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = false;
+    recognitionRef.current.lang = 'en-US';
 
-  const ProgressBar = ({ progress, label }) => (
-    <div className="progress-container">
-      <div className="progress-label">{label}</div>
-      <div className="progress-bar">
-        <div 
-          className="progress-fill" 
-          style={{ width: `${progress}%` }} 
-        />
-      </div>
-      <div className="progress-percentage">{Math.round(progress)}%</div>
-    </div>
-  );
+    recognitionRef.current.onstart = () => {
+      setIsListening(true);
+      setMessages(prev => [...prev, {
+        role: 'user',
+        content: '🎤 Listening...',
+        temporary: true
+      }]);
+    };
 
-  // Add function to prepare text chunks
-  const prepareTextChunks = (text) => {
-    console.log('Starting text preparation...');
-    const tokens = encode(text);
-    console.log('Total tokens in text:', tokens.length);
+    recognitionRef.current.onresult = async (event) => {
+      const transcript = event.results[0][0].transcript;
+      setMessages(prev => prev.filter(msg => !msg.temporary));
+      await handleGenerate(transcript);
+    };
 
+    recognitionRef.current.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      setMessages(prev => prev.filter(msg => !msg.temporary));
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+      if (messages.some(msg => msg.temporary)) {
+        setMessages(prev => prev.filter(msg => !msg.temporary));
+      }
+    };
+
+    try {
+      recognitionRef.current.start();
+    } catch (error) {
+      console.error('Error starting recognition:', error);
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+        setIsListening(false);
+        setMessages(prev => prev.filter(msg => !msg.temporary));
+      } catch (error) {
+        console.error('Error stopping recognition:', error);
+      }
+    }
+  };
+  // const extractTextFromPDF = async (file) => {
+  //   if (!file) {
+  //     alert('Please select a PDF file first');
+  //     return;
+  //   }
+
+  //   const fileReader = new FileReader();
+
+  //   fileReader.onload = async () => {
+  //     const typedArray = new Uint8Array(fileReader.result);
+
+  //     try {
+  //       const loadingTask = pdfjsLib.getDocument(typedArray);
+  //       const pdfDocument = await loadingTask.promise;
+  //       let extractedText = '';
+  //       const totalPages = pdfDocument.numPages;
+
+  //       for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+  //         const page = await pdfDocument.getPage(pageNumber);
+  //         const textContent = await page.getTextContent();
+          
+  //         // Join the text items without extra spaces
+  //         const pageText = textContent.items.map((item) => item.str).join(' ').replace(/\s+/g, ' ').trim();
+  //         extractedText += pageText + '\n';
+  //       }
+
+  //       console.log('Extracted PDF text:', extractedText);
+  //       setPdfText(extractedText);
+  //       setPdfName(file.name);
+
+  //       // Calculate tokens
+  //       const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
+  //       console.log('Total tokens in PDF:', totalTokens);
+
+  //       // Start loading state
+  //       setIsLoading(true);
+
+  //       // If tokens exceed 122,000, break into chunks
+  //       if (totalTokens > 122000) {
+  //         const chunks = breakIntoChunks(extractedText, 122000);
+  //         for (const chunk of chunks) {
+  //           await sendChunkToModel(chunk, file.name);
+  //         }
+  //       } else {
+  //         // Send the entire text if within limits
+  //         await sendChunkToModel(extractedText, file.name);
+  //       }
+        
+  //     } catch (error) {
+  //       console.error('Error extracting text: ', error);
+  //       alert('Error extracting text from PDF.');
+  //     } finally {
+  //       // Stop loading state after processing
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fileReader.onerror = () => {
+  //     console.error('Error reading file');
+  //     alert('Error reading the PDF file.');
+  //   };
+
+  //   fileReader.readAsArrayBuffer(file);
+  // };
+
+  const sendChunkToModel = async (chunk) => {
+    const initialPrompt = `I've uploaded a PDF document". Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.`;
+    await handleGenerate(initialPrompt, true);
+  };
+
+  const breakIntoChunks = (text, maxTokens) => {
+    const words = text.split(/\s+/); // Split text into words
     const chunks = [];
     let currentChunk = [];
-    let tokenCount = 0;
+    let currentTokenCount = 0;
 
-    for (let i = 0; i < tokens.length; i++) {
-      currentChunk.push(tokens[i]);
-      tokenCount++;
-
-      if (tokenCount >= MAX_TOKENS_PER_CHUNK) {
-        chunks.push(currentChunk);
-        // Decode and log the chunk content
-        const chunkText = decode(currentChunk);
-        console.log(`Chunk ${chunks.length} content:`, {
-          tokenCount: currentChunk.length,
-          preview: chunkText.slice(0, 100) + '...',
-          fullText: chunkText
-        });
-        
-        // Keep overlap tokens for context
-        currentChunk = tokens.slice(i - CHUNK_OVERLAP, i + 1);
-        tokenCount = CHUNK_OVERLAP;
+    for (const word of words) {
+      const wordTokenCount = encode(word).length; // Calculate tokens for the word
+      if (currentTokenCount + wordTokenCount > maxTokens) {
+        chunks.push(currentChunk.join(' ')); // Push the current chunk to chunks
+        currentChunk = [word]; // Start a new chunk with the current word
+        currentTokenCount = wordTokenCount; // Reset token count for the new chunk
+      } else {
+        currentChunk.push(word); // Add word to the current chunk
+        currentTokenCount += wordTokenCount; // Update token count
       }
     }
 
-    // Add remaining tokens as final chunk
+    // Push any remaining words as the last chunk
     if (currentChunk.length > 0) {
-      chunks.push(currentChunk);
-      const chunkText = decode(currentChunk);
-      console.log(`Final chunk ${chunks.length} content:`, {
-        tokenCount: currentChunk.length,
-        preview: chunkText.slice(0, 100) + '...',
-        fullText: chunkText
-      });
+      chunks.push(currentChunk.join(' '));
     }
 
     return chunks;
   };
 
-  // Add function to fetch chat history
-  const fetchChatHistory = async (documentId) => {
-    setLoadingStates(prev => ({ ...prev, history: true }));
+  // const handleFileUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (file && file.type === 'application/pdf') {
+  //     await extractTextFromPDF(file);
+  //   } else {
+  //     alert('Please upload a valid PDF file');
+  //   }
+  // };
+
+  const handleGenerate = async (transcript, isPdfContext = false) => {
+    if (!transcript.trim()) return;
+    setIsLoading(true);
+    setIsTyping(true);
+
+    const newUserMessage = { role: 'user', content: transcript };
+    setMessages(prev => [...prev, newUserMessage]);
+
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: 'Thinking...',
+      isTyping: true,
+      temporary: true
+    }]);
+    
+    const openai = new OpenAI({
+      apiKey: import.meta.env.VITE_OPENAI_KEY,
+      dangerouslyAllowBrowser: true
+    });
+
     try {
-      const { data, error } = await supabase
-        .from('chat_history')
-        .select('*')
-        .eq('doc_id', documentId)
-        .single();
+      // Include PDF context in system message if available
+      const systemMessage = pdfText && !isPdfContext
+        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student keith. Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing keith by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
+        : `As an engaging instructor, you will lead discussions with a podcast-like teaching style characterized by natural intonation, clear pronunciation, and dynamic pacing. Your delivery combines authority with warmth - using rhetorical questions, storytelling, and real-world examples to maintain keith's interest. Start each response with a brief context-setting introduction before diving into explanations. Break down complex topics into clear segments, provide illuminating analogies, and smoothly transition between concepts. Regularly check keith's understanding through targeted questions while maintaining an encouraging tone. Your speech should convey enthusiasm for the subject matter while ensuring key points are emphasized through strategic pauses and varied vocal expression. Remember to address keith by name and adapt your explanations based on their demonstrated comprehension level.`;
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No record found - create a new one
-          console.log('Creating new chat history for document:', documentId);
-          const { data: newData, error: createError } = await supabase
-            .from('chat_history')
-            .insert([{
-              doc_id: documentId,
-              messages: [],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }])
-            .select()
-            .single();
-
-          if (createError) throw createError;
-          return [];
-        }
-        throw error;
-      }
-
-      console.log('Retrieved existing chat history:', data);
-      if (data.messages && data.messages.length > 0) {
-        // Convert stored messages back to event format
-        const formattedMessages = data.messages.map(msg => ({
-          type: msg.type,
-          item: {
-            role: "assistant",
-            content: [{
-              type: "text",
-              text: msg.content
-            }]
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini-audio-preview",
+        modalities: ["text", "audio"],
+        audio: { 
+          voice: selectedVoice,
+          format: "wav" 
+        },
+        messages: [
+          {
+            role: "system",
+            content: systemMessage,
           },
-          timestamp: msg.timestamp,
-          event_id: crypto.randomUUID()
-        }));
-        // setEvents(formattedMessages);
-        return formattedMessages;
-      }
-      return [];
+          ...messages,
+          newUserMessage,
+        ],
+      });
+
+      // Process the response
+      setMessages(prev => prev.filter(msg => !msg.temporary));
+
+      const textResponse = response.choices[0].message.audio.transcript;
+      const audioData = response.choices[0].message.audio.data;
+      const audioBlob = new Blob([Uint8Array.from(atob(audioData), (c) => c.charCodeAt(0))], {
+        type: "audio/wav",
+      });
+      const audioURL = URL.createObjectURL(audioBlob);
+
+      const audioElement = new Audio(audioURL);
+      
+      audioElement.addEventListener('play', () => {
+        activeAudiosRef.current.add(audioElement);
+      });
+
+      audioElement.addEventListener('ended', () => {
+        activeAudiosRef.current.delete(audioElement);
+      });
+      audioElement.addEventListener('pause', () => {
+        activeAudiosRef.current.delete(audioElement);
+      });
+
+      audioElement.play();
+
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: textResponse,
+        audioUrl: audioURL
+      }]);
     } catch (error) {
-      console.error('Error handling chat history:', error);
-      setError('Failed to load chat history');
-      return [];
+      console.error("Error generating text and audio:", error);
+      alert('There was an error communicating with the AI model. Please try again later.');
+      setMessages(prev => prev.filter(msg => !msg.temporary));
     } finally {
-      setLoadingStates(prev => ({ ...prev, history: false }));
+      setIsLoading(false);
+      setIsTyping(false);
     }
   };
-
-  // Update saveChatHistory to properly handle AI responses
-  const saveChatHistory = async (messages) => {
-    setLoadingStates(prev => ({ ...prev, saving: true }));
-    if (!docId) return;
-  
-    try {
-      // Filter only AI responses with proper content
-      const aiResponses = messages.filter(msg => {
-        // Check for content.part messages
-        if (msg.type === "response.audio_transcript.done"  ) {
-          return true;
-        }
-        // Check for conversation items from assistant
-        if (msg.type === "conversation.item.create" && 
-            msg.item?.role === "assistant" && 
-            msg.item?.content?.[0]?.text) {
-          return true;
-        }
-        return false;
-      }) 
-  
-      console.log('Saving AI responses:', aiResponses);
-  
-      // Use upsert with ON CONFLICT DO UPDATE
-      const { error } = await supabase
-        .from('chat_history')
-        .upsert({
-          doc_id: docId,
-          messages: aiResponses,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'doc_id',
-          ignoreDuplicates: false
-        });
-  
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-      
-      console.log('Chat history saved successfully');
-    } catch (error) {
-      console.error('Error saving chat history:', error);
-      setError('Failed to save chat history: ' + error.message);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, saving: false }));
-    }
-  };
-
-  // Add function to check if message is related to context
-  const isMessageInContext = (message, context) => {
-    // Simple check for now - can be made more sophisticated
-    const keywords = context.toLowerCase().split(/\W+/).filter(word => word.length > 3);
-    const messageWords = message.toLowerCase().split(/\W+/);
-    
-    return keywords.some(keyword => messageWords.includes(keyword));
-  };
-
-  // Update sendTextMessage to check context
-  function sendTextMessage(message) {
-    if (!processedText) {
-      sendClientEvent({
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "assistant",
-          content: [{
-            type: "text",
-            text: "I don't see any text loaded for us to discuss. Please upload a document first."
-          }]
-        },
-        event_id: crypto.randomUUID()
-      });
-      return;
-    }
-
-    if (!isMessageInContext(message, processedText)) {
-      const event = {
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "user",
-          content: [{
-            type: "input_text",
-            text: message
-          }]
-        }
-      };
-
-      sendClientEvent(event);
-      
-      // Send context reminder
-      sendClientEvent({
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "assistant",
-          content: [{
-            type: "text",
-            text: "I notice your question might not be directly related to the text we're discussing. To help you better, could you please ask something specific about the content we're reviewing? If you'd like to discuss a different topic, we should start a new session with that material."
-          }]
-        },
-        event_id: crypto.randomUUID()
-      });
-      return;
-    }
-
-    // Message is in context, proceed normally
-    const event = {
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [{
-          type: "input_text",
-          text: message + " (Please keep your response focused on the text we're discussing.)"
-        }]
-      }
-    };
-
-    sendClientEvent(event);
-    sendClientEvent({ type: "response.create" });
-  }
-
-  // Update the initial useEffect to better handle history loading
-  useEffect(() => {
-    const initializeChat = async () => {
-      const storedText = localStorage.getItem('extractedText') || '';
-      const { documentId } = location.state;
-      console.log(documentId)
-      
-      if (documentId) {
-        console.log('Initializing chat with document ID:', documentId);
-        setDocId(documentId);
-        const history = await fetchChatHistory(documentId);
-        setChatHistory(history);
-        
-        if (history.length > 0) {
-          console.log('Loaded existing chat history:', history.length, 'messages');
-        }
-      }
-
-      setProcessedText(storedText);
-      const chunks = prepareTextChunks(storedText);
-      setTextChunks(chunks);
-      console.log(`Prepared ${chunks.length} chunks for processing`);
-    };
-
-    initializeChat();
-  }, []);
-
-  // Add effect to save chat history when events change
-  useEffect(() => {
-    if (events.length > 0 && docId) {
-      // Debounce saving to avoid too many database calls
-      const timeoutId = setTimeout(() => {
-        saveChatHistory(events);
-      }, 1000);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [events, docId]);
-
-  async function startSession() {
-    setLoadingStates(prev => ({ ...prev, connection: true }));
-    try {
-      setIsConnecting(true);
-      setError(null);
-
-      // Get an ephemeral key from the server
-      const tokenResponse = await fetch(`https://bwat.netlify.app/.netlify/functions/api/token`);
-      if (!tokenResponse.ok) {
-        throw new Error('Failed to get authentication token');
-      }
-      const data = await tokenResponse.json();
-      const EPHEMERAL_KEY = data.client_secret.value;
-
-      // Create and configure peer connection
-      const pc = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-      });
-      // console.log(pc)
-
-      // Set up audio element
-      const audio = new Audio();
-      audio.autoplay = true;
-      audioElement.current = audio;
-
-      // Handle remote stream
-      pc.ontrack = (e) => {
-        if (audioElement.current) {
-          audioElement.current.srcObject = e.streams[0];
-        }
-      };
-
-      // Handle ICE connection state changes
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'failed') {
-          stopSession();
-          setError('Connection failed. Please try again.');
-        }
-      };
-
-      // Set up media stream
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true
-          }
-        });
-        
-        // Create MediaRecorder instance
-        const mediaRecorder = new MediaRecorder(stream);
-        let audioChunks = [];
-
-        mediaRecorder.ondataavailable = (event) => {
-          audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-          const audioStream = new MediaStream([audioBlob]);
-          
-          // Store the audio stream with the latest event ID
-          const latestEventId = events[0]?.event_id;
-          if (latestEventId) {
-            setAudioStreams(prev => ({
-              ...prev,
-              [latestEventId]: audioStream
-            }));
-          }
-          
-          audioChunks = [];
-        };
-
-        // Store mediaRecorder in ref for later use
-        mediaRecorderRef.current = mediaRecorder;
-        
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
-      } catch (mediaError) {
-        throw new Error('Microphone access denied');
-      }
-
-      // Set up data channel
-      const dc = pc.createDataChannel("oai-events", {
-        ordered: true,
-        maxRetransmits: 3  // Add retry attempts
-      });
-      
-      dc.onopen = () => {
-        console.log('Data channel opened');
-        setIsSessionActive(true);
-        setEvents([]);
-        // Don't send message immediately, wait for stable connection
-        setTimeout(() => {
-          if (dc.readyState === 'open') {
-            sendInitialPrompt(dc);
-          }
-        }, 2000);
-      };
-
-      dc.onclose = () => {
-        console.log('Data channel closed');
-        setError('Connection closed. Please try again.');
-        stopSession();
-      };
-
-      dc.onerror = (err) => {
-        console.error('Data channel error:', err);
-        setError('Connection error occurred. Please try again.');
-        stopSession();
-      };
-
-      setDataChannel(dc);
-
-      // Create and set offer
-      const offer = await pc.createOffer({
-        offerToReceiveAudio: true
-      });
-      await pc.setLocalDescription(offer);
-
-      // Send offer to server
-      const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-4o-mini-realtime-preview-2024-12-17`, {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${EPHEMERAL_KEY}`,
-          "Content-Type": "application/sdp",
-        },
-      });
-
-      if (!sdpResponse.ok) {
-        throw new Error('Failed to establish connection with OpenAI');
-      }
-
-      const answer = {
-        type: "answer",
-        sdp: await sdpResponse.text(),
-      };
-      await pc.setRemoteDescription(answer);
-
-      peerConnection.current = pc;
-
-    } catch (error) {
-      console.error('Session start error:', error);
-      setError(error.message);
-      stopSession();
-    } finally {
-      setIsConnecting(false);
-      setLoadingStates(prev => ({ ...prev, connection: false }));
-    }
-  }
-
-  // Update sendInitialPrompt to include chat history context
-  function sendInitialPrompt(dc) {
-    console.log('Starting text processing sequence...');
-    
-    if (!textChunks.length) {
-      console.log('No chunks to process');
-      return;
-    }
-
-    const initialPrompt = {
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [{
-          type: "input_text",
-          text: `You are my tutor. Always speak in English and  Keep responses short and precise unless asked for more detail. and if asked something unrelated with the context kindly tell the user to ask questions related to the content ${
-            chatHistory.length > 0 
-              ? "We've discussed this text before - continue from our previous conversation." 
-              : "I will share a text for you to help me understand."
-          }`
-        }]
-      },
-      event_id: crypto.randomUUID()
-    };
-    
-    if (dc.readyState === 'open') {
-      console.log('Starting background text processing...');
-      setCurrentChunkIndex(0);
-      setIsProcessingText(true);
-      dc.send(JSON.stringify(initialPrompt));
-      
-      // Update sendChunksSequentially with modified final message
-      const sendChunksSequentially = async () => {
-        setLoadingStates(prev => ({ ...prev, chunking: true }));
-        let processedChunks = 0;
-
-        for (let i = 0; i < textChunks.length; i++) {
-          const chunk = textChunks[i];
-          const chunkText = decode(chunk);
-          
-          processedChunks++;
-          setProgress(prev => ({
-            ...prev,
-            chunks: (processedChunks / textChunks.length) * 100
-          }));
-
-          console.log(`Sending chunk ${i + 1}/${textChunks.length}`, {
-            tokenCount: chunk.length,
-            preview: chunkText.slice(0, 100) + '...'
-          });
-
-          const message = {
-            type: "conversation.item.create",
-            item: {
-              type: "message",
-              role: "user",
-              content: [{
-                type: "input_text",
-                text: chunkText
-              }]
-            },
-            event_id: crypto.randomUUID()
-          };
-
-          try {
-            dc.send(JSON.stringify(message));
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } catch (error) {
-            console.error('Error sending chunk:', error);
-          }
-        }
-
-        // Update final message to request concise summary
-        const finalMessage = {
-          type: "conversation.item.create",
-          item: {
-            type: "message",
-            role: "user",
-            content: [{
-              type: "input_text",
-              text: "Provide a concise summary of the key points from this text. Keep your response focused and brief. If questions asked are out of context provided, politely tell the user to stay on contex. remember to be exiting and happy while sharing"
-            }]
-          },
-          event_id: crypto.randomUUID()
-        };
-        dc.send(JSON.stringify(finalMessage));
-        dc.send(JSON.stringify({ 
-          type: "response.create",
-          event_id: crypto.randomUUID()
-        }));
-        setIsProcessingText(false);
-        setLoadingStates(prev => ({ ...prev, chunking: false }));
-      };
-
-      sendChunksSequentially();
-    }
-  }
-
-  // Modify the stopSession function to keep messages
-  function stopSession() {
-    // Log comprehensive token usage
-    console.log('Detailed Session Token Usage:', {
-      input: {
-        maxTokens: tokenTracker.input.maxTokens,
-        eventCount: tokenTracker.input.tokenEvents.length
-      },
-      output: {
-        maxTokens: tokenTracker.output.maxTokens,
-        eventCount: tokenTracker.output.tokenEvents.length
-      },
-      cache: {
-        maxTokens: tokenTracker.cache.maxTokens,
-        eventCount: tokenTracker.cache.tokenEvents.length
-      },
-      total: {
-        maxTokens: tokenTracker.total.maxTokens,
-        currentSessionTokens: tokenTracker.total.currentSessionTokens
-      }
-    });
-
-    // Reset token tracker
-    setTokenTracker({
-      input: {
-        maxTokens: 0,
-        currentSessionTokens: 0,
-        tokenEvents: []
-      },
-      output: {
-        maxTokens: 0,
-        currentSessionTokens: 0,
-        tokenEvents: []
-      },
-      cache: {
-        maxTokens: 0,
-        currentSessionTokens: 0,
-        tokenEvents: []
-      },
-      total: {
-        maxTokens: 0,
-        currentSessionTokens: 0
-      }
-    });
-
-    setIsTranscribing(false);
-    
-    if (dataChannel) {
-      try {
-        if (dataChannel.readyState === 'open') {
-          dataChannel.close();
-        }
-      } catch (err) {
-        console.warn('Error closing data channel:', err);
-      }
-      setDataChannel(null);
-    }
-
-    if (peerConnection.current) {
-      try {
-        peerConnection.current.getSenders().forEach((sender) => {
-          if (sender.track) {
-            sender.track.stop();
-          }
-        });
-        peerConnection.current.close();
-      } catch (err) {
-        console.warn('Error closing peer connection:', err);
-      }
-      peerConnection.current = null;
-    }
-
-    if (audioElement.current) {
-      audioElement.current.srcObject = null;
-      audioElement.current = null;
-    }
-
-    setAudioStreams({});
-    setIsSessionActive(false);
-  }
-
-  // Modify sendClientEvent to categorize tokens
-  function sendClientEvent(message) {
-    if (!dataChannel || dataChannel.readyState !== 'open') {
-      console.error('Data channel not available or not open');
-      return;
-    }
-
-    try {
-      // Categorize tokens based on message type
-      const messageTokens = encode(JSON.stringify(message)).length;
-      
-      let tokenCategory = 'input'; // Default to input
-      if (message.type === 'cache_retrieval') {
-        tokenCategory = 'cache';
-      } else if (message.type === 'response.create' || message.type === 'content.part') {
-        tokenCategory = 'output';
-      }
-
-      setTokenTracker(prev => {
-        // Update specific category
-        const categoryTokens = prev[tokenCategory];
-        const newCategoryTokens = {
-          maxTokens: Math.max(categoryTokens.maxTokens, categoryTokens.currentSessionTokens + messageTokens),
-          currentSessionTokens: categoryTokens.currentSessionTokens + messageTokens,
-          tokenEvents: [
-            ...categoryTokens.tokenEvents, 
-            {
-              type: message.type,
-              tokens: messageTokens,
-              timestamp: Date.now()
-            }
-          ]
-        };
-
-        // Calculate total tokens
-        const totalTokens = 
-          prev.input.currentSessionTokens + 
-          prev.output.currentSessionTokens + 
-          prev.cache.currentSessionTokens;
-
-        return {
-          ...prev,
-          [tokenCategory]: newCategoryTokens,
-          total: {
-            maxTokens: Math.max(prev.total.maxTokens, totalTokens + messageTokens),
-            currentSessionTokens: totalTokens + messageTokens
-          }
-        };
-      });
-
-      message.event_id = message.event_id || crypto.randomUUID();
-      dataChannel.send(JSON.stringify(message));
-      setEvents((prev) => [message, ...prev]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setError('Failed to send message. Please try reconnecting.');
-    }
-  }
-
-  // Update the useEffect for dataChannel to not clear messages on open
-  useEffect(() => {
-    if (dataChannel) {
-      dataChannel.addEventListener("message", (e) => {
-        const eventData = JSON.parse(e.data);
-        if (!eventData.timestamp) {
-          eventData.timestamp = Date.now();
-        }
-        if (!eventData.event_id) {
-          eventData.event_id = crypto.randomUUID();
-        }
-        setEvents((prev) => [eventData, ...prev]);
-      });
-
-      dataChannel.addEventListener("open", () => {
-        setIsSessionActive(true);
-      });
-    }
-  }, [dataChannel]);
-
-  useEffect(() => {
-    if (events.length > 0) {
-      const lastEvent = events[0]; // events are prepended, so latest is at index 0
-      
-      // Start transcribing when a response.create event is received
-      if (lastEvent.type === "response.create") {
-        setIsTranscribing(true);
-      }
-      
-      // Stop transcribing when receiving content completion event
-      if (lastEvent.type === "content.complete") {
-        setIsTranscribing(false);
-      }
-    }
-  }, [events]);
-
-  // Remove or simplify the chunk processing effect since we're handling it differently
-  useEffect(() => {
-    if (!isProcessingText || !dataChannel) return;
-
-    const lastEvent = events[0];
-    console.log('Processing event:', {
-      type: lastEvent?.type,
-      currentChunk: currentChunkIndex,
-      totalChunks: textChunks.length
-    });
-  }, [events, isProcessingText, currentChunkIndex, textChunks.length, dataChannel]);
-
-  // Add effect to track tokens in received events with categorization
-  useEffect(() => {
-    if (events.length > 0) {
-      const lastEvent = events[0];
-      
-      try {
-        const eventTokens = encode(JSON.stringify(lastEvent)).length;
-        
-        setTokenTracker(prev => {
-          // Determine token category
-          let tokenCategory = 'input'; // Default to input
-          if (lastEvent.type === 'cache_retrieval') {
-            tokenCategory = 'cache';
-          } else if (lastEvent.type === 'response.create' || lastEvent.type === 'content.part') {
-            tokenCategory = 'output';
-          }
-
-          // Update specific category
-          const categoryTokens = prev[tokenCategory];
-          const newCategoryTokens = {
-            maxTokens: Math.max(categoryTokens.maxTokens, categoryTokens.currentSessionTokens + eventTokens),
-            currentSessionTokens: categoryTokens.currentSessionTokens + eventTokens,
-            tokenEvents: [
-              ...categoryTokens.tokenEvents, 
-              {
-                type: lastEvent.type,
-                tokens: eventTokens,
-                timestamp: Date.now()
-              }
-            ]
-          };
-
-          // Calculate total tokens
-          const totalTokens = 
-            prev.input.currentSessionTokens + 
-            prev.output.currentSessionTokens + 
-            prev.cache.currentSessionTokens;
-
-          return {
-            ...prev,
-            [tokenCategory]: newCategoryTokens,
-            total: {
-              maxTokens: Math.max(prev.total.maxTokens, totalTokens + eventTokens),
-              currentSessionTokens: totalTokens + eventTokens
-            }
-          };
-        });
-      } catch (error) {
-        console.error('Error calculating event tokens:', error);
-      }
-    }
-  }, [events]);
 
   return (
-   <div className="chat-interface">
-      <nav className="chat-nav">
-        <div className="nav-content">
-          <h1>AI Tutor Chat</h1>
-          {chatHistory.length > 0 && (
-            <div className="history-indicator">
-              Continuing previous conversation
-            </div>
-          )}
-          {error && <div className="error-message">{error}</div>}
-          {isLoadingHistory && <div className="loading-message">Loading previous conversation...</div>}
-        </div>
-      </nav>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+      <h1>Bwated</h1>
       
-      {/* Add loading status bar */}
-      <div className="loading-status-bar">
-        {loadingStates.connection && (
-          <div className="loading-item">
-            <LoadingSpinner size="20px" />
-            <span>Connecting to AI...</span>
-          </div>
-        )}
-        {loadingStates.history && (
-          <div className="loading-item">
-            <LoadingSpinner size="20px" />
-            <span>Loading chat history...</span>
-          </div>
-        )}
-        {loadingStates.chunking && (
-          <div className="loading-item">
-            <ProgressBar 
-              progress={progress.chunks} 
-              label="Processing text chunks" 
-            />
-          </div>
-        )}
-        {loadingStates.processing && (
-          <div className="loading-item">
-            <ProgressBar 
-              progress={progress.processing} 
-              label="AI processing text" 
-            />
-          </div>
-        )}
-        {loadingStates.saving && (
-          <div className="loading-item">
-            <LoadingSpinner size="20px" />
-            <span>Saving conversation...</span>
-          </div>
-        )}
+      {/* Voice Selection Dropdown */}
+      <div style={{ 
+        marginBottom: "20px",
+        padding: "15px",
+        background: "#f8f9fa",
+        borderRadius: "8px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px"
+      }}>
+        <label htmlFor="voice-select" style={{ fontWeight: "500" }}>AI Voice:</label>
+        <select
+          id="voice-select"
+          value={selectedVoice}
+          onChange={(e) => setSelectedVoice(e.target.value)}
+          style={{
+            padding: "8px 12px",
+            borderRadius: "4px",
+            border: "1px solid #ced4da",
+            backgroundColor: "white",
+            cursor: "pointer",
+            fontSize: "14px"
+          }}
+        >
+          {voices.map(voice => (
+            <option key={voice.id} value={voice.id}>
+              {voice.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Toggle Button */}
+        <button
+          onClick={() => setShowMessages(!showMessages)}
+          style={{
+            marginLeft: "auto",
+            padding: "8px 16px",
+            borderRadius: "20px",
+            border: "none",
+            background: "#007bff",
+            color: "white",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}
+        >
+          <span role="img" aria-label="toggle">
+            {showMessages ? "🤖" : "💬"}
+          </span>
+          {showMessages ? "Show AI" : "Show Messages"}
+        </button>
       </div>
-      
-      <main className="chat-main">
-        <section className="chat-messages">
-          <EventLog events={events} isTranscribing={isTranscribing} audioStreams={audioStreams} />
-        </section>
-        
-        <section className="chat-controls">
-          <SessionControls
-            startSession={startSession}
-            stopSession={stopSession}
-            sendClientEvent={sendClientEvent}
-            sendTextMessage={sendTextMessage}
-            events={events}
-            isSessionActive={isSessionActive}
-            isConnecting={isConnecting}
-          />
-        </section> 
-      </main>
+
+      {/* PDF Upload Section */}
+      {/* <div style={{ 
+        marginBottom: "20px",
+        padding: "15px",
+        border: "2px dashed #ccc",
+        borderRadius: "8px",
+        textAlign: "center"
+      }}>
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileUpload}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+        <button
+          onClick={() => fileInputRef.current.click()}
+          style={{
+            padding: "10px 20px",
+            borderRadius: "4px",
+            border: "none",
+            background: "#28a745",
+            color: "white",
+            cursor: "pointer",
+            marginBottom: "10px"
+          }}
+        >
+          Upload PDF
+        </button>
+        {pdfName && (
+          <div style={{ 
+            marginTop: "10px",
+            fontSize: "14px",
+            color: "#666"
+          }}>
+            Current PDF: {pdfName}
+          </div>
+        )}
+      </div> */}
+
+      {/* Loader */}
+      {/* {isLoading && (
+        <div style={{ textAlign: "center", margin: "20px 0" }}>
+          <p>Loading... Please wait while the content is being processed.</p>
+          <div className="loader"></div>
+        </div>
+      )} */}
+
+      {/* Conditional Render: AI Animation or Messages */}
+      {showMessages ? (
+        // Messages View
+        <div style={{ 
+          height: "400px", 
+          overflowY: "auto", 
+          border: "1px solid #ccc", 
+          padding: "20px",
+          marginBottom: "20px",
+          borderRadius: "8px"
+        }}>
+          {messages.map((message, index) => (
+            <div 
+              key={index}
+              style={{
+                marginBottom: "15px",
+                textAlign: message.role === 'user' ? 'right' : 'left',
+                opacity: message.temporary ? 0.7 : 1
+              }}
+            >
+              <div style={{
+                background: message.role === 'user' ? '#007bff' : '#f0f0f0',
+                color: message.role === 'user' ? 'white' : 'black',
+                padding: "10px 15px",
+                borderRadius: "15px",
+                display: "inline-block",
+                maxWidth: "70%"
+              }}>
+                {message.isTyping ? (
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                ) : (
+                  <>
+                    <p style={{ margin: "0" }}>{message.content}</p>
+                    {message.audioUrl && (
+                      <audio 
+                        controls 
+                        src={message.audioUrl} 
+                        style={{ 
+                          marginTop: "10px",
+                          display: "none"
+                        }}
+                      ></audio>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+      ) : (
+        // AI Animation View
+        <div style={{ 
+          height: "400px", 
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          position: "relative",
+          overflow: "hidden",
+          background: "white"
+        }}>
+          <div className="ai-animation">
+            <div className="pulse"></div>
+            <div className="particles">
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="particle"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recording Button */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button 
+          onClick={isListening ? stopListening : startListening}
+          disabled={isLoading}
+          style={{
+            padding: "15px 30px",
+            borderRadius: "50px",
+            border: "none",
+            background: isListening ? "#dc3545" : "#007bff",
+            color: "white",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            fontSize: "16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            animation: isListening ? "pulse 1.5s infinite" : "none"
+          }}
+        >
+          <span role="img" aria-label="microphone">
+            {isListening ? "🔴" : "🎤"}
+          </span>
+          {isLoading ? "Processing..." : isListening ? "Stop Recording" : "Start Recording"}
+        </button>
+      </div>
+
+      <style>
+        {`
+          @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+          }
+
+          .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+          }
+
+          .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: bounce 1s infinite;
+          }
+
+          .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+          .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+
+          .ai-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+
+          .pulse {
+            width: 100px;
+            height: 100px;
+            background: #007bff;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px #007bff;
+          }
+
+          .particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+          }
+
+          .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #007bff;
+            border-radius: 50%;
+            animation: particle 3s infinite;
+          }
+
+          @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+          }
+
+          @keyframes particle {
+            0% {
+              transform: rotate(0deg) translateY(0) scale(1);
+              opacity: 1;
+            }
+            100% {
+              transform: rotate(360deg) translateY(80px) scale(0);
+              opacity: 0;
+            }
+          }
+
+          .particles .particle:nth-child(1) { animation-delay: 0.1s; }
+          .particles .particle:nth-child(2) { animation-delay: 0.2s; }
+          .particles .particle:nth-child(3) { animation-delay: 0.3s; }
+          .particles .particle:nth-child(4) { animation-delay: 0.4s; }
+          .particles .particle:nth-child(5) { animation-delay: 0.5s; }
+          .particles .particle:nth-child(6) { animation-delay: 0.6s; }
+          .particles .particle:nth-child(7) { animation-delay: 0.7s; }
+          .particles .particle:nth-child(8) { animation-delay: 0.8s; }
+          .particles .particle:nth-child(9) { animation-delay: 0.9s; }
+          .particles .particle:nth-child(10) { animation-delay: 1s; }
+          
+          .particles .particle {
+            transform-origin: 50% 50%;
+          }
+
+          .particles .particle:nth-child(2n) {
+            animation-duration: 4s;
+          }
+
+          .particles .particle:nth-child(3n) {
+            animation-duration: 5s;
+          }
+
+          .particles .particle:nth-child(4n) {
+            animation-duration: 6s;
+          }
+
+          /* Loader styles */
+          .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
-}
-
-// Add this export for SSR
-export function render(url) {
-  const html = ReactDOMServer.renderToString(<App />);
-  return { html };
-}
+};
 
 export default App;
