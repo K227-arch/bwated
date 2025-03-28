@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { CircleUser, BellRing } from "lucide-react";
 import "./Header.css";
 import logo from "../assets/bwated.png";
-
-const ProfileMenu = () => {
+import { supabase } from '@/lib/supabaseClient'; // Import supabase client
+ const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null); // State to hold user details
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -20,8 +21,28 @@ const ProfileMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    alert("Logging out..."); // Replace with actual logout logic
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const { data: userData, error } = await supabase.auth.getUser(); // Fetch logged-in user details
+      if (error) {
+        console.error('Error fetching user details:', error);
+      } else {
+        setUser(userData); // Set user details in state
+        // console.log(user.user.user_metadata)
+      }
+    };
+
+    fetchUserDetails(); // Call the function to fetch user details
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut(); // Perform the logout using Supabase
+      navigate('/') // Notify user of successful logout
+    } catch (error) {
+      console.error('Error logging out:', error);
+      alert("An error occurred while logging out."); // Notify user of error
+    }
     setIsOpen(false);
   };
 
@@ -41,13 +62,13 @@ const ProfileMenu = () => {
         <div className="dropdown-menu">
           <div className="menu-header">
             <img
-              src="https://via.placeholder.com/60"
+              src={user.user.user_metadata.avatar_url}
               alt="Profile"
               className="menu-profile-image"
             />
             <div className="user-info">
-              <h4>John Doe</h4>
-              <p>john.doe@example.com</p>
+              <h4>{user ? user.user.user_metadata.full_name : 'Loading...'}</h4>
+              <p>{user ? user.user.user_metadata.email : 'Loading...'}</p>
             </div>
           </div>
           <ul className="menu-items">

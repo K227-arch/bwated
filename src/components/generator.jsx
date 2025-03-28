@@ -605,13 +605,13 @@ const handlePdfSelect = async (e) => {
           </div>
         ) : (
           <div className="input-wrapper">
-            <label htmlFor="customText">Content from PDF:</label>
+            {/* <label htmlFor="customText">Content from PDF:</label>
             <textarea
               id="customText"
               value={pdfContent}
               readOnly
               placeholder="PDF content will appear here"
-            ></textarea>
+            ></textarea> */}
           </div>
         )}
 

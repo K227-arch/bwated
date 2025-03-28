@@ -24,8 +24,46 @@ function App({ hideSideNav, isSideNavVisible }) {
       try {
         // Get current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const { data: userData, error: userCheckError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_id', user.id)
+          .single();
 
-        if (userError) throw userError;
+        if (userCheckError) {
+          if (userCheckError.message === 'No record found') {
+            const { error: createUserError } = await supabase
+            .from('users')
+            .insert([{
+              auth_id: user.id,
+              full_name: user.user_metadata.full_name || '',
+              email: user.email || '',
+              profile_image: user.user_metadata.avatar_url || '',
+              phone_number: user.user_metadata.phone || ''
+            }]);
+           }  
+        }
+
+        // if (!userData) {
+        //   console.error('User does not exist in the users table');
+        //   const { error: createUserError } = await supabase
+        //     .from('users')
+        //     .insert([{
+        //       auth_id: user.id,
+        //       full_name: user.user_metadata.full_name || '',
+        //       email: user.email || '',
+        //       profile_image: user.user_metadata.avatar_url || '',
+        //       phone_number: user.user_metadata.phone || ''
+        //     }]);
+
+        //   if (createUserError) {
+        //     console.error('Error creating user record:', createUserError.message);
+        //     setError(createUserError.message);
+        //   } else {
+        //     console.log('User record created successfully');
+        //   }
+        // }
+        // if (userError) throw userError;
 
         setUser(user);
 

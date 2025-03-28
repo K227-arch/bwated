@@ -4,7 +4,7 @@ import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import { encode, decode } from "gpt-tokenizer";
 import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
+import { supabase } from '@/lib/supabaseClient';
 
 const App = () => {
   const [messages, setMessages] = useState([]);
@@ -19,7 +19,7 @@ const App = () => {
   const fileInputRef = useRef(null);
   const [selectedVoice, setSelectedVoice] = useState("alloy");
   const [showMessages, setShowMessages] = useState(false);
-  
+  const [name , setName] = useState('')
   // Voice options
   const voices = [
     { id: "alloy", name: "Alloy" },
@@ -48,18 +48,19 @@ const App = () => {
 
       // Start loading state
       setIsLoading(true);
+      await sendChunkToModel(extractedText);
 
-      // If tokens exceed 122,000, break into chunks
-      if (totalTokens > 122000) {
-        const chunks = breakIntoChunks(extractedText, 122000);
-        for (const chunk of chunks) {
-          await sendChunkToModel(chunk);
-        }
-      } else {
-        // Send the entire text if within limits
-        await sendChunkToModel(extractedText);
-        console.log('No limits, sending entire text');
-      }
+      // // If tokens exceed 122,000, break into chunks
+      // if (totalTokens > 122000) {
+      //   const chunks = breakIntoChunks(extractedText, 122000);
+      //   for (const chunk of chunks) {
+      //     await sendChunkToModel(chunk);
+      //   }
+      // } else {
+      //   // Send the entire text if within limits
+      //   await sendChunkToModel(extractedText);
+      //   console.log('No limits, sending entire text');
+      // }
       }catch (e) {
         console.log(e)
       }
@@ -67,6 +68,30 @@ const App = () => {
       // Stop loading state after processing
       setIsLoading(false);
     };
+
+    const fetchLoggedInUser = async () => {
+      try {
+        const { data: user, error } = await supabase.auth.getUser(); // Use Supabase to retrieve the logged-in user
+        if (error) {
+          console.error('Error fetching user from Supabase:', error);
+        }
+        if (user) {
+          // console.log('Logged in user:', user);
+          setName(user.user.user_metadata.full_name || ''); // Set the name state if available
+        } else {
+          console.warn('No user is logged in.');
+        }
+      } catch (error) {
+        console.error('Error fetching logged in user:', error);
+      }
+    };
+ 
+
+
+
+    
+      fetchLoggedInUser(); // Call the function to fetch the logged-in user
+  
 
     // Call the function to get content
     getContent();
@@ -209,7 +234,7 @@ const App = () => {
   // };
 
   const sendChunkToModel = async (chunk) => {
-    const initialPrompt = `I've uploaded a PDF document". Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.`;
+    const initialPrompt = name ? `I've uploaded a PDF document, ${name}. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.` : `I've uploaded a PDF document. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.`;
     await handleGenerate(initialPrompt, true);
   };
 
@@ -271,8 +296,8 @@ const App = () => {
     try {
       // Include PDF context in system message if available
       const systemMessage = pdfText && !isPdfContext
-        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student keith. Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing keith by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
-        : `As an engaging instructor, you will lead discussions with a podcast-like teaching style characterized by natural intonation, clear pronunciation, and dynamic pacing. Your delivery combines authority with warmth - using rhetorical questions, storytelling, and real-world examples to maintain keith's interest. Start each response with a brief context-setting introduction before diving into explanations. Break down complex topics into clear segments, provide illuminating analogies, and smoothly transition between concepts. Regularly check keith's understanding through targeted questions while maintaining an encouraging tone. Your speech should convey enthusiasm for the subject matter while ensuring key points are emphasized through strategic pauses and varied vocal expression. Remember to address keith by name and adapt your explanations based on their demonstrated comprehension level.`;
+        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student ${name}. Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing ${name} by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
+        : `As an engaging instructor, you will lead discussions with a podcast-like teaching style characterized by natural intonation, clear pronunciation, and dynamic pacing. Your delivery combines authority with warmth - using rhetorical questions, storytelling, and real-world examples to maintain ${name}'s interest. Start each response with a brief context-setting introduction before diving into explanations. Break down complex topics into clear segments, provide illuminating analogies, and smoothly transition between concepts. Regularly check ${name}'s understanding through targeted questions while maintaining an encouraging tone. Your speech should convey enthusiasm for the subject matter while ensuring key points are emphasized through strategic pauses and varied vocal expression. Remember to address ${name} by name and adapt your explanations based on their demonstrated comprehension level.`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o-mini-audio-preview",

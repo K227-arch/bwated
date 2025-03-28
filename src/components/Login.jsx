@@ -17,8 +17,24 @@ function Login() {
     return emailRegex.test(email);
   };
 
-  function navigateToPlanPage() { 
-    navigate("/Signup");
+  
+  const SignInGoogle = async () => {
+    const { user, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'http://localhost:5173/dashboard',  
+      },
+    });
+
+    console.log(user)
+
+    if (error) {
+      toast(error.message);
+      console.error("Google sign-in error:", error.message);
+    } else {
+      console.log("Google sign-in successful!", user);
+      // navigate("/dashboard");
+    }
   }
 
   const signInWithEmail = async (email, password) => {
@@ -45,7 +61,7 @@ function Login() {
       <div className="login-wrapper">
         <div className="container-login">
           <div className="logologin">
-            <img src={logo} className="login-logo" alt="Logo"/>
+            <img src={logo} className="login-logo" onClick={ () => navigate('/')} alt="Logo"/>
           </div>
           
           <p>
@@ -63,21 +79,19 @@ function Login() {
 
                 <button type="submit" className="submitbutton2" onClick={() => signInWithEmail(login_email, password)}>Sign In</button>
             </div>
-            <form className="login-form" onSubmit={(e) => e.preventDefault()}>
-              <button className="google-input-with-icon" required>
+
+            <div className="or">OR</div> 
+
+
+            <button className="google-input-with-icon" onClick={SignInGoogle}>
                 Continue With Google
               </button>
-              <div className="or">OR</div> 
-            </form>
           </div>
           
-          <button 
-            type="submit" 
-            className="submitbutton2" 
-            onClick={navigateToPlanPage}
-          >
-            Sign Up
-          </button>
+        <p>
+          <span>Have an account? </span>
+          <a href="/signup" className="signup-button" >Sign Up</a>
+        </p>
         </div>
       </div>
     </div>

@@ -348,7 +348,7 @@ function App() {
             })}
           </div>
           
-          <button onClick={() => navigate('/testscreen')}>Generate New Test</button>
+          <button onClick={() => navigate('/Test')}>Generate New Test</button>
 
           {isSaving ? (
             <div className="saving-indicator">
