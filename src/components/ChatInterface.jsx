@@ -184,7 +184,7 @@ const App = () => {
     try {
       const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
       const canAfford = await canAffordTokens(totalTokensUsed);
-      console.log("sadasdas", canAfford);
+      // console.log("sadasdas", canAfford);
       if (!canAfford) {
         setError('Insufficient tokens to generate the test.');
         return;

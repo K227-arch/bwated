@@ -4,6 +4,8 @@ import { CircleUser, BellRing } from "lucide-react";
 import "./Header.css";
 import logo from "../assets/bwated.png";
 import { supabase } from '@/lib/supabaseClient'; // Import supabase client
+import { canAffordTokens } from "./Calc";
+
  const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null); // State to hold user details
@@ -38,6 +40,14 @@ import { supabase } from '@/lib/supabaseClient'; // Import supabase client
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut(); // Perform the logout using Supabase
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      await canAffordTokens(totalTokensUsed);
+      localStorage.removeItem('docId');
+      localStorage.removeItem('documentId');
+      localStorage.removeItem('extractedText');
+      localStorage.removeItem('fileName');
+      localStorage.removeItem('totalTokensUsed');
+
       navigate('/') // Notify user of successful logout
     } catch (error) {
       console.error('Error logging out:', error);

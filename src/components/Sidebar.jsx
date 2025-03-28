@@ -3,6 +3,7 @@ import { Upload, FileText, Info, CreditCard, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import { supabase } from '@/lib/supabaseClient';
+import { canAffordTokens } from "./Calc";
 
 
 const Sidebar = ({ isVisible, willHideSideNav }) => {
@@ -23,12 +24,21 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
     navigate('/upload');
   };
 
-
+  
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error logging out:', error.message);
-    } else {
+    } else { 
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      await canAffordTokens(totalTokensUsed);
+      localStorage.removeItem('docId');
+      localStorage.removeItem('documentId');
+      localStorage.removeItem('extractedText');
+      localStorage.removeItem('fileName');
+      localStorage.removeItem('totalTokensUsed');
+      // console.log(canAfford)
+
       // Clear user session data
       localStorage.removeItem('userSession');
       // Navigate to the login page
