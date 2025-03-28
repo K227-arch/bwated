@@ -23,12 +23,47 @@ function App({ hideSideNav, isSideNavVisible }) {
     const fetchUserData = async () => {
       try {
         // Get current user
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const { data: userData, error: userCheckError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_id', user.id)
+          .single();
 
-        if (userError) throw userError;
+        if (userCheckError) {
+          if (userCheckError.message === 'No record found') {
+            const { error: createUserError } = await supabase
+            .from('users')
+            .insert([{
+              auth_id: user.id,
+              full_name: user.user_metadata.full_name || '',
+              email: user.email || '',
+              profile_image: user.user_metadata.avatar_url || '',
+              phone_number: user.user_metadata.phone || ''
+            }]);
+           }  
+        }
+
+        // if (!userData) {
+        //   console.error('User does not exist in the users table');
+        //   const { error: createUserError } = await supabase
+        //     .from('users')
+        //     .insert([{
+        //       auth_id: user.id,
+        //       full_name: user.user_metadata.full_name || '',
+        //       email: user.email || '',
+        //       profile_image: user.user_metadata.avatar_url || '',
+        //       phone_number: user.user_metadata.phone || ''
+        //     }]);
+
+        //   if (createUserError) {
+        //     console.error('Error creating user record:', createUserError.message);
+        //     setError(createUserError.message);
+        //   } else {
+        //     console.log('User record created successfully');
+        //   }
+        // }
+        // if (userError) throw userError;
 
         setUser(user);
 
@@ -236,83 +271,68 @@ function App({ hideSideNav, isSideNavVisible }) {
             </div>
           </div>
 
-          <div className="chat-grid">
-            {loading ? (
-              <div className="loading">Loading {activeTab}...</div>
-            ) : error ? (
-              <div className="error">Error: {error}</div>
-            ) : getFilteredItems().length === 0 ? (
-              <div className="no-documents">
-                No {activeTab} found.{" "}
-                {activeTab === "documents"
-                  ? "Upload a document to get started!"
-                  : "Take a test to get started!"}
-              </div>
-            ) : activeTab === "documents" ? (
-              // Existing document cards
-              getFilteredItems().map((doc) => (
-                <div
-                  key={doc.id}
-                  className={`chat-card-main ${
-                    doc.file_type === "pdf" ? "clickable" : ""
-                  }`}
-                  onClick={() => handleDocumentClick(doc)}
-                >
-                  <div className="chat-preview">
-                    <h3 title={doc.name || "Untitled"}>
-                      {truncateText(doc.name)|| "Untitled"}
-                    </h3>
-                    <div className="date">
-                      {new Date(doc.created_at).toLocaleDateString()}
-                    </div>
-                    <div className="document-type">
-                      {doc.file_type === "pdf" ? "📄" : "📁"}
-                    </div>
+        <div className="chat-grid">
+          {loading ? (
+            <div className="loading">Loading {activeTab}...</div>
+          ) : error ? (
+            <div className="error">Error: {error}</div>
+          ) : getFilteredItems().length === 0 ? (
+            <div className="no-documents">
+              No {activeTab} found. {
+                activeTab === 'documents'
+                  ? 'Upload a document to get started!'
+                  : 'Take a test to get started!'
+              }
+            </div>
+          ) : activeTab === 'documents' ? (
+            // Existing document cards
+            getFilteredItems().map((doc) => (
+              <div
+                key={doc.id}
+                className={`chat-card-main ${doc.file_type === 'pdf' ? 'clickable' : ''}`}
+                onClick={() => handleDocumentClick(doc)}
+              >
+                <div className="chat-preview">
+                  <h3 title={doc.name || 'Untitled'}>{doc.name || 'Untitled'}</h3>
+                  <div className="date">
+                    {new Date(doc.created_at).toLocaleDateString()}
+                  </div>
+                  <div className="document-type">
+                    {doc.file_type === 'pdf' ? '📄' : '📁'}
+                    <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
                   </div>
                 </div>
-              ))
-            ) : (
-              // New test result cards
-              getFilteredItems().map((test) => (
-                <div
-                  key={test.id}
-                  className="chat-card test-card"
-                  sx
-                  onClick={() => navigate(`/test-results/${test.id}`)}
-                >
-                  <div className="chat-preview">
-                    <h3>{test.document_name}</h3>
-                    <div className="chat-vie">
-                      <div className="test-stats">
-                        <div className="score">
-                          Score: {Math.round(test.score)}%
+              </div>
+            ))
+          ) : (
+            // New test result cards
+            getFilteredItems().map((test) => (
+              <div
+                key={test.id}
+                className="chat-card test-card" sx
+                onClick={() => navigate(`/test-results/${test.id}`)}
+              >
+                <div className="chat-preview">
+                  <h3>{test.document_name}</h3>
+                  <div className='chat-vie'>
+                    <div className="test-stats">
+                      <div className="score">Score: {Math.round(test.score)}%</div>
+                      <div className="correct-answers">
+                        Correct: {test.correct_answers}/{test.total_questions}
+                      </div>
+                      {test.question_types && (
+                        <div className="question-type-breakdown">
+                          <span>Multiple Choice: {test.question_types.multiple || 0}</span>
+                          <span>Structured: {test.question_types.structured || 0}</span>
                         </div>
-                        <div className="correct-answers">
-                          Correct: {test.correct_answers}/{test.total_questions}
-                        </div>
-                        {test.question_types && (
-                          <div className="question-type-breakdown">
-                            <span>
-                              Multiple Choice:{" "}
-                              {test.question_types.multiple || 0}
-                            </span>
-                            <span>
-                              Structured: {test.question_types.structured || 0}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="date">
-                        {new Date(test.created_at).toLocaleDateString()}
-                      </div>
-                      <div className="test-type">
-                        {test.test_type === "generated" ? "📝" : "✍️"}
-                        <Trash
-                          size={18}
-                          color="red"
-                          style={{ marginLeft: "8px", cursor: "pointer" }}
-                        />
-                      </div>
+                      )}
+                    </div>
+                    <div className="date">
+                      {new Date(test.created_at).toLocaleDateString()}
+                    </div>
+                    <div className="test-type">
+                      {test.test_type === 'generated' ? '📝' : '✍️' }
+                      <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
                     </div>
                   </div>
                 </div>

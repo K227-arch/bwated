@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import { Upload, FileText, Info, CreditCard, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
+import { supabase } from '@/lib/supabaseClient';
+
 
 const Sidebar = ({ isVisible, willHideSideNav }) => {
   const navigate = useNavigate();
@@ -19,6 +21,19 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
     localStorage.removeItem('extractedText');
     localStorage.removeItem('fileName');
     navigate('/upload');
+  };
+
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error logging out:', error.message);
+    } else {
+      // Clear user session data
+      localStorage.removeItem('userSession');
+      // Navigate to the login page
+      navigate('/login');
+    }
   };
 
   return (
@@ -93,7 +108,7 @@ const Sidebar = ({ isVisible, willHideSideNav }) => {
         <div className="down-buttons">
           <button
             className="nav-btn"
-            onClick={goto("/Admindashboard")}
+            onClick={handleLogout}
             aria-label="Log In"
           >
             <LogOut size={20} />
