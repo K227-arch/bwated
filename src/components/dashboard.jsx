@@ -195,7 +195,7 @@ function App({ hideSideNav, isSideNavVisible }) {
       <div className="chat-container2-dashboard">
         <header className="chat-header">
           <div className="morning">
-            <h1>Hello {user?.user_metadata?.full_name || "User."}</h1>
+            <h1>Hello {user?.user_metadata?.full_name || ""}👋.</h1>
           </div>
 
           <div className="header-part-2">
