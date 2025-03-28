@@ -31,7 +31,7 @@ function App({ hideSideNav, isSideNavVisible }) {
           .single();
 
         if (userCheckError) {
-          if (userCheckError.message === 'No record found') {
+          if (userCheckError.code === 'PGRST116') {
             const { error: createUserError } = await supabase
             .from('users')
             .insert([{
@@ -336,12 +336,14 @@ function App({ hideSideNav, isSideNavVisible }) {
                     </div>
                   </div>
                 </div>
+                </div>
               ))
             )}
           </div>
         </div>
       </div>
     </div>
+    
   );
 }
 

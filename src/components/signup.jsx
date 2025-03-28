@@ -171,6 +171,7 @@ const schema = yup.object().shape({
           
         </div>
       </div>
+      </div>
     </div>
   );
 };

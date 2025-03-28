@@ -33,7 +33,7 @@ function Login() {
       console.error("Google sign-in error:", error.message);
     } else {
       console.log("Google sign-in successful!", user);
-      // navigate("/dashboard");
+      navigate("/dashboard");
     }
   }
 

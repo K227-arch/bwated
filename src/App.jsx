@@ -33,6 +33,7 @@ import Admindashboard from "./components/Admin/Admindashboard.jsx";
 import Transactions from "./components/Admin/Transactions.jsx";
 import "./App.css";
 import ProtectedRoute from "./components/protected/ProtectedRoute.jsx";
+import ProtectedRouteAdmin from "./components/protected/ProtectedRouteAdmin.jsx";
 import TestDetails from './components/TestDetails';
 import CheckoutForm from './components/CheckoutForm';
 const AppRoutes = () => {
@@ -73,21 +74,27 @@ const AppRoutes = () => {
     <Load>
       {loading && <Loader />}
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Loader" element={<Loader />} />
-        <Route path="/FAQ" element={<FAQ />} />
-        
-        <Route path="/Pop" element={<Pop />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/Adminside" element={<Adminside />} />
-        <Route path="/Transactions" element={<Transactions />} />
-        <Route path="/Notifications" element={<Notifications />} />
-        <Route path="/Users" element={<Users />} />
-        <Route path="/Token" element={<Token />} />
-        <Route path="/Packages" element={<Packages />} />
-        <Route path="/Admindashboard" element={<Admindashboard />} />
-       
+      <Route path="/" element={<Landing />} />
+              <Route path="/Login" element={<Login />} />
+              <Route path="/Loader" element={<Loader />} />
+              <Route path="/FAQ" element={<FAQ />} /> 
+              <Route path="/Pop" element={<Pop />} />
+              <Route path="/Signup" element={<Signup />} />
+
+
+            <Route element={<ProtectedRouteAdmin />}>
+ 
+              <Route path="/Adminside" element={<Adminside />} />
+              <Route path="/Transactions" element={<Transactions />} />
+              <Route path="/Notifications" element={<Notifications />} />
+              <Route path="/Users" element={<Users />} />
+              <Route path="/Token" element={<Token />} />
+              <Route path="/Packages" element={<Packages />} />
+              <Route path="/admindashboard" element={<Admindashboard />} />
+          </Route>
+
+
+
         <Route
           path="/home"
           element={
@@ -99,74 +106,74 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute />}>
               <Route path="/Recording" element={<Recording />} />
               <Route path="/documenttitle" element={<Documenttitle />} />
-              <Route
-              path="/documentchat"
-              element={
-                <Documentchat
-                  hideSideNav={hideSideNav}
-                  isSideNavVisible={isNavVisible}
-                />
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <Dashboard
-                  hideSideNav={hideSideNav}
-                  isSideNavVisible={isNavVisible}
-                />
-              }
-            />
-            <Route
-              path="/Upload"
-              element={
-                <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-              }
-            />
-             <Route
-                path="/Test"
+                <Route
+                path="/documentchat"
                 element={
-                  <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                  <Documentchat
+                    hideSideNav={hideSideNav}
+                    isSideNavVisible={isNavVisible}
+                  />
                 }
               />
               <Route
-                path="/Question"
+                path="/dashboard"
                 element={
-                <Question
-                  hideSideNav={hideSideNav}
-                  isSideNavVisible={isNavVisible}
+                  <Dashboard
+                    hideSideNav={hideSideNav}
+                    isSideNavVisible={isNavVisible}
+                  />
+                }
+              />
+              <Route
+                path="/Upload"
+                element={
+                  <Upload hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                }
+              />
+              <Route
+                  path="/Test"
+                  element={
+                    <Test hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                  }
                 />
-          }
-        />
-          <Route path="/test-results/:testId" element={<TestDetails />} />
-
-        </Route>
-        <Route
-          path="/plan"
-          element={
-            <Plan hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <CheckoutForm hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
-          }
-        />
-        
-        <Route path="/PDFViewer" element={<PDFViewer />} />
+                <Route
+                  path="/Question"
+                  element={
+                  <Question
+                    hideSideNav={hideSideNav}
+                    isSideNavVisible={isNavVisible}
+                  />  
+                  }
+                />
+          
+                <Route path="/test-results/:testId" element={<TestDetails />} />
+                <Route
+                  path="/plan"
+                  element={
+                    <Plan hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <CheckoutForm hideSideNav={hideSideNav} isSideNavVisible={isNavVisible} />
+                  }
+                />
+          </Route>
+                
+          <Route path="/PDFViewer" element={<PDFViewer />} />
        
         
-        <Route
-          path="/Feedback"
-          element={
-            <Feedback
-              hideSideNav={hideSideNav}
-              isSideNavVisible={isNavVisible}
-            />
-          }
-        />
-        <Route path="/Footer" element={<Footer />} />
+                  <Route
+                    path="/Feedback"
+                    element={
+                      <Feedback
+                        hideSideNav={hideSideNav}
+                        isSideNavVisible={isNavVisible}
+                      />
+                    }
+                  />
+                  <Route path="/Footer" element={<Footer />} />
       </Routes>
       <button
         id="nav-menu-ctrl"
