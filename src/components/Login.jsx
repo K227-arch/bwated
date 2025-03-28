@@ -6,7 +6,7 @@ import "./login.css";
 import { useState } from 'react';
 import { supabase } from "@/lib/supabaseClient";
 import { ToastContainer, toast } from 'react-toastify';
-
+import { useEffect } from "react";
 function Login() {
    const [login_email, setLoginEmail] = useState('');
    const [password, setPassword] = useState('');
@@ -16,6 +16,17 @@ function Login() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+ 
+  const checkSession = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      navigate("/dashboard");
+    }
+  };
+
+  useEffect(() => {
+    checkSession();
+  }, []); 
 
   
   const SignInGoogle = async () => {
@@ -33,7 +44,7 @@ function Login() {
       console.error("Google sign-in error:", error.message);
     } else {
       console.log("Google sign-in successful!", user);
-      // navigate("/dashboard");
+      navigate("/dashboard");
     }
   }
 

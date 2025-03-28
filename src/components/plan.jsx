@@ -26,13 +26,15 @@ function BillingPage({ children, hideSideNav, isSideNavVisible }) {
 
         // Fetch user's account balance
         const { data: balanceData, error: balanceError } = await supabase
-          .from('user_accounts')
-          .select('balance')
-          .eq('user_id', user.id)
+          .from('users')
+          .select('credit')
+          .eq('auth_id', user.id)
           .single();
 
+          console.log(balanceData)
+
         if (balanceError) throw balanceError; 
-        setBalance(balanceData?.balance || 0);
+        setBalance(balanceData?.credit || 0);
       } catch (error) {
         console.error('Error fetching user or balance:', error);
         setError('Failed to load user information');

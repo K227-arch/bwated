@@ -5,6 +5,7 @@ import { encode, decode } from "gpt-tokenizer";
 import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 import { supabase } from '@/lib/supabaseClient';
+import { canAffordTokens } from "./Calc";
 
 const App = () => {
   const [messages, setMessages] = useState([]);
@@ -19,7 +20,10 @@ const App = () => {
   const fileInputRef = useRef(null);
   const [selectedVoice, setSelectedVoice] = useState("alloy");
   const [showMessages, setShowMessages] = useState(false);
-  const [name , setName] = useState('')
+  const [name , setName] = useState('');
+  const [totalTokensUsed, setTotalTokensUsed] = useState(0); // State to track total tokens used
+  const [error, setError] = useState(null);
+
   // Voice options
   const voices = [
     { id: "alloy", name: "Alloy" },
@@ -44,25 +48,16 @@ const App = () => {
 
       try {
         const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
-      console.log('Total tokens in PDF:', totalTokens);
+        console.log('Total tokens in PDF:', totalTokens);
+        // setTotalTokensUsed(prev => prev + totalTokens); // Update total tokens used
+        // localStorage.setItem('totalTokensUsed', totalTokensUsed + totalTokens); // Store in local storage
 
-      // Start loading state
-      setIsLoading(true);
-      await sendChunkToModel(extractedText);
-
-      // // If tokens exceed 122,000, break into chunks
-      // if (totalTokens > 122000) {
-      //   const chunks = breakIntoChunks(extractedText, 122000);
-      //   for (const chunk of chunks) {
-      //     await sendChunkToModel(chunk);
-      //   }
-      // } else {
-      //   // Send the entire text if within limits
-      //   await sendChunkToModel(extractedText);
-      //   console.log('No limits, sending entire text');
-      // }
-      }catch (e) {
-        console.log(e)
+        // Start loading state
+        setIsLoading(true);
+        await sendChunkToModel(extractedText);
+ 
+      } catch (e) {
+        console.log(e);
       }
 
       // Stop loading state after processing
@@ -76,7 +71,6 @@ const App = () => {
           console.error('Error fetching user from Supabase:', error);
         }
         if (user) {
-          // console.log('Logged in user:', user);
           setName(user.user.user_metadata.full_name || ''); // Set the name state if available
         } else {
           console.warn('No user is logged in.');
@@ -85,16 +79,9 @@ const App = () => {
         console.error('Error fetching logged in user:', error);
       }
     };
- 
 
-
-
-    
-      fetchLoggedInUser(); // Call the function to fetch the logged-in user
-  
-
-    // Call the function to get content
-    getContent();
+    fetchLoggedInUser(); // Call the function to fetch the logged-in user
+    getContent(); // Call the function to get content
   }, []); // Ensure this array is empty to run only once
 
   useEffect(() => {
@@ -168,110 +155,11 @@ const App = () => {
       }
     }
   };
-  // const extractTextFromPDF = async (file) => {
-  //   if (!file) {
-  //     alert('Please select a PDF file first');
-  //     return;
-  //   }
-
-  //   const fileReader = new FileReader();
-
-  //   fileReader.onload = async () => {
-  //     const typedArray = new Uint8Array(fileReader.result);
-
-  //     try {
-  //       const loadingTask = pdfjsLib.getDocument(typedArray);
-  //       const pdfDocument = await loadingTask.promise;
-  //       let extractedText = '';
-  //       const totalPages = pdfDocument.numPages;
-
-  //       for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-  //         const page = await pdfDocument.getPage(pageNumber);
-  //         const textContent = await page.getTextContent();
-          
-  //         // Join the text items without extra spaces
-  //         const pageText = textContent.items.map((item) => item.str).join(' ').replace(/\s+/g, ' ').trim();
-  //         extractedText += pageText + '\n';
-  //       }
-
-  //       console.log('Extracted PDF text:', extractedText);
-  //       setPdfText(extractedText);
-  //       setPdfName(file.name);
-
-  //       // Calculate tokens
-  //       const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
-  //       console.log('Total tokens in PDF:', totalTokens);
-
-  //       // Start loading state
-  //       setIsLoading(true);
-
-  //       // If tokens exceed 122,000, break into chunks
-  //       if (totalTokens > 122000) {
-  //         const chunks = breakIntoChunks(extractedText, 122000);
-  //         for (const chunk of chunks) {
-  //           await sendChunkToModel(chunk, file.name);
-  //         }
-  //       } else {
-  //         // Send the entire text if within limits
-  //         await sendChunkToModel(extractedText, file.name);
-  //       }
-        
-  //     } catch (error) {
-  //       console.error('Error extracting text: ', error);
-  //       alert('Error extracting text from PDF.');
-  //     } finally {
-  //       // Stop loading state after processing
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fileReader.onerror = () => {
-  //     console.error('Error reading file');
-  //     alert('Error reading the PDF file.');
-  //   };
-
-  //   fileReader.readAsArrayBuffer(file);
-  // };
 
   const sendChunkToModel = async (chunk) => {
     const initialPrompt = name ? `I've uploaded a PDF document, ${name}. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.` : `I've uploaded a PDF document. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.`;
     await handleGenerate(initialPrompt, true);
   };
-
-  const breakIntoChunks = (text, maxTokens) => {
-    const words = text.split(/\s+/); // Split text into words
-    const chunks = [];
-    let currentChunk = [];
-    let currentTokenCount = 0;
-
-    for (const word of words) {
-      const wordTokenCount = encode(word).length; // Calculate tokens for the word
-      if (currentTokenCount + wordTokenCount > maxTokens) {
-        chunks.push(currentChunk.join(' ')); // Push the current chunk to chunks
-        currentChunk = [word]; // Start a new chunk with the current word
-        currentTokenCount = wordTokenCount; // Reset token count for the new chunk
-      } else {
-        currentChunk.push(word); // Add word to the current chunk
-        currentTokenCount += wordTokenCount; // Update token count
-      }
-    }
-
-    // Push any remaining words as the last chunk
-    if (currentChunk.length > 0) {
-      chunks.push(currentChunk.join(' '));
-    }
-
-    return chunks;
-  };
-
-  // const handleFileUpload = async (event) => {
-  //   const file = event.target.files[0];
-  //   if (file && file.type === 'application/pdf') {
-  //     await extractTextFromPDF(file);
-  //   } else {
-  //     alert('Please upload a valid PDF file');
-  //   }
-  // };
 
   const handleGenerate = async (transcript, isPdfContext = false) => {
     if (!transcript.trim()) return;
@@ -294,9 +182,20 @@ const App = () => {
     });
 
     try {
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      const canAfford = await canAffordTokens(totalTokensUsed);
+      // console.log("sadasdas", canAfford);
+      if (!canAfford) {
+        setError('Insufficient tokens to generate the test.');
+        return;
+      }
+
+      // Reset totalTokensUsed in local storage after successful check
+      localStorage.setItem('totalTokensUsed', '0');
+
       // Include PDF context in system message if available
       const systemMessage = pdfText && !isPdfContext
-        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student ${name}. Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing ${name} by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
+        ? `You are a knowledgeable teacher leading a discussion about the PDF  with your student ${name} that u include in your conversations by mentioning the name and giving examples including them . Your voice has natural intonation, clear pronunciation, and varied pacing to maintain engagement. Begin with a hook that introduces the PDF's content, then present a structured overview that outlines key topics and learning objectives. Use a conversational yet authoritative tone, addressing ${name} by name while guiding the discussion. Break down complex concepts into digestible segments, provide relevant examples and analogies, and strategically pause for reflection. Reference this context in your responses: ${pdfText.substring(0, 1000)}...`
         : `As an engaging instructor, you will lead discussions with a podcast-like teaching style characterized by natural intonation, clear pronunciation, and dynamic pacing. Your delivery combines authority with warmth - using rhetorical questions, storytelling, and real-world examples to maintain ${name}'s interest. Start each response with a brief context-setting introduction before diving into explanations. Break down complex topics into clear segments, provide illuminating analogies, and smoothly transition between concepts. Regularly check ${name}'s understanding through targeted questions while maintaining an encouraging tone. Your speech should convey enthusiasm for the subject matter while ensuring key points are emphasized through strategic pauses and varied vocal expression. Remember to address ${name} by name and adapt your explanations based on their demonstrated comprehension level.`;
 
       const response = await openai.chat.completions.create({
@@ -346,6 +245,13 @@ const App = () => {
         content: textResponse,
         audioUrl: audioURL
       }]);
+
+      // Track token usage
+      const tokensUsed = response.usage.total_tokens; // Assuming the API returns token usage
+      setTotalTokensUsed(prev => prev + tokensUsed);
+      localStorage.setItem('totalTokensUsed', totalTokensUsed + tokensUsed); // Store in local storage
+      console.log('Total tokens used in this request:', tokensUsed);
+
     } catch (error) {
       console.error("Error generating text and audio:", error);
       alert('There was an error communicating with the AI model. Please try again later.');
@@ -359,12 +265,12 @@ const App = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h1>Bwated</h1>
-      
+      {error && error}
       {/* Voice Selection Dropdown */}
       <div style={{ 
         marginBottom: "20px",
         padding: "15px",
-        background: "#f8f9fa",
+        background: "transparent",
         borderRadius: "8px",
         display: "flex",
         alignItems: "center",
@@ -379,7 +285,7 @@ const App = () => {
             padding: "8px 12px",
             borderRadius: "4px",
             border: "1px solid #ced4da",
-            backgroundColor: "white",
+            backgroundColor: "#2dd4bf",
             cursor: "pointer",
             fontSize: "14px"
           }}
@@ -399,7 +305,7 @@ const App = () => {
             padding: "8px 16px",
             borderRadius: "20px",
             border: "none",
-            background: "#007bff",
+            background: "#2dd4bf",
             color: "white",
             cursor: "pointer",
             display: "flex",
@@ -520,11 +426,11 @@ const App = () => {
         // AI Animation View
         <div style={{ 
           height: "400px", 
-          border: "1px solid #ccc",
+          
           borderRadius: "8px",
           position: "relative",
           overflow: "hidden",
-          background: "white"
+          background: "transparent"
         }}>
           <div className="ai-animation">
             <div className="pulse"></div>
@@ -546,7 +452,7 @@ const App = () => {
             padding: "15px 30px",
             borderRadius: "50px",
             border: "none",
-            background: isListening ? "#dc3545" : "#007bff",
+            background: isListening ? "#2dd4bf" : "#2dd4bf",
             color: "white",
             cursor: isLoading ? "not-allowed" : "pointer",
             fontSize: "16px",
@@ -603,10 +509,11 @@ const App = () => {
           .pulse {
             width: 100px;
             height: 100px;
-            background: #007bff;
+            background: #2dd4bf;
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 30px #007bff;
+            box-shadow: 0 0 30px #2dd4bf;
+            
           }
 
           .particles {
@@ -622,7 +529,7 @@ const App = () => {
             position: absolute;
             width: 4px;
             height: 4px;
-            background: #007bff;
+            background: #2dd4bf;
             border-radius: 50%;
             animation: particle 3s infinite;
           }
@@ -674,7 +581,7 @@ const App = () => {
           /* Loader styles */
           .loader {
             border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #3498db; /* Blue */
+            border-top: 8px solid #2dd4bf; /* Blue */
             border-radius: 50%;
             width: 50px;
             height: 50px;

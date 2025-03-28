@@ -7,6 +7,7 @@ import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { supabase } from '@/lib/supabaseClient';
 import {fetchUser} from '@/lib/authUser';
 import { encode } from "gpt-tokenizer";
+import { canAffordTokens } from "./Calc";
 
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
  
@@ -220,6 +221,17 @@ function extractJSONObject(input) {
     setError(null);
 
     try {
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      const canAfford = await canAffordTokens(totalTokensUsed);
+
+      if (!canAfford) {
+        setError('Insufficient tokens to generate the test.');
+        return;
+      }
+
+      // Reset totalTokensUsed in local storage after successful check
+      localStorage.setItem('totalTokensUsed', '0');
+
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
@@ -277,12 +289,11 @@ function extractJSONObject(input) {
       }
 
       // Calculate output tokens
-      const outputTokens = calculateTokens(JSON.stringify(parsedResponse));
-      setTokenCounts(prev => ({
-        ...prev,
-        output: outputTokens,
-        total: prev.input + outputTokens + prev.cache
-      }));
+      const outputTokens =  completion.usage.total_tokens;
+
+      // Update total tokens used in local storage
+      const totalTokensUseds = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      localStorage.setItem('totalTokensUsed', totalTokensUseds + outputTokens);
 
       // Validate question types
       const isValidFormat = parsedResponse.questions.every(q => 
@@ -293,7 +304,7 @@ function extractJSONObject(input) {
       if (!isValidFormat) {
         throw new Error('Generated questions do not match the requested format');
       }
-        console.log(tokenCounts)
+      
       navigate("/Question", { 
         state: { 
           questions: parsedResponse.questions,
@@ -304,7 +315,7 @@ function extractJSONObject(input) {
 
     } catch (error) {
       console.error('Error generating test:', error);
-      setError(error.message || 'Failed to generate test. Please try again.');
+      setError(error.message || 'Failed to generate test. Please try again with lighter Pdf.');
     } finally {
       setIsLoading(false);
     }
@@ -322,7 +333,7 @@ function extractJSONObject(input) {
       const user = await fetchUser();
      
       if (user) {
-        console.log(user)
+        // console.log(user)
         fetchUserPdfs(user);
         setUser(user); 
       }
