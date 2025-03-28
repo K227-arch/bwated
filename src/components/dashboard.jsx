@@ -41,8 +41,14 @@ function App({ hideSideNav, isSideNavVisible }) {
               profile_image: user.user_metadata.avatar_url || '',
               phone_number: user.user_metadata.phone || ''
             }]);
+            if (createUserError) {
+              console.log(createUserError)
+             }
            }  
+          
         }
+
+       
 
         // if (!userData) {
         //   console.error('User does not exist in the users table');

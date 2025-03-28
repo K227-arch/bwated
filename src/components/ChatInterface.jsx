@@ -19,7 +19,9 @@ const App = () => {
   const fileInputRef = useRef(null);
   const [selectedVoice, setSelectedVoice] = useState("alloy");
   const [showMessages, setShowMessages] = useState(false);
-  const [name , setName] = useState('')
+  const [name , setName] = useState('');
+  const [totalTokensUsed, setTotalTokensUsed] = useState(0); // State to track total tokens used
+
   // Voice options
   const voices = [
     { id: "alloy", name: "Alloy" },
@@ -44,25 +46,16 @@ const App = () => {
 
       try {
         const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
-      console.log('Total tokens in PDF:', totalTokens);
+        console.log('Total tokens in PDF:', totalTokens);
+        setTotalTokensUsed(prev => prev + totalTokens); // Update total tokens used
+        localStorage.setItem('totalTokensUsed', totalTokensUsed + totalTokens); // Store in local storage
 
-      // Start loading state
-      setIsLoading(true);
-      await sendChunkToModel(extractedText);
-
-      // // If tokens exceed 122,000, break into chunks
-      // if (totalTokens > 122000) {
-      //   const chunks = breakIntoChunks(extractedText, 122000);
-      //   for (const chunk of chunks) {
-      //     await sendChunkToModel(chunk);
-      //   }
-      // } else {
-      //   // Send the entire text if within limits
-      //   await sendChunkToModel(extractedText);
-      //   console.log('No limits, sending entire text');
-      // }
-      }catch (e) {
-        console.log(e)
+        // Start loading state
+        setIsLoading(true);
+        await sendChunkToModel(extractedText);
+ 
+      } catch (e) {
+        console.log(e);
       }
 
       // Stop loading state after processing
@@ -76,7 +69,6 @@ const App = () => {
           console.error('Error fetching user from Supabase:', error);
         }
         if (user) {
-          // console.log('Logged in user:', user);
           setName(user.user.user_metadata.full_name || ''); // Set the name state if available
         } else {
           console.warn('No user is logged in.');
@@ -85,16 +77,9 @@ const App = () => {
         console.error('Error fetching logged in user:', error);
       }
     };
- 
 
-
-
-    
-      fetchLoggedInUser(); // Call the function to fetch the logged-in user
-  
-
-    // Call the function to get content
-    getContent();
+    fetchLoggedInUser(); // Call the function to fetch the logged-in user
+    getContent(); // Call the function to get content
   }, []); // Ensure this array is empty to run only once
 
   useEffect(() => {
@@ -168,110 +153,11 @@ const App = () => {
       }
     }
   };
-  // const extractTextFromPDF = async (file) => {
-  //   if (!file) {
-  //     alert('Please select a PDF file first');
-  //     return;
-  //   }
-
-  //   const fileReader = new FileReader();
-
-  //   fileReader.onload = async () => {
-  //     const typedArray = new Uint8Array(fileReader.result);
-
-  //     try {
-  //       const loadingTask = pdfjsLib.getDocument(typedArray);
-  //       const pdfDocument = await loadingTask.promise;
-  //       let extractedText = '';
-  //       const totalPages = pdfDocument.numPages;
-
-  //       for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-  //         const page = await pdfDocument.getPage(pageNumber);
-  //         const textContent = await page.getTextContent();
-          
-  //         // Join the text items without extra spaces
-  //         const pageText = textContent.items.map((item) => item.str).join(' ').replace(/\s+/g, ' ').trim();
-  //         extractedText += pageText + '\n';
-  //       }
-
-  //       console.log('Extracted PDF text:', extractedText);
-  //       setPdfText(extractedText);
-  //       setPdfName(file.name);
-
-  //       // Calculate tokens
-  //       const totalTokens = encode(extractedText).length; // Calculate tokens using the tokenizer
-  //       console.log('Total tokens in PDF:', totalTokens);
-
-  //       // Start loading state
-  //       setIsLoading(true);
-
-  //       // If tokens exceed 122,000, break into chunks
-  //       if (totalTokens > 122000) {
-  //         const chunks = breakIntoChunks(extractedText, 122000);
-  //         for (const chunk of chunks) {
-  //           await sendChunkToModel(chunk, file.name);
-  //         }
-  //       } else {
-  //         // Send the entire text if within limits
-  //         await sendChunkToModel(extractedText, file.name);
-  //       }
-        
-  //     } catch (error) {
-  //       console.error('Error extracting text: ', error);
-  //       alert('Error extracting text from PDF.');
-  //     } finally {
-  //       // Stop loading state after processing
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fileReader.onerror = () => {
-  //     console.error('Error reading file');
-  //     alert('Error reading the PDF file.');
-  //   };
-
-  //   fileReader.readAsArrayBuffer(file);
-  // };
 
   const sendChunkToModel = async (chunk) => {
     const initialPrompt = name ? `I've uploaded a PDF document, ${name}. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.` : `I've uploaded a PDF document. Here's a chunk of the content:\n\n${chunk}\n\nPlease acknowledge that you've received this content and are ready to discuss it.`;
     await handleGenerate(initialPrompt, true);
   };
-
-  const breakIntoChunks = (text, maxTokens) => {
-    const words = text.split(/\s+/); // Split text into words
-    const chunks = [];
-    let currentChunk = [];
-    let currentTokenCount = 0;
-
-    for (const word of words) {
-      const wordTokenCount = encode(word).length; // Calculate tokens for the word
-      if (currentTokenCount + wordTokenCount > maxTokens) {
-        chunks.push(currentChunk.join(' ')); // Push the current chunk to chunks
-        currentChunk = [word]; // Start a new chunk with the current word
-        currentTokenCount = wordTokenCount; // Reset token count for the new chunk
-      } else {
-        currentChunk.push(word); // Add word to the current chunk
-        currentTokenCount += wordTokenCount; // Update token count
-      }
-    }
-
-    // Push any remaining words as the last chunk
-    if (currentChunk.length > 0) {
-      chunks.push(currentChunk.join(' '));
-    }
-
-    return chunks;
-  };
-
-  // const handleFileUpload = async (event) => {
-  //   const file = event.target.files[0];
-  //   if (file && file.type === 'application/pdf') {
-  //     await extractTextFromPDF(file);
-  //   } else {
-  //     alert('Please upload a valid PDF file');
-  //   }
-  // };
 
   const handleGenerate = async (transcript, isPdfContext = false) => {
     if (!transcript.trim()) return;
@@ -346,6 +232,13 @@ const App = () => {
         content: textResponse,
         audioUrl: audioURL
       }]);
+
+      // Track token usage
+      const tokensUsed = response.usage.total_tokens; // Assuming the API returns token usage
+      setTotalTokensUsed(prev => prev + tokensUsed);
+      localStorage.setItem('totalTokensUsed', totalTokensUsed + tokensUsed); // Store in local storage
+      console.log('Total tokens used in this request:', tokensUsed);
+
     } catch (error) {
       console.error("Error generating text and audio:", error);
       alert('There was an error communicating with the AI model. Please try again later.');

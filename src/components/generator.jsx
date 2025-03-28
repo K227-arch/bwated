@@ -7,6 +7,7 @@ import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/webpack';
 import { supabase } from '@/lib/supabaseClient';
 import {fetchUser} from '@/lib/authUser';
 import { encode } from "gpt-tokenizer";
+import { canAffordTokens } from "./Calc";
 
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
  
@@ -220,91 +221,101 @@ function extractJSONObject(input) {
     setError(null);
 
     try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { 
-            role: "system", 
-            content: "You are an AI assistant that creates tests based on uploaded documents." 
-          },
-          {
-            role: "user",
-            content: `
-              Create a test based on the following document content:
-              ---
-              ${pdfContent}
-              ---
+      const totalTokensUsed = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      const canAfford = await canAffordTokens(totalTokensUsed);
 
-              Create ${questionCount} questions of type "${complexity === 'Multichoice' ? 'multiple' : 'structured'}".
+      if (!canAfford) {
+        setError('Insufficient tokens to generate the test.');
+        return;
+      }
+
+      // Reset totalTokensUsed in local storage after successful check
+      localStorage.setItem('totalTokensUsed', '0');
+
+      // const completion = await openai.chat.completions.create({
+      //   model: "gpt-4o-mini",
+      //   messages: [
+      //     { 
+      //       role: "system", 
+      //       content: "You are an AI assistant that creates tests based on uploaded documents." 
+      //     },
+      //     {
+      //       role: "user",
+      //       content: `
+      //         Create a test based on the following document content:
+      //         ---
+      //         ${pdfContent}
+      //         ---
+
+      //         Create ${questionCount} questions of type "${complexity === 'Multichoice' ? 'multiple' : 'structured'}".
               
-              Rules:
-              ${complexity === 'Multichoice' ? `
-              - All questions must be multiple choice with exactly 4 options
-              - One option must be correct
-              - Options should be plausible but clearly distinguishable
-              ` : `
-              - All questions must be structured (open-ended)
-              - Answers should be clear and concise
-              - Include key points that should be present in a good answer
-              `}
+      //         Rules:
+      //         ${complexity === 'Multichoice' ? `
+      //         - All questions must be multiple choice with exactly 4 options
+      //         - One option must be correct
+      //         - Options should be plausible but clearly distinguishable
+      //         ` : `
+      //         - All questions must be structured (open-ended)
+      //         - Answers should be clear and concise
+      //         - Include key points that should be present in a good answer
+      //         `}
 
-              Return the test in this exact JSON format:
-              {
-                "questions": [
-                  ${complexity === 'Multichoice' ? `{
-                    "question": "Sample question?",
-                    "type": "multiple",
-                    "options": ["Option A", "Option B", "Option C", "Option D"],
-                    "answer": "Option A"
-                  }` : `{
-                    "question": "Sample question?",
-                    "type": "structured",
-                    "answer": "Expected answer with key points"
-                  }`}
-                ]
-              }
+      //         Return the test in this exact JSON format:
+      //         {
+      //           "questions": [
+      //             ${complexity === 'Multichoice' ? `{
+      //               "question": "Sample question?",
+      //               "type": "multiple",
+      //               "options": ["Option A", "Option B", "Option C", "Option D"],
+      //               "answer": "Option A"
+      //             }` : `{
+      //               "question": "Sample question?",
+      //               "type": "structured",
+      //               "answer": "Expected answer with key points"
+      //             }`}
+      //           ]
+      //         }
 
-              Focus on these key topics: ${keywords.join(', ')}
-            `
-          }
-        ],
-      });
-      console.log(completion)
-      const parsedResponse = extractJSONObject(completion.choices[0].message.content);
+      //         Focus on these key topics: ${keywords.join(', ')}
+      //       `
+      //     }
+      //   ],
+      // });
+      // console.log(completion)
+      // const parsedResponse = extractJSONObject(completion.choices[0].message.content);
       
-      if (!parsedResponse || !parsedResponse.questions) {
-        throw new Error('Invalid response format from AI');
-      }
+      // if (!parsedResponse || !parsedResponse.questions) {
+      //   throw new Error('Invalid response format from AI');
+      // }
 
-      // Calculate output tokens
-      const outputTokens = calculateTokens(JSON.stringify(parsedResponse));
-      setTokenCounts(prev => ({
-        ...prev,
-        output: outputTokens,
-        total: prev.input + outputTokens + prev.cache
-      }));
+      // // Calculate output tokens
+      // const outputTokens =  completion.usage.total_tokens;
 
-      // Validate question types
-      const isValidFormat = parsedResponse.questions.every(q => 
-        q.type === (complexity === 'Multichoice' ? 'multiple' : 'structured') &&
-        (q.type === 'multiple' ? Array.isArray(q.options) && q.options.length === 4 : true)
-      );
+      // // Update total tokens used in local storage
+      // const totalTokensUseds = parseInt(localStorage.getItem('totalTokensUsed')) || 0;
+      // localStorage.setItem('totalTokensUsed', totalTokensUseds + outputTokens);
 
-      if (!isValidFormat) {
-        throw new Error('Generated questions do not match the requested format');
-      }
-        console.log(tokenCounts)
-      navigate("/Question", { 
-        state: { 
-          questions: parsedResponse.questions,
-          documentId: documentId,
-          tokenCounts: tokenCounts
-        }
-      });
+      // // Validate question types
+      // const isValidFormat = parsedResponse.questions.every(q => 
+      //   q.type === (complexity === 'Multichoice' ? 'multiple' : 'structured') &&
+      //   (q.type === 'multiple' ? Array.isArray(q.options) && q.options.length === 4 : true)
+      // );
+
+      // if (!isValidFormat) {
+      //   throw new Error('Generated questions do not match the requested format');
+      // }
+      
+      // navigate("/Question", { 
+      //   state: { 
+      //     questions: parsedResponse.questions,
+      //     documentId: documentId,
+      //     tokenCounts: tokenCounts
+      //   }
+      // });
 
     } catch (error) {
       console.error('Error generating test:', error);
-      setError(error.message || 'Failed to generate test. Please try again.');
+      setError(error.message || 'Failed to generate test. Please try again with lighter Pdf.');
     } finally {
       setIsLoading(false);
     }
@@ -322,7 +333,7 @@ function extractJSONObject(input) {
       const user = await fetchUser();
      
       if (user) {
-        console.log(user)
+        // console.log(user)
         fetchUserPdfs(user);
         setUser(user); 
       }
