@@ -230,10 +230,32 @@
 
 @media(max-width:408px) {
   .header-logo {
-    width:300px;
-    height:40px;
+    
     cursor:pointer;
     margin-left: -10px;
+    margin-right: 0px;
+  }
+}
+
+@media(max-width:518px) {
+  .header-container >  .logo-header {
+    margin-left: 20px;
+   }
+  .auth-buttons {
+    margin-right: 8px;
+  }
+}
+
+@media(max-width:376px) {
+  .auth-buttons {
+    margin-right: 0px;
+  }
+}
+
+
+@media(max-width:320px) {
+  
+  .auth-buttons {
     margin-right: 0px;
   }
 }

@@ -8,6 +8,10 @@
   margin: 0px 20px 0px 20px;
 }
 
+.logologin {
+  display: block;
+  margin-bottom: 100px;
+}
 .cl-wrapper {
   display: flex;
   flex-direction: column;
@@ -16,8 +20,8 @@
 }
 
 .login-logo {
-  width: 700px;
-  height: 200px;
+  width: 260px;
+  height: 60px;
   margin-top: -60px;
   margin-left: 20px;
 }
@@ -40,7 +44,7 @@
   text-align: center; /* Center-align text inside the box */
   max-width: 400px;
   flex: 1;
-  height:550px;
+  height: 550px;
 }
 .google-input-with-icon {
   display: flex; /* Align icon and text */
@@ -144,13 +148,12 @@ img {
   margin-left: 140px;
 }
 
-
 .login-form {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin-left:10px;
+  margin-left: 10px;
 }
 
 @media (max-width: 449px) {
@@ -170,7 +173,6 @@ img {
   }
 }
 
-
 @media (max-width: 422px) {
   .login-wrapper .submitbutton2 {
     width: 250px;
@@ -189,7 +191,6 @@ img {
   }
 }
 
-
 @media (max-width: 340px) {
   .login-wrapper .submitbutton2 {
     width: 210px;
@@ -198,8 +199,4 @@ img {
   .login-wrapper .google-input-with-icon {
     width: 210px;
   }
-
-  
 }
-
-
