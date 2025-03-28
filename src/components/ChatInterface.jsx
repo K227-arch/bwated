@@ -257,7 +257,7 @@ const App = () => {
       <div style={{ 
         marginBottom: "20px",
         padding: "15px",
-        background: "#f8f9fa",
+        background: "transparent",
         borderRadius: "8px",
         display: "flex",
         alignItems: "center",
@@ -272,7 +272,7 @@ const App = () => {
             padding: "8px 12px",
             borderRadius: "4px",
             border: "1px solid #ced4da",
-            backgroundColor: "white",
+            backgroundColor: "#2dd4bf",
             cursor: "pointer",
             fontSize: "14px"
           }}
@@ -292,7 +292,7 @@ const App = () => {
             padding: "8px 16px",
             borderRadius: "20px",
             border: "none",
-            background: "#007bff",
+            background: "#2dd4bf",
             color: "white",
             cursor: "pointer",
             display: "flex",
@@ -413,11 +413,11 @@ const App = () => {
         // AI Animation View
         <div style={{ 
           height: "400px", 
-          border: "1px solid #ccc",
+          
           borderRadius: "8px",
           position: "relative",
           overflow: "hidden",
-          background: "white"
+          background: "transparent"
         }}>
           <div className="ai-animation">
             <div className="pulse"></div>
@@ -439,7 +439,7 @@ const App = () => {
             padding: "15px 30px",
             borderRadius: "50px",
             border: "none",
-            background: isListening ? "#dc3545" : "#007bff",
+            background: isListening ? "#2dd4bf" : "#2dd4bf",
             color: "white",
             cursor: isLoading ? "not-allowed" : "pointer",
             fontSize: "16px",
@@ -496,10 +496,11 @@ const App = () => {
           .pulse {
             width: 100px;
             height: 100px;
-            background: #007bff;
+            background: #2dd4bf;
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 30px #007bff;
+            box-shadow: 0 0 30px #2dd4bf;
+            
           }
 
           .particles {
@@ -515,7 +516,7 @@ const App = () => {
             position: absolute;
             width: 4px;
             height: 4px;
-            background: #007bff;
+            background: #2dd4bf;
             border-radius: 50%;
             animation: particle 3s infinite;
           }
@@ -567,7 +568,7 @@ const App = () => {
           /* Loader styles */
           .loader {
             border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #3498db; /* Blue */
+            border-top: 8px solid #2dd4bf; /* Blue */
             border-radius: 50%;
             width: 50px;
             height: 50px;
