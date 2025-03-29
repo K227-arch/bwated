@@ -87,11 +87,9 @@ function App() {
           <img src={logo} className="logose" alt="Logo" />
         </div>
         <nav className="nav-buttons">
-          <button className="btn btn-outline" onClick={gotoLogin}>
-            Sign Up
-          </button>
+          
           <button className="btn btn-primary" onClick={gotoLogin}>
-            TRY FREE
+            SIGN UP
           </button>
         </nav>
       </header>
@@ -126,10 +124,10 @@ function App() {
           
 
           
-          <img src={school1} className="slide" alt="" />
-          <img src={school2} className="slide" alt="" />
-          <img src={school3} className="slide" alt="" />
-          <img src={school4} className="slide" alt="" />
+          <img src={school1} className="slide" alt="school 1" />
+          <img src={school2} className="slide" alt="school2" />
+          <img src={school3} className="slide" alt="school2" />
+          <img src={school4} className="slide" alt="school2" />
           <img src={school5} className="slide" alt="" />
           <img src={school6} className="slide" alt="" />
           <img src={school7} className="slide" alt="" />
