@@ -33,7 +33,7 @@ function Login() {
     const { user, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://www.bwated.com/dashboard',  
+        redirectTo: 'https://bwated.com/dashboard',  
       },
     });
 
