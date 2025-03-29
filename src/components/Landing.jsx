@@ -79,6 +79,7 @@ function App() {
   const navigate = useNavigate();
   const gotoDocumenttitle = () => navigate("/Documenttitle");
   const gotoLogin = () => navigate("/Login");
+  const gotoSignup = () => navigate("/Signup");
 
   return (
     <div className="container8">
@@ -88,7 +89,7 @@ function App() {
         </div>
         <nav className="nav-buttons">
           
-          <button className="btn btn-primary" onClick={gotoLogin}>
+          <button className="btn btn-primary" onClick={gotoSignup}>
             SIGN UP
           </button>
         </nav>

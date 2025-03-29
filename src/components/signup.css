@@ -11,6 +11,12 @@
   
 }
 
+.cl-wrapper-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .signuplogo {
   display: block;
   margin-bottom: 80px;
