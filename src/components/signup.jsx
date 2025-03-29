@@ -28,7 +28,7 @@ const Signup = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:5173/dashboard",
+          redirectTo: "https://www.bwated.com/dashboard",
         },
       });
 
