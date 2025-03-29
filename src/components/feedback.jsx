@@ -1,19 +1,33 @@
 import { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { supabase } from "@/lib/supabaseClient"; // Import supabase client
 import "./feedback.css";
 
 function App({ hideSideNav, isSideNavVisible }) {
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState(null); // State for error handling
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (category && message) {
-      console.log("Feedback submitted:", { category, message });
-      // Reset form
-      setCategory("");
-      setMessage("");
+      try {
+        // Save feedback to Supabase
+        const { error } = await supabase
+          .from("feedback") // Assuming the table name is 'feedback'
+          .insert([{ category, message }]);
+
+        if (error) throw error;
+
+        console.log("Feedback submitted:", { category, message });
+        // Reset form
+        setCategory("");
+        setMessage("");
+      } catch (err) {
+        console.error("Error submitting feedback:", err);
+        setError("Failed to submit feedback. Please try again."); // Set error message
+      }
     }
   };
 
@@ -28,6 +42,8 @@ function App({ hideSideNav, isSideNavVisible }) {
           We would love to hear your thoughts on how we can improve bwarted, so
           we can better help you achieve your dream grade!
         </p>
+
+        {error && <p className="error-message">{error}</p>} {/* Display error message */}
 
         <form onSubmit={handleSubmit}>
           <div>
