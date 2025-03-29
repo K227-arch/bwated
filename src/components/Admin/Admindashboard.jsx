@@ -37,7 +37,8 @@ const Admindashboard = () => {
           email: user.email,
           joinedAt: new Date(user.created_at).toLocaleString(),
           status: user.status || 'Active',
-          plan: user.subscription_tier || 'Free'
+          plan: user.subscription_tier || 'Free',
+          profile_image: user.profile_image
         })));
 
         // Fetch transactions

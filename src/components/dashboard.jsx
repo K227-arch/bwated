@@ -45,31 +45,7 @@ function App({ hideSideNav, isSideNavVisible }) {
               console.log(createUserError)
              }
            }  
-          
         }
-
-       
-
-        // if (!userData) {
-        //   console.error('User does not exist in the users table');
-        //   const { error: createUserError } = await supabase
-        //     .from('users')
-        //     .insert([{
-        //       auth_id: user.id,
-        //       full_name: user.user_metadata.full_name || '',
-        //       email: user.email || '',
-        //       profile_image: user.user_metadata.avatar_url || '',
-        //       phone_number: user.user_metadata.phone || ''
-        //     }]);
-
-        //   if (createUserError) {
-        //     console.error('Error creating user record:', createUserError.message);
-        //     setError(createUserError.message);
-        //   } else {
-        //     console.log('User record created successfully');
-        //   }
-        // }
-        // if (userError) throw userError;
 
         setUser(user);
 
@@ -142,7 +118,7 @@ function App({ hideSideNav, isSideNavVisible }) {
 
   function truncateText(text) {
     return text.length > 26 ? text.slice(0, 26) + "..." : text;
-}
+  }
 
   const handleChatClick = () => {
     navigate("/upload");
@@ -151,6 +127,7 @@ function App({ hideSideNav, isSideNavVisible }) {
   const handleTestClick = () => {
     navigate("/Test");
   };
+
   const extractTextFromPDF = async (url) => {
     try {
       // First fetch the PDF file from the URL
@@ -189,6 +166,24 @@ function App({ hideSideNav, isSideNavVisible }) {
     navigate("/Documentchat", {
       state: { docId: doc.doc_id },
     });
+  };
+
+  const handleDeleteDocument = async (docId) => {
+    try {
+      const { error } = await supabase
+        .from("documents")
+        .delete()
+        .eq("id", docId);
+
+      if (error) throw error;
+
+      // Update the local state to remove the deleted document
+      setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== docId));
+      console.log("Document deleted successfully");
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      setError("Failed to delete document. Please try again.");
+    }
   };
 
   return (
@@ -305,7 +300,15 @@ function App({ hideSideNav, isSideNavVisible }) {
                   </div>
                   <div className="document-type">
                     {doc.file_type === 'pdf' ? '📄' : '📁'}
-                    <Trash size={18} color="#28a745" style={{ marginLeft: '8px', cursor: 'pointer' }} />
+                    <Trash 
+                      size={18} 
+                      color="#28a745" 
+                      style={{ marginLeft: '8px', cursor: 'pointer' }} 
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering document click
+                        handleDeleteDocument(doc.id);
+                      }} 
+                    />
                   </div>
                 </div>
               </div>
@@ -315,7 +318,7 @@ function App({ hideSideNav, isSideNavVisible }) {
             getFilteredItems().map((test) => (
               <div
                 key={test.id}
-                className="chat-card test-card" sx
+                className="chat-card test-card"
                 onClick={() => navigate(`/test-results/${test.id}`)}
               >
                 <div className="chat-preview">
@@ -338,13 +341,21 @@ function App({ hideSideNav, isSideNavVisible }) {
                     </div>
                     <div className="test-type">
                       {test.test_type === 'generated' ? '📝' : '✍️' }
-                      <Trash size={18} color="red" style={{ marginLeft: '8px', cursor: 'pointer' }} />
+                      <Trash 
+                        size={18} 
+                        color="red" 
+                        style={{ marginLeft: '8px', cursor: 'pointer' }} 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent triggering test click
+                          handleDeleteDocument(test.id);
+                        }} 
+                      />
                     </div>
                   </div>
                 </div>
-                </div>
-              ))
-            )}
+              </div>
+            ))
+          )}
           </div>
         </div>
       </div>
