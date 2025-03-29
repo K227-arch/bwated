@@ -182,11 +182,11 @@ const AppRoutes = () => {
           display:
             location.pathname == "/"
               ? "none"
-              : location.pathname == "/Documenttitle"
+              : location.pathname == "/documenttitle"
               ? "none"
               : location.pathname == "/Login"
               ? "none"
-              : location.pathname == "/Signup"
+              : location.pathname == "/signup"
               ? "none"
               : "flex",
         }}
