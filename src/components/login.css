@@ -108,6 +108,9 @@
   margin: -10px auto;
   text-align: center;
   margin-top: -50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .submitbutton3 {
@@ -161,7 +164,7 @@ img {
     width: 300px;
   }
 
-  .login-wrapper .google-input-with-icon {
+  .google-input-with-icon {
     width: 300px;
   }
 
@@ -178,7 +181,7 @@ img {
     width: 250px;
   }
 
-  .login-wrapper .google-input-with-icon {
+  .google-input-with-icon {
     width: 250px;
   }
 
@@ -197,6 +200,6 @@ img {
   }
 
   .login-wrapper .google-input-with-icon {
-    width: 210px;
+    /* width: 210px; */
   }
 }

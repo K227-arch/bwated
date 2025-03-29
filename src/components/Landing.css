@@ -111,7 +111,7 @@
 /* Slider container */
 .sliders {
   margin: 0px 0px 100px 0px;
-  display: none;
+  /* display: none; */
   /* Hide overflowing content */
   width: 100%; /* Full width */
   height: fit-content; /* Set desired height */
